@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  cvs       CV[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CV {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Dados pessoais
+  fullName       String
+  email          String
+  phone          String
+  location       String?
+  linkedIn       String?
+  portfolio      String?
+  
+  // Conteúdo
+  summary        String?
+  targetPosition String?
+  experiences    Json     @default("[]")
+  education      Json     @default("[]")
+  skills         String[]
+  languages      Json     @default("[]")
+  
+  // Metadados
+  templateId     String   @default("modern")
+  aiImproved     Boolean  @default(false)
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  @@index([userId])
+}
