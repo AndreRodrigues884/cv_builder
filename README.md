@@ -22,8 +22,3 @@ The application is divided into two main parts:
 - **Backend**: Built with Node.js, Express, and Prisma ORM, located in the `backend/` folder.
 
 ---
-
-
-
-```bash
-cd backend
