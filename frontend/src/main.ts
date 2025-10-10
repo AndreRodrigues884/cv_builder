@@ -3,7 +3,7 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
-import './assets/style.css'
+import './assets/main.css'
 
 // Criar a instância da aplicação
 const app = createApp(App)
