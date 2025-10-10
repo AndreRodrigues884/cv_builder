@@ -9,14 +9,20 @@
         Cria o teu currículo profissional com ajuda de IA
       </p>
       <div class="space-x-4">
+        <router-link to="/login">
+          <button class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+            Login
+          </button>
+        </router-link>
         <button class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
           Começar Agora
         </button>
-        <button class="px-6 py-3 bg-white text-blue-600 rounded-lg border-2 border-blue-600 hover:bg-blue-50 transition">
+        <button
+          class="px-6 py-3 bg-white text-blue-600 rounded-lg border-2 border-blue-600 hover:bg-blue-50 transition">
           Ver Exemplo
         </button>
       </div>
-      
+
       <!-- Status do Backend -->
       <div class="mt-12">
         <p class="text-sm text-gray-500 mb-2">Status do Backend:</p>
