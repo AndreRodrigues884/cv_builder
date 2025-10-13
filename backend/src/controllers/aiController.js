@@ -1,4 +1,4 @@
-const aiService = require('../services/aiService');
+const aiService = require('../services/aiServiceHuggingFace');
 
 exports.improveDescription = async (req, res) => {
   try {
