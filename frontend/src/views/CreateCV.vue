@@ -278,6 +278,102 @@
           </p>
         </div>
 
+
+        <!-- Projetos -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold">🎓 Projetos</h2>
+            <button
+              type="button"
+              @click="addProject"
+              class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition text-sm"
+            >
+              ➕ Adicionar
+            </button>
+          </div>
+
+          <div v-for="(edu, index) in formData.project" :key="index" class="mb-6 p-4 border rounded-lg">
+            <div class="flex justify-between items-start mb-4">
+              <h3 class="font-semibold">Projeto {{ index + 1 }}</h3>
+              <button
+                type="button"
+                @click="removeProject(index)"
+                class="text-red-600 hover:text-red-800 text-sm"
+              >
+                🗑️ Remover
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium mb-2">Titulo *</label>
+                <input 
+                  v-model="edu.projectTitle" 
+                  type="text" 
+                  required
+                  class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Titulo do Projeto"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium mb-2">Data Início *</label>
+                <input 
+                  v-model="exp.startDate" 
+                  type="month" 
+                  required
+                  class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium mb-2">Data Fim</label>
+                <input 
+                  v-model="exp.endDate" 
+                  type="month"
+                  :disabled="exp.isCurrentJob"
+                  class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                />
+                <label class="flex items-center mt-2 text-sm">
+                  <input 
+                    v-model="exp.isCurrentJob" 
+                    type="checkbox"
+                    class="mr-2"
+                  />
+                  Em desenvolvimento
+                </label>
+              </div>
+
+              <div class="mt-4">
+              <label class="block text-sm font-medium mb-2">Descrição *</label>
+              <div class="relative">
+                <textarea 
+                  v-model="exp.description" 
+                  rows="3"
+                  required
+                  class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Descreve as tuas responsabilidades e conquistas..."
+                ></textarea>
+                <button
+                  type="button"
+                  @click="improveDescriptionProject(index)"
+                  :disabled="loadingAI"
+                  class="absolute bottom-2 right-2 px-3 py-1 bg-purple-600 text-white text-sm rounded hover:bg-purple-700 transition disabled:opacity-50"
+                >
+                  {{ loadingAI ? '⏳' : '✨ Melhorar' }}
+                </button>
+              </div>
+            </div>
+
+            
+            </div>
+          </div>
+
+          <p v-if="formData.education.length === 0" class="text-gray-500 text-center py-4">
+            Nenhum projeto adicionado ainda
+          </p>
+        </div>
+
         <!-- Competências -->
         <div class="bg-white rounded-lg shadow p-6">
           <h2 class="text-2xl font-bold mb-4">🛠️ Competências</h2>
@@ -411,6 +507,41 @@ const addEducation = () => {
 
 const removeEducation = (index) => {
   formData.education.splice(index, 1)
+}
+
+// Projetos
+const addProject = () => {
+  formData.project.push({
+    projectTitle: '',
+    startDate: '',
+    endDate: '',
+    description: '',
+  })
+}
+
+const removeProject = (index) => {
+  formData.project.splice(index, 1)
+}
+
+const improveDescriptionProject = async (index) => {
+  const exp = formData.experiences[index]
+  if (!exp.projectTitle || !exp.description) {
+    alert('Preenche o titulo« e descrição primeiro!')
+    return
+  }
+
+  try {
+    loadingAI.value = true
+    const improved = await aiService.improveDescription(
+      exp.description,
+    )
+    formData.experiences[index].description = improved
+  } catch (error) {
+    console.error('Erro ao melhorar descrição:', error)
+    alert('Erro ao melhorar descrição')
+  } finally {
+    loadingAI.value = false
+  }
 }
 
 // Competências

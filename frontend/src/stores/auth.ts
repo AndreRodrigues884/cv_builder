@@ -18,7 +18,7 @@ export const useAuthStore = defineStore('auth', {
     async register(userData: RegisterData) {
       try {
         const response = await axios.post<AuthResponse>(
-          'http://localhost:3000/api/auth/register',
+          `${import.meta.env.VITE_API_URL}/api/auth/register`,
           userData
         )
         this.token = response.data.token
@@ -34,7 +34,7 @@ export const useAuthStore = defineStore('auth', {
     async login(credentials: Credentials) {
       try {
         const response = await axios.post<AuthResponse>(
-          'http://localhost:3000/api/auth/login',
+          `${import.meta.env.VITE_API_URL}/api/auth/login`,
           credentials
         )
         this.token = response.data.token
