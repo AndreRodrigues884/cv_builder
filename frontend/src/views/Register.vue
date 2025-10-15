@@ -1,102 +1,115 @@
-<!-- frontend/src/views/Register.vue -->
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50">
-    <div class="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
-      <h2 class="text-2xl font-bold text-center mb-6">Criar Conta</h2>
-      
-      <form @submit.prevent="handleRegister">
-        <div class="mb-4">
-          <label class="block text-sm font-medium mb-2">Nome Completo</label>
-          <input 
-            v-model="name" 
-            type="text" 
-            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-            placeholder="João Silva"
+  <div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md">
+      <h2 class="text-3xl font-semibold text-center text-gray-800 mb-6">
+        Criar Conta
+      </h2>
+
+      <form @submit.prevent="handleRegister" class="space-y-4">
+        <div>
+          <input
+            v-model="name"
+            type="text"
+            placeholder="Nome"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
 
-        <div class="mb-4">
-          <label class="block text-sm font-medium mb-2">Email</label>
-          <input 
-            v-model="email" 
-            type="email" 
-            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-            placeholder="joao@example.com"
+        <div>
+          <input
+            v-model="email"
+            type="email"
+            placeholder="Email"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
-        
-        <div class="mb-6">
-          <label class="block text-sm font-medium mb-2">Password</label>
-          <input 
-            v-model="password" 
-            type="password" 
-            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-            placeholder="Mínimo 6 caracteres"
-            minlength="6"
+
+        <div>
+          <input
+            v-model="password"
+            type="password"
+            placeholder="Password"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
-        
-        <button 
+
+        <button
           type="submit"
-          class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
-          :disabled="loading"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition"
         >
-          {{ loading ? 'A criar conta...' : 'Registar' }}
+          Registar
         </button>
-        
-        <p v-if="error" class="text-red-500 text-sm mt-4 text-center">{{ error }}</p>
-        <p v-if="success" class="text-green-500 text-sm mt-4 text-center">Conta criada! ✅</p>
       </form>
-      
-      <p class="text-center mt-4 text-sm">
-        Já tens conta? 
-        <router-link to="/login" class="text-blue-600 hover:underline">Entrar</router-link>
+
+      <div class="flex items-center my-6">
+        <div class="flex-1 h-px bg-gray-300"></div>
+        <span class="px-2 text-gray-400 text-sm">ou</span>
+        <div class="flex-1 h-px bg-gray-300"></div>
+      </div>
+
+      <button
+        @click="googleLogin"
+        class="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg font-medium transition"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 48 48"
+          class="w-5 h-5"
+        >
+          <path
+            fill="#EA4335"
+            d="M24 9.5c3.54 0 6.63 1.22 9.1 3.22l6.77-6.77C35.64 2.71 30.15 0 24 0 14.75 0 6.68 5.46 2.69 13.39l7.91 6.14C12.13 13.49 17.63 9.5 24 9.5z"
+          />
+          <path
+            fill="#34A853"
+            d="M46.1 24.49c0-1.57-.14-3.09-.39-4.56H24v9.11h12.45c-.55 2.86-2.21 5.28-4.69 6.93l7.27 5.64c4.26-3.94 6.97-9.74 6.97-17.12z"
+          />
+          <path
+            fill="#4A90E2"
+            d="M9.6 28.53A14.48 14.48 0 019.5 24c0-1.57.27-3.07.74-4.47l-7.91-6.14A23.92 23.92 0 000 24c0 3.89.93 7.57 2.59 10.83l7.01-6.3z"
+          />
+          <path
+            fill="#FBBC05"
+            d="M24 48c6.48 0 11.92-2.13 15.9-5.79l-7.27-5.64c-2.01 1.35-4.57 2.16-8.63 2.16-6.37 0-11.87-4-13.41-9.54l-7.91 6.14C6.68 42.54 14.75 48 24 48z"
+          />
+        </svg>
+        Registar com Google
+      </button>
+
+      <p class="text-center text-gray-500 text-sm mt-6">
+        Já tens conta?
+        <RouterLink to="/login" class="text-blue-600 hover:underline">
+          Inicia sessão
+        </RouterLink>
       </p>
     </div>
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue'
-import { useAuthStore } from '../stores/auth'
-import { useRouter } from 'vue-router'
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useAuthStore } from '../stores/auth';
+import { useRouter } from 'vue-router';
 
-const authStore = useAuthStore()
-const router = useRouter()
+const router = useRouter();
 
-const name = ref('')
-const email = ref('')
-const password = ref('')
-const loading = ref(false)
-const error = ref('')
-const success = ref(false)
+const store = useAuthStore();
+const name = ref('');
+const email = ref('');
+const password = ref('');
 
 const handleRegister = async () => {
   try {
-    loading.value = true
-    error.value = ''
-    success.value = false
-    
-    await authStore.register({
-      name: name.value,
-      email: email.value,
-      password: password.value
-    })
-    
-    success.value = true
-    
-    // Redirecionar após 1 segundo
-    setTimeout(() => {
-      router.push('/dashboard')
-    }, 1000)
-    
-  } catch (err) {
-    error.value = err.error || 'Erro ao criar conta'
-  } finally {
-    loading.value = false
+    await store.register(name.value, email.value, password.value);
+    alert('Conta criada com sucesso!');
+    router.push('/login');
+  } catch (err: any) {
+    alert(err.response?.data?.error || 'Erro ao registar.');
   }
-}
+};
+
+const googleLogin = () => {
+  store.$reset();
+  window.location.href = 'http://localhost:5000/api/auth/google';
+};
 </script>

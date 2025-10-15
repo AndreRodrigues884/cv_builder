@@ -1,39 +1,27 @@
-// backend/src/server.js
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import helmet from 'helmet';
+import router from './routes/index.js';
 
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
-
-// Importar as rotas
-const authRoutes = require('./routes/auth');
-const cvRoutes = require('./routes/cv');
-const aiRoutes = require('./routes/ai');
-const pdfRoutes = require('./routes/pdf');
+dotenv.config();
 
 const app = express();
+app.use(helmet());
 
 // Middlewares
 app.use(cors());
 app.use(express.json());
 
-// Health check
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV 
-  });
-});
+// Rotas
+app.use('/api', router);
 
-// Usar as rotas
-app.use('/api/auth', authRoutes);
-app.use('/api/cv', cvRoutes);
-app.use('/api/ai', aiRoutes);
-app.use('/api/pdf', pdfRoutes);
-
-// Rota 404
+// 404 fallback
 app.use((req, res) => {
-  res.status(404).json({ error: 'Rota não encontrada' });
+  res.status(404).json({ 
+    error: 'Rota não encontrada',
+    path: req.originalUrl
+  });
 });
 
 // Error handling
@@ -47,9 +35,8 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ Servidor rodando na porta ${PORT}`);
   console.log(`🌍 Ambiente: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🔗 Health check: http://localhost:${PORT}/health`);
+  console.log(`🔗 Health check: http://localhost:${PORT}/api`);
 });

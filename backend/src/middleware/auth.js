@@ -1,20 +1,30 @@
-// backend/src/middleware/auth.js
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
-const authMiddleware = (req, res, next) => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1];
-    
-    if (!token) {
-      return res.status(401).json({ error: 'Token não fornecido' });
-    }
-    
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.userId = decoded.userId;
-    next();
-  } catch (error) {
-    return res.status(401).json({ error: 'Token inválido' });
+export const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // "Bearer <token>"
+
+  if (!token) {
+    return res.status(401).json({ message: 'Token não fornecido.' });
   }
+
+  jwt.verify(token, process.env.JWT_ACCESS_SECRET, (err, user) => {
+    if (err) {
+      console.error('Erro na verificação do token:', err);
+      return res.status(403).json({ message: 'Token inválido ou expirado.' });
+    }
+
+    req.user = user; // coloca o userId decodificado no req
+    next();
+  });
 };
 
-module.exports = authMiddleware;
+// Middleware opcional — usado para verificar roles (ADMIN, USER, etc)
+export const authorizeRoles = (...allowedRoles) => {
+  return (req, res, next) => {
+    if (!req.user || !allowedRoles.includes(req.user.role)) {
+      return res.status(403).json({ message: 'Acesso negado.' });
+    }
+    next();
+  };
+};

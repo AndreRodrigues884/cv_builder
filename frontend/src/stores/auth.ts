@@ -1,57 +1,47 @@
-// frontend/src/stores/auth.ts
-import { defineStore } from 'pinia'
-import axios, { AxiosError } from 'axios'
-import type { AuthResponse, Credentials, RegisterData, User } from '../types/authInterface'
-
+import { defineStore } from 'pinia';
+import * as authApi from '../api/auth';
+import { AuthState } from '../types/authInterface';
+import { User } from '../types/userInterface';
 
 export const useAuthStore = defineStore('auth', {
-  state: () => ({
-    user: null as User | null,
-    token: localStorage.getItem('token') || null,
+  state: (): AuthState => ({
+    user: null,
+    accessToken: localStorage.getItem('accessToken'),
+    refreshToken: localStorage.getItem('refreshToken'),
   }),
 
-  getters: {
-    isAuthenticated: (state): boolean => !!state.token,
-  },
-
   actions: {
-    async register(userData: RegisterData) {
-      try {
-        const response = await axios.post<AuthResponse>(
-          `${import.meta.env.VITE_API_URL}/api/auth/register`,
-          userData
-        )
-        this.token = response.data.token
-        this.user = response.data.user
-        localStorage.setItem('token', this.token)
-        axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`
-      } catch (error) {
-        const err = error as AxiosError
-        throw err.response?.data || err.message
-      }
+    async register(name: string, email: string, password: string) {
+      const res = await authApi.register({ name, email, password });
+      this.setSession(res.data.user, res.data.accessToken, res.data.refreshToken);
     },
 
-    async login(credentials: Credentials) {
-      try {
-        const response = await axios.post<AuthResponse>(
-          `${import.meta.env.VITE_API_URL}/api/auth/login`,
-          credentials
-        )
-        this.token = response.data.token
-        this.user = response.data.user
-        localStorage.setItem('token', this.token)
-        axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`
-      } catch (error) {
-        const err = error as AxiosError
-        throw err.response?.data || err.message
-      }
+    async login(email: string, password: string) {
+      const res = await authApi.login({ email, password });
+      this.setSession(res.data.user, res.data.accessToken, res.data.refreshToken);
     },
 
-    logout() {
-      this.token = null
-      this.user = null
-      localStorage.removeItem('token')
-      delete axios.defaults.headers.common['Authorization']
+    async logout() {
+      if (this.refreshToken) {
+        await authApi.logout(this.refreshToken);
+      }
+      this.clearSession();
+    },
+
+    setSession(user: User, accessToken: string, refreshToken: string) {
+      this.user = user;
+      this.accessToken = accessToken;
+      this.refreshToken = refreshToken;
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+    },
+
+    clearSession() {
+      this.user = null;
+      this.accessToken = null;
+      this.refreshToken = null;
+      localStorage.clear();
     },
   },
-})
+  persist: true,
+});

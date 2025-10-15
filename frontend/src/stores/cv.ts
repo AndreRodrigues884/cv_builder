@@ -1,4 +1,4 @@
-// frontend/src/stores/cv.ts
+/* // frontend/src/stores/cv.ts
 import { defineStore } from 'pinia'
 import cvService from '../services/cvService'
 import type { CV } from '../types/cvInterface'
@@ -66,3 +66,4 @@ export const useCVStore = defineStore('cv', {
     }
   },
 })
+ */

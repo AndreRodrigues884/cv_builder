@@ -1,6 +1,6 @@
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "linux-musl"]
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "windows"]
 }
 
 datasource db {
@@ -8,43 +8,392 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ============================================
+// AUTHENTICATION & USERS
+// ============================================
+
+enum UserRole {
+  USER
+  ADMIN
+  HR_MANAGER
+}
+
+enum OAuthProvider {
+  GOOGLE
+  LINKEDIN
+  GITHUB
+}
+
+enum UserPlan {
+  FREE
+  PRO
+  CAREER_PLUS
+}
+
 model User {
+  id              String         @id @default(cuid())
+  email           String         @unique
+  name            String?
+  hashedPassword  String?
+  oauthProvider   OAuthProvider?
+  oauthId         String?        @unique
+  role            UserRole       @default(USER)
+  emailVerified   Boolean        @default(false)
+  isActive        Boolean        @default(true)
+  lastLoginAt     DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  userPlan        UserPlan       @default(FREE)
+
+  // Relations
+  profile         Profile?
+  cvs             CV[]
+  jobImports      JobImport[]
+  billing         Billing?
+  refreshTokens   RefreshToken[]
+
+  @@index([email])
+  @@index([oauthProvider, oauthId])
+  @@map("users")
+}
+
+model RefreshToken {
   id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String
-  cvs       CV[]
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("refresh_tokens")
+}
+
+// ============================================
+// PROFILE
+// ============================================
+
+enum ProfileVisibility {
+  PRIVATE
+  PUBLIC
+  UNLISTED
+}
+
+model Profile {
+  id              String             @id @default(cuid())
+  userId          String             @unique
+  headline        String?            @db.VarChar(200)
+  summary         String?            @db.Text
+  location        String?
+  phone           String?
+  website         String?
+  linkedin        String?
+  github          String?
+  languages       Json?              // ["PT", "EN", "ES"]
+  visibility      ProfileVisibility  @default(PRIVATE)
+  publicSlug      String?            @unique // para URLs tipo meucv.ai/joaosilva
+  profileImageUrl String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  // Relations
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  experiences  Experience[]
+  educations   Education[]
+  skills       Skill[]
+  certifications Certification[]
+  projects     Project[]
+
+  @@index([publicSlug])
+  @@map("profiles")
+}
+
+// ============================================
+// CV STRUCTURE
+// ============================================
+
+enum CVStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum CVLanguage {
+  PT
+  EN
+  ES
+  FR
+  DE
 }
 
 model CV {
-  id             String   @id @default(cuid())
-  userId         String
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  // Dados pessoais
-  fullName       String
-  email          String
-  phone          String
-  location       String?
-  linkedIn       String?
-  portfolio      String?
-  
-  // Conteúdo
-  summary        String?
-  targetPosition String?
-  experiences    Json     @default("[]")
-  education      Json     @default("[]")
-  skills         String[]
-  languages      Json     @default("[]")
-  
-  // Metadados
-  templateId     String   @default("modern")
-  aiImproved     Boolean  @default(false)
-  
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  
+  id              String     @id @default(cuid())
+  userId          String
+  title           String     @db.VarChar(200)
+  contentJson     Json       // Estrutura completa do CV
+  templateId      String
+  status          CVStatus   @default(DRAFT)
+  language        CVLanguage @default(PT)
+  generatedPdfUrl String?
+  generatedDocxUrl String?
+  jobTargetTitle  String?    // Cargo alvo
+  jobTargetArea   String?    // Área profissional
+  isAtsOptimized  Boolean    @default(false)
+  viewCount       Int        @default(0)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  // Relations
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  template   Template    @relation(fields: [templateId], references: [id])
+  aiReviews  AIReview[]
+
   @@index([userId])
+  @@index([status])
+  @@map("cvs")
+}
+
+// ============================================
+// TEMPLATES
+// ============================================
+
+enum TemplateType {
+  MODERN
+  CLASSIC
+  CREATIVE
+  MINIMAL
+  EXECUTIVE
+  TECHNICAL
+}
+
+model Template {
+  id          String       @id @default(cuid())
+  name        String       @db.VarChar(100)
+  slug        String       @unique
+  type        TemplateType
+  description String?      @db.Text
+  previewUrl  String
+  isPremium   Boolean      @default(false)
+  metadata    Json?        // Cores, fontes, layout configs
+  isActive    Boolean      @default(true)
+  sortOrder   Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // Relations
+  cvs CV[]
+
+  @@index([type])
+  @@index([isPremium])
+  @@map("templates")
+}
+
+// ============================================
+// AI REVIEW & ANALYSIS
+// ============================================
+
+model AIReview {
+  id              String   @id @default(cuid())
+  cvId            String
+  scoreOverall    Float    // 0-100
+  scoreAts        Float    // 0-100
+  scoreLanguage   Float    // 0-100
+  scoreImpact     Float    // 0-100
+  scoreClarity    Float    // 0-100
+  recommendations Json     // Array de objetos com sugestões
+  missingKeywords String[] // Palavras-chave ausentes
+  strengths       String[] // Pontos fortes
+  improvements    String[] // Pontos a melhorar
+  estimatedReadTime Int?   // Em segundos
+  createdAt       DateTime @default(now())
+
+  // Relations
+  cv CV @relation(fields: [cvId], references: [id], onDelete: Cascade)
+
+  @@index([cvId])
+  @@index([scoreOverall])
+  @@map("ai_reviews")
+}
+
+// ============================================
+// JOB MATCHING
+// ============================================
+
+model JobImport {
+  id              String   @id @default(cuid())
+  userId          String
+  sourceUrl       String?
+  jobTitle        String
+  company         String?
+  parsedText      String   @db.Text
+  extractedSkills String[]
+  requirements    Json?    // Requisitos estruturados
+  benefits        Json?
+  location        String?
+  remoteOption    String?
+  salaryRange     String?
+  createdAt       DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("job_imports")
+}
+
+// ============================================
+// BILLING & SUBSCRIPTIONS
+// ============================================
+
+enum SubscriptionPlan {
+  FREE
+  PRO
+  CAREER_PLUS
+  BUSINESS
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  TRIALING
+  EXPIRED
+}
+
+model Billing {
+  id                 String             @id @default(cuid())
+  userId             String             @unique
+  stripeCustomerId   String?            @unique
+  subscriptionStatus SubscriptionStatus @default(ACTIVE)
+  plan               SubscriptionPlan   @default(FREE)
+  subscriptionId     String?            @unique
+  currentPeriodStart DateTime?
+  currentPeriodEnd   DateTime?
+  cancelAtPeriodEnd  Boolean            @default(false)
+  cvGenerationLimit  Int                @default(1) // Limite mensal
+  cvGenerationCount  Int                @default(0) // Contador atual
+  lastResetAt        DateTime           @default(now())
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([stripeCustomerId])
+  @@map("billings")
+}
+
+// ============================================
+// PROFILE COMPONENTS (Experiences, Education, etc.)
+// ============================================
+
+model Experience {
+  id          String    @id @default(cuid())
+  profileId   String
+  jobTitle    String    @db.VarChar(200)
+  company     String    @db.VarChar(200)
+  location    String?
+  startDate   DateTime
+  endDate     DateTime?
+  isCurrent   Boolean   @default(false)
+  description String?   @db.Text
+  achievements String[] // Lista de conquistas/resultados
+  skills      String[]  // Competências usadas
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+  @@map("experiences")
+}
+
+model Education {
+  id          String    @id @default(cuid())
+  profileId   String
+  degree      String    @db.VarChar(200)
+  institution String    @db.VarChar(200)
+  fieldOfStudy String?  @db.VarChar(200)
+  location    String?
+  startDate   DateTime
+  endDate     DateTime?
+  isCurrent   Boolean   @default(false)
+  grade       String?
+  description String?   @db.Text
+  achievements String[]
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+  @@map("educations")
+}
+
+model Skill {
+  id          String   @id @default(cuid())
+  profileId   String
+  name        String   @db.VarChar(100)
+  category    String?  @db.VarChar(100) // Ex: "Técnica", "Soft Skill", "Idioma"
+  level       Int?     @default(3) // 1-5
+  yearsOfExp  Int?
+  isEndorsed  Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  // Relations
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+  @@index([category])
+  @@map("skills")
+}
+
+model Certification {
+  id              String    @id @default(cuid())
+  profileId       String
+  name            String    @db.VarChar(200)
+  issuingOrg      String    @db.VarChar(200)
+  issueDate       DateTime
+  expirationDate  DateTime?
+  credentialId    String?
+  credentialUrl   String?
+  doesNotExpire   Boolean   @default(false)
+  sortOrder       Int       @default(0)
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+  @@map("certifications")
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  profileId   String
+  name        String   @db.VarChar(200)
+  description String   @db.Text
+  role        String?  @db.VarChar(100)
+  startDate   DateTime?
+  endDate     DateTime?
+  isCurrent   Boolean  @default(false)
+  url         String?
+  technologies String[]
+  highlights  String[]
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+  @@map("projects")
 }

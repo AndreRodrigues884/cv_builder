@@ -2,6 +2,10 @@
 # 🔹 Base layer
 # -------------------------------
 FROM node:20-alpine AS base
+
+# Instala dependências do sistema necessárias para Prisma
+RUN apk add --no-cache libc6-compat openssl1.1-compat bash curl git
+
 WORKDIR /app
 COPY package*.json ./
 
@@ -11,8 +15,10 @@ COPY package*.json ./
 FROM base AS development
 RUN npm install
 COPY . .
-# ✅ Garante que o Prisma seja gerado dentro do container
+
+# Gera o cliente Prisma
 RUN npx prisma generate
+
 EXPOSE 5000
 CMD ["npm", "run", "dev"]
 
@@ -22,7 +28,6 @@ CMD ["npm", "run", "dev"]
 FROM base AS build
 RUN npm ci
 COPY . .
-# ✅ Gera o cliente Prisma antes do build
 RUN npx prisma generate
 RUN npm run build
 
@@ -31,12 +36,19 @@ RUN npm run build
 # -------------------------------
 FROM node:20-alpine AS production
 WORKDIR /app
+
+# Dependências de produção + libs do sistema
+RUN apk add --no-cache libc6-compat openssl1.1-compat
+
 COPY package*.json ./
 RUN npm ci --only=production && npm cache clean --force
-# ✅ Copia o código compilado e a pasta prisma (para migrations e schema)
+
+# Copia build e Prisma
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/prisma ./prisma
-# ✅ Gera o cliente Prisma em produção também (caso o build não tenha persistido)
+
+# Gera o cliente Prisma em produção
 RUN npx prisma generate
+
 EXPOSE 4000
 CMD ["npm", "start"]
