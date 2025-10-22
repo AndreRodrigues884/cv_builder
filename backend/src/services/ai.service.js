@@ -1,17 +1,101 @@
 // src/services/ai.service.js
-const axios = require('axios');
+import axios from 'axios'
 
 class AIService {
   constructor() {
     this.apiKey = process.env.HUGGINGFACE_API_KEY;
     this.baseURL = 'https://api-inference.huggingface.co/models';
-    
+
     // Modelos que vamos usar
     this.models = {
       textGeneration: 'mistralai/Mistral-7B-Instruct-v0.2', // Para gerar texto
       textAnalysis: 'facebook/bart-large-mnli', // Para análise
       embeddings: 'sentence-transformers/all-MiniLM-L6-v2', // Para comparações
     };
+  }
+
+  async analyzeJobDescription(jobDescription) {
+    const prompt = `
+Analisa a seguinte descrição de vaga e extrai:
+1. Título do cargo
+2. Empresa (se mencionada)
+3. Localização (se mencionada)
+4. Competências técnicas requeridas
+5. Keywords importantes para ATS
+
+Descrição da vaga:
+${jobDescription}
+
+Responde em JSON:
+{
+  "jobTitle": "...",
+  "company": "...",
+  "location": "...",
+  "skills": ["skill1", "skill2"],
+  "keywords": ["keyword1", "keyword2"]
+}
+`;
+
+    const response = await this.callAI(prompt);
+    return JSON.parse(response);
+  }
+
+  /**
+   * Adaptar CV para vaga específica
+   */
+  async adaptCVToJob(cvContent, jobDescription, requiredSkills) {
+    const prompt = `
+Adapta o seguinte CV para a vaga descrita, mantendo a veracidade mas otimizando para ATS:
+
+CV ATUAL:
+${JSON.stringify(cvContent, null, 2)}
+
+DESCRIÇÃO DA VAGA:
+${jobDescription}
+
+COMPETÊNCIAS REQUERIDAS:
+${requiredSkills.join(', ')}
+
+Regras:
+- Destaca experiências relevantes para a vaga
+- Adiciona keywords da vaga de forma natural
+- Identifica competências que faltam
+- Sugere como destacar experiências relevantes
+- Dá uma pontuação de match (0-100)
+
+Responde em JSON com o CV adaptado.
+`;
+
+    const response = await this.callAI(prompt);
+    return JSON.parse(response);
+  }
+
+  /**
+   * Analisar compatibilidade CV x Vaga
+   */
+  async analyzeJobMatch(cvContent, jobDescription) {
+    const prompt = `
+Analisa a compatibilidade entre o CV e a vaga:
+
+CV:
+${JSON.stringify(cvContent, null, 2)}
+
+VAGA:
+${jobDescription}
+
+Responde em JSON:
+{
+  "score": 85,
+  "matchingSkills": ["React", "Node.js"],
+  "missingSkills": ["Kubernetes", "AWS"],
+  "recommendations": ["Destaca projeto X", "Adiciona certificação Y"],
+  "strengths": ["Experiência forte em frontend"],
+  "gaps": ["Falta experiência em cloud"]
+}
+`;
+
+    const response = await this.callAI(prompt);
+    return JSON.parse(response);
   }
 
   /**
@@ -116,7 +200,7 @@ Responda no formato JSON:
 [/INST]`;
 
       const response = await this.generateText(prompt, 1000, 0.3);
-      
+
       // Tentar extrair JSON da resposta
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
@@ -167,7 +251,7 @@ Responda no formato JSON:
 [/INST]`;
 
       const response = await this.generateText(prompt, 500, 0.5);
-      
+
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);
@@ -218,7 +302,7 @@ Responda no formato JSON:
 [/INST]`;
 
       const response = await this.generateText(prompt, 800, 0.6);
-      
+
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);
@@ -236,7 +320,7 @@ Responda no formato JSON:
    */
   async generateSummary(profile, jobTitle, targetArea, tone = 'professional') {
     try {
-      const experiences = profile.experiences?.map(e => 
+      const experiences = profile.experiences?.map(e =>
         `${e.jobTitle} na ${e.company} (${e.isCurrent ? 'atual' : 'anterior'})`
       ).join(', ') || 'sem experiência listada';
 
@@ -275,7 +359,7 @@ Responda no formato JSON:
 [/INST]`;
 
       const response = await this.generateText(prompt, 600, 0.7);
-      
+
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         const result = JSON.parse(jsonMatch[0]);
@@ -329,7 +413,7 @@ Responda no formato JSON:
 [/INST]`;
 
       const response = await this.generateText(prompt, 800, 0.3);
-      
+
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);
@@ -376,7 +460,7 @@ Responda no formato JSON:
 [/INST]`;
 
       const response = await this.generateText(prompt, 1200, 0.6);
-      
+
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);
@@ -431,7 +515,7 @@ Responda no formato JSON:
 [/INST]`;
 
       const response = await this.generateText(prompt, 1000, 0.5);
-      
+
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);
@@ -481,7 +565,7 @@ Responda no formato JSON:
 [/INST]`;
 
       const response = await this.generateText(prompt, 1000, 0.4);
-      
+
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);
@@ -539,7 +623,7 @@ Responda no formato JSON:
 [/INST]`;
 
       const response = await this.generateText(prompt, 1200, 0.5);
-      
+
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         const result = JSON.parse(jsonMatch[0]);
@@ -547,7 +631,7 @@ Responda no formato JSON:
           const price = parseFloat(course.price.replace(/[€,]/g, ''));
           return sum + (isNaN(price) ? 0 : price);
         }, 0);
-        
+
         return {
           ...result,
           totalCost: `€${totalCost.toFixed(2)}`,
@@ -624,7 +708,7 @@ Responda no formato JSON:
    */
   calculateYearsOfExperience(experiences) {
     if (!experiences || experiences.length === 0) return 0;
-    
+
     const totalMonths = experiences.reduce((total, exp) => {
       const start = new Date(exp.startDate);
       const end = exp.endDate ? new Date(exp.endDate) : new Date();
@@ -803,4 +887,6 @@ Responda no formato JSON:
   }
 }
 
-module.exports = new AIService();
+const aiService = new AIService();
+
+export default aiService;

@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import helmet from 'helmet';
 import router from './routes/index.js';
+import fileUpload from 'express-fileupload';
 
 dotenv.config();
 
@@ -33,6 +34,15 @@ app.use((err, req, res, next) => {
       : err.message 
   });
 });
+
+// Middleware para file upload
+app.use(fileUpload({
+  useTempFiles: true,
+  tempFileDir: '/tmp/',
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max
+  abortOnLimit: true,
+  createParentPath: true
+}));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {

@@ -1,0 +1,67 @@
+.cv-classic {
+  max-width: 21cm;
+  margin: 0 auto;
+  padding: 2cm;
+  font-family: 'Georgia', serif;
+  color: #000;
+}
+
+.cv-header {
+  text-align: center;
+  border-bottom: 3px solid #000;
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
+}
+
+.cv-header h1 {
+  font-size: 28pt;
+  margin-bottom: 0.5rem;
+}
+
+.contact {
+  font-size: 10pt;
+  color: #333;
+}
+
+section {
+  margin-bottom: 1.5rem;
+}
+
+section h2 {
+  font-size: 14pt;
+  text-transform: uppercase;
+  border-bottom: 2px solid #000;
+  padding-bottom: 0.25rem;
+  margin-bottom: 1rem;
+  letter-spacing: 1px;
+}
+
+.item {
+  margin-bottom: 1rem;
+}
+
+.item h3 {
+  font-size: 12pt;
+  margin-bottom: 0.25rem;
+}
+
+.item p {
+  font-size: 10pt;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.item ul {
+  margin-left: 1.5rem;
+}
+
+.item li {
+  font-size: 10pt;
+  line-height: 1.6;
+  margin-bottom: 0.25rem;
+}
+
+.skills {
+  font-size: 10pt;
+  line-height: 1.8;
+}

@@ -24,12 +24,6 @@ enum OAuthProvider {
   GITHUB
 }
 
-enum UserPlan {
-  FREE
-  PRO
-  CAREER_PLUS
-}
-
 model User {
   id              String         @id @default(cuid())
   email           String         @unique
@@ -43,7 +37,6 @@ model User {
   lastLoginAt     DateTime?
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
-  userPlan        UserPlan       @default(FREE)
 
   // Relations
   profile         Profile?

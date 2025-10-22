@@ -1,0 +1,53 @@
+<div class="cv-classic">
+  <header class="cv-header">
+    <h1>{{name}}</h1>
+    <div class="contact">
+      {{email}} | {{phone}} | {{location}}
+    </div>
+  </header>
+  
+  {{#if summary}}
+  <section>
+    <h2>PROFESSIONAL SUMMARY</h2>
+    <p>{{summary}}</p>
+  </section>
+  {{/if}}
+  
+  {{#hasItems experiences}}
+  <section>
+    <h2>EXPERIENCE</h2>
+    {{#each experiences}}
+    <div class="item">
+      <h3>{{jobTitle}}</h3>
+      <p><strong>{{company}}</strong> | {{startDate}} - {{endDate}}</p>
+      {{#hasItems achievements}}
+      <ul>
+        {{#each achievements}}<li>{{this}}</li>{{/each}}
+      </ul>
+      {{/hasItems}}
+    </div>
+    {{/each}}
+  </section>
+  {{/hasItems}}
+  
+  {{#hasItems educations}}
+  <section>
+    <h2>EDUCATION</h2>
+    {{#each educations}}
+    <div class="item">
+      <h3>{{degree}}</h3>
+      <p>{{institution}} | {{startDate}} - {{endDate}}</p>
+    </div>
+    {{/each}}
+  </section>
+  {{/hasItems}}
+  
+  {{#hasItems skills}}
+  <section>
+    <h2>SKILLS</h2>
+    <div class="skills">
+      {{#each skills}}{{name}}{{#unless @last}}, {{/unless}}{{/each}}
+    </div>
+  </section>
+  {{/hasItems}}
+</div>

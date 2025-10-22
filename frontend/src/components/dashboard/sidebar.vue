@@ -104,7 +104,9 @@ const changeSection = (section: string) => {
 
 // Logout
 const handleLogout = async () => {
-  await store.logout();
-  router.push("/");
+  await store.logout();  
+  router.push("/login");       
+  window.location.reload(); 
 };
+
 </script>

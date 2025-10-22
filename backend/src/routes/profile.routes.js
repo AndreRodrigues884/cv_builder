@@ -6,6 +6,7 @@ import * as profileController from '../controllers/profile.controllers.js';
 const router = Router();
 
 router.get('/me', authenticateToken, profileController.getMyProfile);
+
 router.put('/update', authenticateToken, 
     [
     body('headline').optional().isString().isLength({ max: 150 }).withMessage('Headline demasiado longa'),

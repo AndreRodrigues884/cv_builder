@@ -35,10 +35,10 @@
 </template>
 
 <script setup lang="ts">
-import { useUserStore } from '../../stores/user';
-import { ref, computed, onMounted, watch } from "vue";
+import { useProfileStore } from '../../stores/profile';
+import { ref, onMounted, watch, computed } from "vue";
 
-const userStore = useUserStore();
+const userStore = useProfileStore();
 
 // Estado reativo
 const userName = ref('');
@@ -50,7 +50,6 @@ const updateUserData = () => {
   if (!userStore.user) return;
 
   userName.value = userStore.user.name ?? 'Sem Nome';
-  userPlan.value = userStore.user.userPlan ?? 'FREE';
   userInitials.value = userStore.user.name
     ? userStore.user.name
         .split(' ')
@@ -58,17 +57,23 @@ const updateUserData = () => {
         .join('')
         .toUpperCase()
     : 'U';
+
+  // Buscar plano do billing
+  userPlan.value = userStore.billing?.plan ?? 'FREE';
 };
 
 // Buscar dados do usuário ao montar o componente
 onMounted(async () => {
   await userStore.getMe();
   updateUserData();
-  console.log(userStore.user);
+  console.log(userStore.user, userStore.billing);
 });
 
 // Atualizar automaticamente caso o usuário seja alterado
 watch(() => userStore.user, () => {
+  updateUserData();
+});
+watch(() => userStore.billing, () => {
   updateUserData();
 });
 

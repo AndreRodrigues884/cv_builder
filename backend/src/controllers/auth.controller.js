@@ -12,14 +12,14 @@ const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || 'http://localhost
 
 export const register = async (req, res) => {
   try {
-    const { email, password, name } = req.body;
+    const { email, password, name, role } = req.body;
 
     if (!email || !password)
-      return res.status(400).json({ error: 'Email e senha são obrigatórios.' });
+      return res.status(400).json({ error: "Email e senha são obrigatórios." });
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser)
-      return res.status(409).json({ error: 'Utilizador já existe.' });
+      return res.status(409).json({ error: "Utilizador já existe." });
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -28,21 +28,54 @@ export const register = async (req, res) => {
         email,
         name,
         hashedPassword,
+        role
       },
     });
 
-    const tokens = await generateTokens(user.id);
+    // Billing
+    await prisma.billing.create({
+      data: {
+        userId: user.id,
+        plan: "PRO",
+        subscriptionStatus: "ACTIVE",
+        cvGenerationLimit: 50,
+        cvGenerationCount: 0,
+        lastResetAt: new Date(),
+      },
+    });
+
+    // Profile
+    await prisma.profile.create({
+      data: {
+        userId: user.id,
+        headline: "",
+        summary: "",
+        location: "",
+        visibility: "PRIVATE"
+      }
+    });
+
+    // Tokens
+    const tokens = await generateTokens(user.id, user.role);
 
     res.status(201).json({
-      message: 'Utilizador registado com sucesso.',
-      user: { id: user.id, email: user.email, name: user.name },
+      message: "Utilizador registado com sucesso.",
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      },
       ...tokens,
     });
+
   } catch (err) {
-    console.error('Erro no register:', err);
-    res.status(500).json({ error: 'Erro interno do servidor.' });
+    console.error("Erro no register:", err);
+    res.status(500).json({ error: "Erro interno do servidor." });
   }
 };
+
+
 
 export const login = async (req, res) => {
   try {
@@ -64,7 +97,7 @@ export const login = async (req, res) => {
       data: { lastLoginAt: new Date() },
     });
 
-    const tokens = await generateTokens(user.id);
+    const tokens = await generateTokens(user.id, user.role);
 
     res.json({
       message: 'Login efetuado com sucesso.',

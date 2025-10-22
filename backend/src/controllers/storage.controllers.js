@@ -1,6 +1,6 @@
 // src/controllers/cv.controller.js
-import { PrismaClient } from '@prisma/client';
-import { validationResult } from 'express-validator';
+const { PrismaClient } = require('@prisma/client');
+const { validationResult } = require('express-validator');
 
 const prisma = new PrismaClient();
 
@@ -149,6 +149,7 @@ export const createCV = async (req, res) => {
  * Listar todos os CVs do utilizador
  * GET /api/cvs
  */
+
 export const getCVs = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -240,6 +241,7 @@ export const getCVs = async (req, res) => {
  * Buscar CV específico por ID
  * GET /api/cvs/:id
  */
+
 export const getCVById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -327,6 +329,7 @@ export const getCVById = async (req, res) => {
  * Atualizar CV
  * PUT /api/cvs/:id
  */
+
 export const updateCV = async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -440,6 +443,7 @@ export const updateCV = async (req, res) => {
  * Gerar PDF do CV
  * POST /api/cvs/:id/generate/pdf
  */
+
 export const generatePDF = async (req, res) => {
   try {
     const { id } = req.params;
@@ -535,6 +539,7 @@ export const generatePDF = async (req, res) => {
  * Download PDF do CV (se já foi gerado)
  * GET /api/cvs/:id/download/pdf
  */
+
 export const downloadPDF = async (req, res) => {
   try {
     const { id } = req.params;
@@ -724,6 +729,7 @@ export const duplicateCV = async (req, res) => {
  * Alterar status do CV
  * PUT /api/cvs/:id/status
  */
+
 export const updateStatus = async (req, res) => {
   try {
     const { id } = req.params;

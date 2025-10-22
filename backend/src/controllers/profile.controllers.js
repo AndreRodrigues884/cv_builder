@@ -1,51 +1,47 @@
 import { PrismaClient } from '@prisma/client';
+import {validationResult} from 'express-validator';
 
 const prisma = new PrismaClient();
 
 export const getMyProfile = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     const profile = await prisma.profile.findUnique({
-      where: { userId: userId },
+      where: { userId },
       include: {
-        experiences: {
-          orderBy: { sortOrder: 'asc' },
-        },
-        educations: {
-          orderBy: { sortOrder: 'asc' },
-        },
-        skills: {
-          orderBy: { sortOrder: 'asc' },
-        },
-        certifications: {
-          orderBy: { sortOrder: 'asc' },
-        },
-        projects: {
-          orderBy: { sortOrder: 'asc' },
-        },
+        experiences: { orderBy: { sortOrder: 'asc' } },
+        educations: { orderBy: { sortOrder: 'asc' } },
+        skills: { orderBy: { sortOrder: 'asc' } },
+        certifications: { orderBy: { sortOrder: 'asc' } },
+        projects: { orderBy: { sortOrder: 'asc' } },
       },
     });
 
-    if (!profile) {
-      return res.status(404).json({
-        success: false,
-        message: 'Perfil não encontrado',
-      });
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, name: true, email: true },
+    });
+
+    if (!profile || !user) {
+      return res.status(404).json({ success: false, message: 'Perfil não encontrado' });
     }
+
+    // Buscar billing associado
+    const billing = await prisma.billing.findUnique({
+      where: { userId },
+      select: { plan: true, subscriptionStatus: true, cvGenerationLimit: true, cvGenerationCount: true },
+    });
 
     return res.status(200).json({
       success: true,
-      data: { profile },
+      data: { user, profile, billing },
     });
   } catch (error) {
     console.error('Erro ao obter perfil:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Erro ao obter perfil',
-    });
+    return res.status(500).json({ success: false, message: 'Erro ao obter perfil' });
   }
-}
+};
 
 /**
  * Atualizar perfil
@@ -61,7 +57,7 @@ export const updateProfile = async (req, res) => {
       });
     }
 
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const {
       headline,
       summary,
@@ -197,7 +193,7 @@ export const addExperience = async (req, res) => {
       });
     }
 
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
     });
@@ -258,7 +254,7 @@ export const addExperience = async (req, res) => {
 export const updateExperience = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
@@ -327,7 +323,7 @@ export const updateExperience = async (req, res) => {
 export const deleteExperience = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
@@ -382,7 +378,7 @@ export const addEducation = async (req, res) => {
       });
     }
 
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
     });
@@ -438,7 +434,7 @@ export const addEducation = async (req, res) => {
 export const updateEducation = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
@@ -509,7 +505,7 @@ export const updateEducation = async (req, res) => {
 export const deleteEducation = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
@@ -564,7 +560,7 @@ export const addSkill = async (req, res) => {
       });
     }
 
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
     });
@@ -603,7 +599,7 @@ export const addSkill = async (req, res) => {
 export const updateSkill = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
@@ -657,7 +653,7 @@ export const updateSkill = async (req, res) => {
 export const deleteSkill = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
@@ -704,7 +700,7 @@ export const deleteSkill = async (req, res) => {
  */
 export const addCertification = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
     });
@@ -754,7 +750,7 @@ export const addCertification = async (req, res) => {
 export const updateCertification = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
@@ -800,7 +796,7 @@ export const updateCertification = async (req, res) => {
 export const deleteCertification = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
@@ -847,7 +843,7 @@ export const deleteCertification = async (req, res) => {
  */
 export const addProject = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
     });
@@ -901,7 +897,7 @@ export const addProject = async (req, res) => {
 export const updateProject = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
@@ -947,7 +943,7 @@ export const updateProject = async (req, res) => {
 export const deleteProject = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },

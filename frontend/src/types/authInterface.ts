@@ -1,4 +1,4 @@
-import { User } from "./userInterface";
+import { Billing, Profile, User } from "./userInterface";
 
 export interface LoginData {
   email: string;
@@ -13,6 +13,8 @@ export interface RegisterData {
 
 export interface AuthState {
   user: User | null;
+  profile: Profile | null;
+  billing: Billing | null;
   accessToken: string | null;
   refreshToken: string | null;
 }
