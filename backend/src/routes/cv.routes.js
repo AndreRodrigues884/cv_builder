@@ -144,6 +144,10 @@ router.patch("/:id/template", authenticateToken,
   CVController.changeTemplate
 );
 
+router.post('/:id/generate/pdf', CVController.generatePDF);
+
+router.get('/:id/download/pdf', CVController.downloadPDF);
+
 export default router;
 
 

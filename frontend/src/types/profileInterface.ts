@@ -8,8 +8,6 @@ export interface Experience {
   endDate?: string | null;
   isCurrent: boolean;
   description?: string;
-  achievements: string[];
-  skills: string[];
   sortOrder: number;
   createdAt: string;
   updatedAt: string;

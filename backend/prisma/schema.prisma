@@ -127,6 +127,7 @@ model CV {
   title           String     @db.VarChar(200)
   contentJson     Json       // Estrutura completa do CV
   templateId      String
+  targetRole      String?
   status          CVStatus   @default(DRAFT)
   language        CVLanguage @default(PT)
   generatedPdfUrl String?
@@ -292,8 +293,6 @@ model Experience {
   endDate     DateTime?
   isCurrent   Boolean   @default(false)
   description String?   @db.Text
-  achievements String[] // Lista de conquistas/resultados
-  skills      String[]  // Competências usadas
   sortOrder   Int       @default(0)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt

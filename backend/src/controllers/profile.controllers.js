@@ -213,8 +213,6 @@ export const addExperience = async (req, res) => {
       endDate,
       isCurrent,
       description,
-      achievements,
-      skills,
     } = req.body;
 
     const experience = await prisma.experience.create({
@@ -227,8 +225,6 @@ export const addExperience = async (req, res) => {
         endDate: endDate ? new Date(endDate) : null,
         isCurrent: isCurrent || false,
         description,
-        achievements: achievements || [],
-        skills: skills || [],
         sortOrder: 0,
       },
     });
@@ -282,8 +278,6 @@ export const updateExperience = async (req, res) => {
       endDate,
       isCurrent,
       description,
-      achievements,
-      skills,
     } = req.body;
 
     const updateData = {};
@@ -294,8 +288,6 @@ export const updateExperience = async (req, res) => {
     if (endDate !== undefined) updateData.endDate = endDate ? new Date(endDate) : null;
     if (isCurrent !== undefined) updateData.isCurrent = isCurrent;
     if (description !== undefined) updateData.description = description;
-    if (achievements !== undefined) updateData.achievements = achievements;
-    if (skills !== undefined) updateData.skills = skills;
 
     const updatedExperience = await prisma.experience.update({
       where: { id: id },
@@ -393,7 +385,6 @@ export const addEducation = async (req, res) => {
       isCurrent,
       grade,
       description,
-      achievements,
     } = req.body;
 
     const education = await prisma.education.create({
@@ -408,7 +399,6 @@ export const addEducation = async (req, res) => {
         isCurrent: isCurrent || false,
         grade,
         description,
-        achievements: achievements || [],
         sortOrder: 0,
       },
     });
@@ -464,7 +454,6 @@ export const updateEducation = async (req, res) => {
       isCurrent,
       grade,
       description,
-      achievements,
     } = req.body;
 
     const updateData = {};
@@ -477,7 +466,6 @@ export const updateEducation = async (req, res) => {
     if (isCurrent !== undefined) updateData.isCurrent = isCurrent;
     if (grade !== undefined) updateData.grade = grade;
     if (description !== undefined) updateData.description = description;
-    if (achievements !== undefined) updateData.achievements = achievements;
 
     const updatedEducation = await prisma.education.update({
       where: { id: id },

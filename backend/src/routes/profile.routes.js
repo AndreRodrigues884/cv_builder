@@ -29,7 +29,7 @@ router.get('/:slug',
   [param('slug').isSlug().withMessage('Slug inválido')],
   profileController.getProfileBySlug
 );
-router.post('/experience', authenticateToken,
+router.post('/experiences', authenticateToken,
   [
     body('jobTitle').notEmpty().withMessage('O cargo é obrigatório'),
     body('company').notEmpty().withMessage('A empresa é obrigatória'),
@@ -53,9 +53,7 @@ router.put('/experiences/:id',authenticateToken,
   ],
   profileController.updateExperience
 );
-router.delete(
-  '/experiences/:id',
-  authenticateToken,
+router.delete('/experiences/:id', authenticateToken,
   [param('id').notEmpty().withMessage('ID é obrigatório')],
   profileController.deleteExperience
 );
@@ -163,6 +161,7 @@ router.delete('/projects/:id', authenticateToken,
   ],
   profileController.deleteProject
 );
+
 
 
 export default router;
