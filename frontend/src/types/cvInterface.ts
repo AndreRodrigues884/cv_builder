@@ -10,3 +10,10 @@ export interface CV {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface CVState {
+  cvs: CV[];
+  currentCV: CV | null;
+  loading: boolean;
+  error: string | null;
+}

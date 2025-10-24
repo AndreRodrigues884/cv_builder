@@ -1,111 +1,186 @@
-// src/stores/cv.ts
 import { defineStore } from 'pinia';
 import * as cvApi from '../api/cv';
-import { useAuthStore } from './auth';
-import { CV } from '../types/cvInterface';
+import { CV, CVState } from '../types/cvInterface';
 
 export const useCVStore = defineStore('cv', {
-  state: () => ({
-    cvs: [] as CV[],
-    currentCV: null as CV | null,
+  state: (): CVState => ({
+    cvs: [],
+    currentCV: null,
     loading: false,
+    error: null,
   }),
 
   getters: {
-    publishedCVs: (state) => state.cvs.filter(cv => cv.status === 'PUBLISHED'),
     draftCVs: (state) => state.cvs.filter(cv => cv.status === 'DRAFT'),
+    publishedCVs: (state) => state.cvs.filter(cv => cv.status === 'PUBLISHED'),
     archivedCVs: (state) => state.cvs.filter(cv => cv.status === 'ARCHIVED'),
   },
 
   actions: {
-    async fetchCVs(params?: { status?: string; search?: string; sortBy?: string; order?: string }) {
-      const authStore = useAuthStore();
-      if (!authStore.accessToken) return;
-
+    // ========================================
+    // LISTAR CVs
+    // ========================================
+    async fetchCVs(filters?: { status?: string; search?: string }) {
       this.loading = true;
+      this.error = null;
+      
       try {
-        const response = await cvApi.getCVs(authStore.accessToken, params);
-        this.cvs = response.data.data.cvs || [];
-      } catch (error) {
+        // ✅ SEM passar token - interceptor faz isso automaticamente!
+        const response = await cvApi.getCVs(filters);
+        this.cvs = response.data;
+      } catch (error: any) {
+        this.error = error.response?.data?.message || 'Erro ao carregar CVs';
         console.error('Erro ao buscar CVs:', error);
-        this.cvs = [];
       } finally {
         this.loading = false;
       }
     },
 
+    // ========================================
+    // BUSCAR CV POR ID
+    // ========================================
     async fetchCVById(id: string) {
-      const authStore = useAuthStore();
-      if (!authStore.accessToken) return;
-
+      this.loading = true;
+      this.error = null;
+      
       try {
-        const response = await cvApi.getCVById(authStore.accessToken, id);
-        this.currentCV = response.data.data.cv;
-      } catch (error) {
+        const response = await cvApi.getCVById(id);
+        this.currentCV = response.data;
+      } catch (error: any) {
+        this.error = error.response?.data?.message || 'CV não encontrado';
         console.error('Erro ao buscar CV:', error);
-        this.currentCV = null;
+      } finally {
+        this.loading = false;
       }
     },
 
-    async createCV(data: Partial<CV>) {
-      const authStore = useAuthStore();
-      if (!authStore.accessToken) return;
-
-      const response = await cvApi.createCV(authStore.accessToken, data);
-      const newCV = response.data.data.cv;
-      this.cvs.push(newCV);
-      return newCV;
+    // ========================================
+    // CRIAR NOVO CV
+    // ========================================
+    async createCV(cvData: Partial<CV>) {
+      this.loading = true;
+      this.error = null;
+      
+      try {
+        const response = await cvApi.createCV(cvData);
+        this.cvs.push(response.data);
+        this.currentCV = response.data;
+        return { success: true, cv: response.data };
+      } catch (error: any) {
+        this.error = error.response?.data?.message || 'Erro ao criar CV';
+        console.error('Erro ao criar CV:', error);
+        return { success: false, message: this.error };
+      } finally {
+        this.loading = false;
+      }
     },
 
-    async updateCV(id: string, data: Partial<CV>) {
-      const authStore = useAuthStore();
-      if (!authStore.accessToken) return;
-
-      const response = await cvApi.updateCV(authStore.accessToken, id, data);
-      const updatedCV = response.data.data.cv;
-      const index = this.cvs.findIndex(cv => cv.id === id);
-      if (index !== -1) this.cvs[index] = updatedCV;
-      return updatedCV;
+    // ========================================
+    // ATUALIZAR CV
+    // ========================================
+    async updateCV(id: string, cvData: Partial<CV>) {
+      this.loading = true;
+      this.error = null;
+      
+      try {
+        const response = await cvApi.updateCV(id, cvData);
+        const index = this.cvs.findIndex(cv => cv.id === id);
+        if (index !== -1) this.cvs[index] = response.data;
+        if (this.currentCV?.id === id) this.currentCV = response.data;
+        return { success: true, cv: response.data };
+      } catch (error: any) {
+        this.error = error.response?.data?.message || 'Erro ao atualizar CV';
+        console.error('Erro ao atualizar CV:', error);
+        return { success: false, message: this.error };
+      } finally {
+        this.loading = false;
+      }
     },
 
+    // ========================================
+    // APAGAR CV
+    // ========================================
     async deleteCV(id: string) {
-      const authStore = useAuthStore();
-      if (!authStore.accessToken) return;
-
-      await cvApi.deleteCV(authStore.accessToken, id);
-      this.cvs = this.cvs.filter(cv => cv.id !== id);
+      this.loading = true;
+      this.error = null;
+      
+      try {
+        await cvApi.deleteCV(id);
+        this.cvs = this.cvs.filter(cv => cv.id !== id);
+        if (this.currentCV?.id === id) this.currentCV = null;
+        return { success: true };
+      } catch (error: any) {
+        this.error = error.response?.data?.message || 'Erro ao apagar CV';
+        console.error('Erro ao apagar CV:', error);
+        return { success: false, message: this.error };
+      } finally {
+        this.loading = false;
+      }
     },
 
+    // ========================================
+    // DUPLICAR CV
+    // ========================================
     async duplicateCV(id: string) {
-      const authStore = useAuthStore();
-      if (!authStore.accessToken) return;
-
-      const response = await cvApi.duplicateCV(authStore.accessToken, id);
-      const duplicated = response.data.data.cv;
-      this.cvs.push(duplicated);
-      return duplicated;
+      this.loading = true;
+      this.error = null;
+      
+      try {
+        const response = await cvApi.duplicateCV(id);
+        this.cvs.push(response.data);
+        return { success: true, cv: response.data };
+      } catch (error: any) {
+        this.error = error.response?.data?.message || 'Erro ao duplicar CV';
+        console.error('Erro ao duplicar CV:', error);
+        return { success: false, message: this.error };
+      } finally {
+        this.loading = false;
+      }
     },
 
-    async updateStatus(id: string, status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED') {
-      const authStore = useAuthStore();
-      if (!authStore.accessToken) return;
-
-      const response = await cvApi.updateStatus(authStore.accessToken, id, status);
-      const updatedCV = response.data.data.cv;
-      const index = this.cvs.findIndex(cv => cv.id === id);
-      if (index !== -1) this.cvs[index] = updatedCV;
-      return updatedCV;
+    // ========================================
+    // MUDAR STATUS
+    // ========================================
+    async changeStatus(id: string, status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED') {
+      this.loading = true;
+      this.error = null;
+      
+      try {
+        const response = await cvApi.updateStatus(id, status);
+        const index = this.cvs.findIndex(cv => cv.id === id);
+        if (index !== -1) this.cvs[index] = response.data;
+        return { success: true };
+      } catch (error: any) {
+        this.error = error.response?.data?.message || 'Erro ao mudar status';
+        console.error('Erro ao mudar status:', error);
+        return { success: false, message: this.error };
+      } finally {
+        this.loading = false;
+      }
     },
 
-    async changeTemplate(id: string, templateId: string) {
-      const authStore = useAuthStore();
-      if (!authStore.accessToken) return;
-
-      const response = await cvApi.changeTemplate(authStore.accessToken, id, templateId);
-      const updatedCV = response.data.data.cv;
-      const index = this.cvs.findIndex(cv => cv.id === id);
-      if (index !== -1) this.cvs[index] = updatedCV;
-      return updatedCV;
+    // ========================================
+    // EXPORTAR CV
+    // ========================================
+    async exportCV(id: string, format: 'PDF' | 'DOCX' = 'PDF') {
+      try {
+        const response = await cvApi.exportCV(id, format);
+        
+        // Cria link de download
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `cv-${id}.${format.toLowerCase()}`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        
+        return { success: true };
+      } catch (error: any) {
+        this.error = error.response?.data?.message || 'Erro ao exportar CV';
+        console.error('Erro ao exportar CV:', error);
+        return { success: false, message: this.error };
+      }
     },
   },
 });

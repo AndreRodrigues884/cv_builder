@@ -303,7 +303,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import cvService from '../services/cvService'
+import cvApi from '../api/cv'
 import aiService from '../services/aiService'
 
 const router = useRouter()
@@ -332,7 +332,7 @@ onMounted(async () => {
 const loadCV = async () => {
   try {
     loading.value = true
-    const cv = await cvService.getCVById(route.params.id)
+    const cv = await cvApi.getCVById(route.params.id)
     
     // Preencher formData com dados do CV
     Object.assign(formData, cv)
@@ -420,7 +420,7 @@ const handleSave = async () => {
 
   try {
     saving.value = true
-    await cvService.updateCV(route.params.id, formData)
+    await cvApi.updateCV(route.params.id, formData)
     alert('CV atualizado com sucesso! ✅')
     router.push('/dashboard')
   } catch (error) {

@@ -435,7 +435,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import cvService from '../services/cvService'
+import cvApi from '../api/cv'
 import aiService from '../services/aiService'
 
 const router = useRouter()
@@ -614,7 +614,7 @@ const handleSave = async () => {
 
   try {
     saving.value = true
-    await cvService.createCV(formData)
+    await cvApi.createCV(formData)
     alert('CV criado com sucesso! ✅')
     router.push('/dashboard')
   } catch (error) {

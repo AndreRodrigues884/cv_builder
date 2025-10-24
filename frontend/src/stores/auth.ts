@@ -7,6 +7,7 @@ import { User } from '../types/userInterface';
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
     user: null,
+    profile: null,
     accessToken: localStorage.getItem('accessToken'),
     refreshToken: localStorage.getItem('refreshToken'),
     billing: null, // ← ADICIONAR
