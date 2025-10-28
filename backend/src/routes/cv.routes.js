@@ -144,9 +144,9 @@ router.patch("/:id/template", authenticateToken,
   CVController.changeTemplate
 );
 
-router.post('/:id/generate/pdf', CVController.generatePDF);
-
-router.get('/:id/download/pdf', CVController.downloadPDF);
+router.get('/:id/pdf-url', authenticateToken, CVController.getCVPdfUrl);
+router.get('/:id/download/pdf', authenticateToken, CVController.downloadCVPDF);
+router.get('/:id/download/docx', authenticateToken, CVController.downloadCVDOCX);
 
 export default router;
 

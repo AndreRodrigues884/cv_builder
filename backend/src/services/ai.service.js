@@ -8,7 +8,7 @@ class AIService {
 
     // Modelos que vamos usar
     this.models = {
-      textGeneration: 'mistralai/Mistral-7B-Instruct-v0.2', // Para gerar texto
+       textGeneration: "gpt2",  
       textAnalysis: 'facebook/bart-large-mnli', // Para análise
       embeddings: 'sentence-transformers/all-MiniLM-L6-v2', // Para comparações
     };
@@ -103,20 +103,33 @@ Responde em JSON:
    */
   async callHuggingFace(model, payload, retries = 3) {
     try {
+      const url = `${this.baseURL}/${model}`;
+      console.log('🌐 URL da API:', url);
+      console.log('📦 Payload:', JSON.stringify(payload, null, 2));
+      console.log('🔑 API Key presente:', !!this.apiKey);
+
       const response = await axios.post(
-        `${this.baseURL}/${model}`,
+        url,
         payload,
         {
           headers: {
             'Authorization': `Bearer ${this.apiKey}`,
             'Content-Type': 'application/json',
           },
-          timeout: 30000, // 30 segundos
+          timeout: 30000,
         }
       );
 
+      console.log('✅ Resposta recebida:', response.status);
       return response.data;
     } catch (error) {
+      console.error('❌ Erro completo:', {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        url: error.config?.url,
+      });
+
       // Se modelo está carregando, retry
       if (error.response?.status === 503 && retries > 0) {
         console.log(`Modelo carregando, tentando novamente em 5s... (${retries} tentativas restantes)`);
@@ -124,7 +137,6 @@ Responde em JSON:
         return this.callHuggingFace(model, payload, retries - 1);
       }
 
-      console.error('Erro ao chamar Hugging Face:', error.message);
       throw error;
     }
   }
@@ -134,10 +146,16 @@ Responde em JSON:
    */
   async generateText(prompt, maxTokens = 500, temperature = 0.7) {
     try {
+      // Remove os [INST] tags para FLAN-T5
+      const cleanPrompt = prompt
+        .replace(/\[INST\]/g, '')
+        .replace(/\[\/INST\]/g, '')
+        .trim();
+
       const response = await this.callHuggingFace(
         this.models.textGeneration,
         {
-          inputs: prompt,
+          inputs: cleanPrompt,
           parameters: {
             max_new_tokens: maxTokens,
             temperature: temperature,
@@ -232,33 +250,20 @@ Responda no formato JSON:
         skills: 'Organize por categorias, priorize as mais relevantes.',
       };
 
-      const prompt = `[INST] Você é um especialista em redação de currículos. Melhore o seguinte texto da secção "${section}" de um CV:
+      // Prompt simplificado para FLAN-T5
+      const prompt = `Improve this ${section} text for a CV: "${text}". ${sectionTips[section]}`;
 
-Texto original:
-"${text}"
+      const response = await this.generateText(prompt, 300, 0.7);
 
-Dicas para ${section}: ${sectionTips[section] || 'Seja claro e profissional.'}
-
-Forneça:
-1. Versão melhorada do texto
-2. 3 sugestões de melhoria específicas
-
-Responda no formato JSON:
-{
-  "improved": "texto melhorado aqui",
-  "suggestions": ["sugestão 1", "sugestão 2", "sugestão 3"]
-}
-[/INST]`;
-
-      const response = await this.generateText(prompt, 500, 0.5);
-
+      // Tentar extrair JSON (pode não vir formatado)
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);
       }
 
+      // Fallback - retornar resposta simples
       return {
-        improved: text,
+        improved: response.trim() || text,
         suggestions: [
           'Adicione mais detalhes quantificáveis',
           'Use verbos de ação mais impactantes',

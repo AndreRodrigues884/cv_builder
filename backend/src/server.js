@@ -4,8 +4,13 @@ import dotenv from 'dotenv';
 import helmet from 'helmet';
 import router from './routes/index.js';
 import fileUpload from 'express-fileupload';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(helmet());
@@ -13,6 +18,8 @@ app.use(helmet());
 // Middlewares
 app.use(cors());
 app.use(express.json());
+
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 // Rotas
 app.use('/api', router);

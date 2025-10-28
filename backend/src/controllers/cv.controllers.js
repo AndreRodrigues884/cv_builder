@@ -1,6 +1,9 @@
 // src/controllers/cv.controller.js
 import { PrismaClient } from '@prisma/client';
 import { validationResult } from 'express-validator';
+import PDFService from '../services/pdf.service.js';
+import path from 'path';   
+import fs from 'fs/promises';
 
 const prisma = new PrismaClient();
 
@@ -130,7 +133,7 @@ export const createCV = async (req, res) => {
     // 5. MELHORAR CONTEÚDO COM IA ⭐⭐⭐
     // ========================================
     console.log('🤖 Melhorando conteúdo com IA...');
-    
+
     let improvedContent = content;
 
     try {
@@ -215,7 +218,7 @@ export const createCV = async (req, res) => {
           // 7.4: Atualizar CV com URL do PDF
           await prisma.cV.update({
             where: { id: cv.id },
-            data: { 
+            data: {
               generatedPdfUrl: pdfUrl,
               status: 'PUBLISHED', // ← Publicar após gerar PDF
             },
@@ -287,10 +290,10 @@ export const createCV = async (req, res) => {
 export const getCVs = async (req, res) => {
   try {
     const userId = req.user.userId;
-    const { 
-      status, 
-      search, 
-      sortBy = 'updatedAt', 
+    const {
+      status,
+      search,
+      sortBy = 'updatedAt',
       order = 'desc',
       page = 1,        // ⭐ ADICIONAR paginação
       limit = 10       // ⭐ ADICIONAR limite
@@ -351,8 +354,16 @@ export const getCVs = async (req, res) => {
             select: {
               id: true,
               scoreOverall: true,
-              scores: true, // ⭐ ADICIONAR scores detalhados
+              scoreAts: true,
+              scoreLanguage: true,
+              scoreImpact: true,
+              scoreClarity: true,
               createdAt: true,
+              recommendations: true,
+              missingKeywords: true,
+              strengths: true,
+              improvements: true,
+              estimatedReadTime: true,
             },
           },
         },
@@ -392,7 +403,7 @@ export const getCVs = async (req, res) => {
           targetRole: cv.targetRole, // ⭐ CORRIGIR nome
           status: cv.status,
           language: cv.language,
-          template: cv.template,
+          template: cv.templateId,
           lastReview: cv.aiReviews[0] || null,
           generatedPdfUrl: cv.generatedPdfUrl,
           generatedDocxUrl: cv.generatedDocxUrl,
@@ -634,7 +645,7 @@ export const updateCV = async (req, res) => {
 
         if (billing?.plan !== 'FREE') {
           console.log('🤖 Melhorando conteúdo atualizado com IA...');
-          
+
           finalContent = await AIService.improveCV({
             summary: content.summary,
             experiences: content.experiences,
@@ -758,16 +769,15 @@ export const updateCV = async (req, res) => {
   }
 };
 
-
-export const generatePDF = async (req, res) => {
+export const downloadCVPDF = async (req, res) => {
   try {
-    const { id } = req.params;
+    const cvId = req.params.id;
     const userId = req.user.id;
 
-    // Buscar CV com todos os dados necessários
+    // Buscar CV completo com profile
     const cv = await prisma.cV.findFirst({
       where: {
-        id: id,
+        id: cvId,
         userId: userId,
       },
       include: {
@@ -776,21 +786,12 @@ export const generatePDF = async (req, res) => {
           include: {
             profile: {
               include: {
-                experiences: {
-                  orderBy: { sortOrder: 'asc' },
-                },
-                educations: {
-                  orderBy: { sortOrder: 'asc' },
-                },
-                skills: {
-                  orderBy: { sortOrder: 'asc' },
-                },
-                certifications: {
-                  orderBy: { sortOrder: 'asc' },
-                },
-                projects: {
-                  orderBy: { sortOrder: 'asc' },
-                },
+                experiences: true,
+                educations: true,
+                skills: true,
+                certifications: true,
+                projects: true,
+                languages: true,
               },
             },
           },
@@ -805,64 +806,84 @@ export const generatePDF = async (req, res) => {
       });
     }
 
-    // Importar services
-    const PDFService = require('../services/pdf.service');
-    const StorageService = require('../services/storage.service');
+    console.log('📄 Gerando PDF para CV:', cv.id);
+    console.log('📦 Dados do CV:', {
+      id: cv.id,
+      title: cv.title,
+      hasProfile: !!cv.user.profile,
+      hasTemplate: !!cv.template,
+    });
 
     // Gerar PDF
-    const pdf = await PDFService.generatePDF(cv, cv.user.profile);
+    const pdfBuffer = await PDFService.generatePDF(cv, cv.user.profile);
+    
+    console.log('✅ PDF Buffer gerado:', {
+      type: typeof pdfBuffer,
+      isBuffer: Buffer.isBuffer(pdfBuffer),
+      length: pdfBuffer?.length,
+    });
 
-    // Upload para Cloudinary (se configurado)
-    let pdfUrl = null;
-    if (StorageService.isConfigured()) {
-      try {
-        const uploadResult = await StorageService.uploadCVPDF(pdf, userId, cv.id);
-        pdfUrl = uploadResult.url;
+    // Salvar PDF no servidor (opcional, para cache)
+    const filename = `cv_${userId}_${cvId}_${Date.now()}.pdf`;
+    const uploadsDir = path.join(process.cwd(), 'uploads', 'cvs');
+    
+    // Criar diretório se não existir
+    await fs.mkdir(uploadsDir, { recursive: true });
+    
+    const filepath = path.join(uploadsDir, filename);
+    await fs.writeFile(filepath, pdfBuffer);
 
-        // Atualizar URL no CV
-        await prisma.cV.update({
-          where: { id: id },
-          data: { generatedPdfUrl: pdfUrl },
-        });
+    // Atualizar URL no CV
+    const pdfUrl = `/uploads/cvs/${filename}`;
+    await prisma.cV.update({
+      where: { id: cvId },
+      data: { generatedPdfUrl: pdfUrl },
+    });
 
-        console.log('✅ PDF salvo no Cloudinary:', pdfUrl);
-      } catch (uploadError) {
-        console.warn('⚠️ Erro ao fazer upload do PDF:', uploadError.message);
-        // Continua mesmo se upload falhar
-      }
-    }
+    console.log('✅ PDF gerado e salvo:', pdfUrl);
 
-    // Definir headers para download
-    const filename = `${cv.title.replace(/[^a-z0-9]/gi, '_')}.pdf`;
+    // Enviar PDF para download
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    res.setHeader('Content-Length', pdf.length);
+    res.setHeader('Content-Disposition', `attachment; filename="${cv.title || 'CV'}.pdf"`);
+    res.send(pdfBuffer);
 
-    // Enviar PDF
-    res.send(pdf);
   } catch (error) {
-    console.error('Erro ao gerar PDF:', error);
-    return res.status(500).json({
+    console.error('❌ Erro ao gerar PDF:', error);
+    res.status(500).json({
       success: false,
-      message: 'Erro ao gerar PDF',
-      error: error.message,
+      message: 'Erro ao gerar PDF do CV',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
     });
   }
-}
+};
 
 /**
- * Download PDF do CV (se já foi gerado)
- * GET /api/cvs/:id/download/pdf
+ * Gerar e fazer download do DOCX do CV
+ * GET /api/cv/:id/download/docx
  */
-export const downloadPDF = async (req, res) => {
+export const downloadCVDOCX = async (req, res) => {
   try {
-    const { id } = req.params;
+    const cvId = req.params.id;
     const userId = req.user.id;
 
+    // Buscar CV
     const cv = await prisma.cV.findFirst({
       where: {
-        id: id,
+        id: cvId,
         userId: userId,
+      },
+      include: {
+        user: {
+          include: {
+            profile: {
+              include: {
+                experiences: true,
+                educations: true,
+                skills: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -873,23 +894,66 @@ export const downloadPDF = async (req, res) => {
       });
     }
 
-    if (!cv.generatedPdfUrl) {
+    // TODO: Implementar geração de DOCX
+    // Por enquanto retorna erro
+    return res.status(501).json({
+      success: false,
+      message: 'Geração de DOCX em desenvolvimento',
+    });
+
+  } catch (error) {
+    console.error('Erro ao gerar DOCX:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro ao gerar DOCX do CV',
+    });
+  }
+};
+
+/**
+ * Obter URL do PDF gerado (se existir)
+ * GET /api/cv/:id/pdf-url
+ */
+export const getCVPdfUrl = async (req, res) => {
+  try {
+    const cvId = req.params.id;
+    const userId = req.user.id;
+
+    const cv = await prisma.cV.findFirst({
+      where: {
+        id: cvId,
+        userId: userId,
+      },
+      select: {
+        id: true,
+        generatedPdfUrl: true,
+        generatedDocxUrl: true,
+      },
+    });
+
+    if (!cv) {
       return res.status(404).json({
         success: false,
-        message: 'PDF ainda não foi gerado. Use POST /api/cvs/:id/generate/pdf',
+        message: 'CV não encontrado',
       });
     }
 
-    // Redirecionar para URL do storage
-    return res.redirect(cv.generatedPdfUrl);
+    return res.json({
+      success: true,
+      data: {
+        pdfUrl: cv.generatedPdfUrl,
+        docxUrl: cv.generatedDocxUrl,
+      },
+    });
+
   } catch (error) {
-    console.error('Erro ao fazer download do PDF:', error);
-    return res.status(500).json({
+    console.error('Erro ao obter URLs:', error);
+    res.status(500).json({
       success: false,
-      message: 'Erro ao fazer download do PDF',
+      message: 'Erro ao obter URLs do CV',
     });
   }
-}
+};
 
 export const deleteCV = async (req, res) => {
   try {

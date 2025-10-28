@@ -33,8 +33,9 @@ export const updateStatus = (
 export const changeTemplate = (id: string, templateId: string) => 
   api.patch(`${BASE_URL}/${id}/template`, { templateId });
 
-export const exportCV = (id: string, format: 'PDF' | 'DOCX' = 'PDF') => 
-  api.get(`${BASE_URL}/${id}/export`, { 
-    params: { format },
-    responseType: 'blob' // Para download de arquivos
+
+  export const downloadCVPDF = async (id: string) => {
+  return api.get(`${BASE_URL}/${id}/download/pdf`, {
+    responseType: 'blob', // muito importante para ficheiros binários
   });
+};

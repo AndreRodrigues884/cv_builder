@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-slate-950 text-slate-100">
     <Sidebar :activeSection="activeSection" @change-section="activeSection = $event" />
-    
+
     <!-- Main Content -->
     <main class="ml-64 min-h-screen">
       <!-- Top Bar -->
@@ -19,7 +19,7 @@
                 <span class="text-slate-400 text-sm">CVs Criados</span>
                 <span class="text-2xl">📄</span>
               </div>
-              <div class="text-3xl font-bold text-blue-500">{{ stats.cvsCreated }}</div>
+              <div v-if="!cvStore.loading" class="text-3xl font-bold text-blue-500">{{ stats.cvsCreated }}</div>
               <div class="text-xs text-slate-500 mt-1">{{ stats.cvsLimit }} disponíveis este mês</div>
             </div>
 
@@ -86,7 +86,7 @@
                 class="text-blue-500 hover:text-blue-400 text-sm font-medium">Ver todos →</button>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div v-for="cv in recentCVs" :key="cv.id"
+              <div v-for="cv in allCVs" :key="cv.id"
                 class="bg-slate-900 border border-slate-800 rounded-xl p-6 hover:border-blue-500/30 transition-all">
                 <div class="flex items-start justify-between mb-4">
                   <div class="flex-1">
@@ -107,7 +107,7 @@
                     class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-all text-sm font-medium">
                     Editar
                   </button>
-                  <button
+                  <button @click="downloadCV(cv)"
                     class="px-4 py-2 border border-slate-700 text-slate-300 rounded-lg hover:bg-slate-800 transition-all text-sm font-medium">
                     Download
                   </button>
@@ -294,249 +294,18 @@
         </div>
 
         <!-- My CVs Section -->
-        <div v-if="activeSection === 'my-cvs'">
-          <div class="flex justify-between items-center mb-6">
-            <div class="flex gap-4">
-              <button class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium">Todos ({{ allCVs.length
-              }})</button>
-              <button
-                class="px-4 py-2 text-slate-400 hover:bg-slate-800 rounded-lg font-medium transition-all">Publicados</button>
-              <button
-                class="px-4 py-2 text-slate-400 hover:bg-slate-800 rounded-lg font-medium transition-all">Rascunhos</button>
-            </div>
-            <button @click="activeSection = 'create-cv'"
-              class="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg hover:shadow-purple-500/30 transition-all font-medium">
-              + Novo CV
-            </button>
-          </div>
+        <MyCVs v-if="activeSection === 'my-cvs'" />
 
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div v-for="cv in allCVs" :key="cv.id"
-              class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden hover:border-blue-500/30 hover:-translate-y-1 transition-all group">
-              <div
-                class="h-48 bg-gradient-to-br from-slate-800 to-slate-900 p-6 flex items-center justify-center relative overflow-hidden">
-                <div class="text-center">
-                  <div class="text-4xl mb-2">{{ cv.icon }}</div>
-                  <div class="text-sm text-slate-400">{{ cv.template }}</div>
-                </div>
-                <div class="absolute inset-0 bg-blue-600/0 group-hover:bg-blue-600/5 transition-all"></div>
-              </div>
-              <div class="p-6">
-                <div class="flex items-start justify-between mb-3">
-                  <div>
-                    <h3 class="font-bold mb-1">{{ cv.title }}</h3>
-                    <p class="text-sm text-slate-400">{{ cv.targetRole }}</p>
-                  </div>
-                  <span :class="cv.statusColor" class="px-2 py-1 rounded text-xs font-semibold">
-                    {{ cv.status }}
-                  </span>
-                </div>
-                <div class="text-xs text-slate-500 mb-4">
-                  Atualizado há {{ cv.updatedAt }}
-                </div>
-                <div class="flex gap-2">
-                  <button
-                    class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-all text-sm font-medium">
-                    Editar
-                  </button>
-                  <button
-                    class="px-3 py-2 border border-slate-700 text-slate-300 rounded-lg hover:bg-slate-800 transition-all">
-                    ⬇
-                  </button>
-                  <button
-                    class="px-3 py-2 border border-slate-700 text-slate-300 rounded-lg hover:bg-slate-800 transition-all">
-                    ⋮
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
         <!-- AI Review Section -->
-        <div v-if="activeSection === 'ai-review'" class="max-w-5xl mx-auto">
-          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 mb-6">
-            <h2 class="text-2xl font-bold mb-4">Analisar CV com IA</h2>
-            <p class="text-slate-400 mb-6">Seleciona um CV para análise detalhada com pontuação ATS, linguagem, impacto
-              e clareza</p>
-
-            <select
-              class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 mb-6 focus:border-blue-500 focus:outline-none transition-all">
-              <option value="">Seleciona um CV</option>
-              <option v-for="cv in allCVs" :key="cv.id" :value="cv.id">{{ cv.title }}</option>
-            </select>
-
-            <button
-              class="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-xl hover:shadow-purple-500/30 transition-all font-semibold flex items-center justify-center gap-2">
-              <span class="text-xl">🎯</span>
-              Analisar com IA
-            </button>
-          </div>
-
-          <!-- Review Results (Mock) -->
-          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8">
-            <h3 class="text-xl font-bold mb-6">Resultado da Análise</h3>
-
-            <!-- Overall Score -->
-            <div
-              class="bg-gradient-to-br from-blue-600/10 to-purple-600/10 border border-blue-500/30 rounded-xl p-6 mb-6">
-              <div class="text-center mb-4">
-                <div
-                  class="text-6xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent mb-2">
-                  85</div>
-                <div class="text-slate-400">Score Geral</div>
-              </div>
-            </div>
-
-            <!-- Detailed Scores -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              <div class="bg-slate-800 rounded-lg p-4 text-center">
-                <div class="text-3xl font-bold text-green-500 mb-1">92</div>
-                <div class="text-xs text-slate-400">ATS</div>
-              </div>
-              <div class="bg-slate-800 rounded-lg p-4 text-center">
-                <div class="text-3xl font-bold text-blue-500 mb-1">78</div>
-                <div class="text-xs text-slate-400">Linguagem</div>
-              </div>
-              <div class="bg-slate-800 rounded-lg p-4 text-center">
-                <div class="text-3xl font-bold text-purple-500 mb-1">88</div>
-                <div class="text-xs text-slate-400">Impacto</div>
-              </div>
-              <div class="bg-slate-800 rounded-lg p-4 text-center">
-                <div class="text-3xl font-bold text-cyan-500 mb-1">82</div>
-                <div class="text-xs text-slate-400">Clareza</div>
-              </div>
-            </div>
-
-            <!-- Recommendations -->
-            <div class="space-y-4">
-              <div class="bg-slate-800 border border-orange-500/30 rounded-lg p-4">
-                <div class="flex items-start gap-3">
-                  <span class="text-xl">⚠️</span>
-                  <div class="flex-1">
-                    <div class="font-semibold mb-1">Adiciona números e resultados</div>
-                    <p class="text-sm text-slate-400">As tuas experiências ganhariam mais impacto com métricas
-                      quantificáveis</p>
-                  </div>
-                  <span class="text-xs bg-orange-500/20 text-orange-400 px-2 py-1 rounded">Alta</span>
-                </div>
-              </div>
-
-              <div class="bg-slate-800 border border-blue-500/30 rounded-lg p-4">
-                <div class="flex items-start gap-3">
-                  <span class="text-xl">💡</span>
-                  <div class="flex-1">
-                    <div class="font-semibold mb-1">Usa verbos de ação</div>
-                    <p class="text-sm text-slate-400">Substitui frases passivas por verbos impactantes: Desenvolvi,
-                      Implementei, Liderei</p>
-                  </div>
-                  <span class="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded">Média</span>
-                </div>
-              </div>
-
-              <div class="bg-slate-800 border border-green-500/30 rounded-lg p-4">
-                <div class="flex items-start gap-3">
-                  <span class="text-xl">✅</span>
-                  <div class="flex-1">
-                    <div class="font-semibold mb-1">Ponto forte</div>
-                    <p class="text-sm text-slate-400">Excelente estrutura e organização das competências técnicas</p>
-                  </div>
-                  <span class="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded">Info</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <AiReview v-if="activeSection === 'ai-review'" />
 
         <!-- Job Match Section -->
-        <div v-if="activeSection === 'job-match'" class="max-w-4xl mx-auto">
-          <div
-            class="bg-gradient-to-br from-purple-600/10 to-blue-600/10 border border-purple-500/30 rounded-2xl p-8 mb-6">
-            <div class="flex items-start justify-between mb-4">
-              <div>
-                <h2 class="text-2xl font-bold mb-2">AI Job Match</h2>
-                <p class="text-slate-400">Adapta o teu CV automaticamente para uma vaga específica</p>
-              </div>
-              <span class="px-3 py-1 bg-purple-600 text-white rounded-full text-xs font-semibold">Pro</span>
-            </div>
-          </div>
-
-          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8">
-            <label class="block text-sm font-medium mb-2">Seleciona o CV</label>
-            <select
-              class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 mb-6 focus:border-blue-500 focus:outline-none transition-all">
-              <option value="">Seleciona um CV</option>
-              <option v-for="cv in allCVs" :key="cv.id" :value="cv.id">{{ cv.title }}</option>
-            </select>
-
-            <label class="block text-sm font-medium mb-2">Descrição da Vaga</label>
-            <p class="text-xs text-slate-500 mb-2">Cola a descrição completa da vaga ou insere o link do LinkedIn</p>
-            <textarea rows="8"
-              class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 mb-4 focus:border-blue-500 focus:outline-none transition-all"
-              placeholder="Cole aqui a descrição da vaga ou link do LinkedIn..."></textarea>
-
-            <div class="flex gap-3">
-              <button
-                class="flex-1 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-xl hover:shadow-purple-500/30 transition-all font-semibold">
-                Adaptar CV para Esta Vaga
-              </button>
-              <button
-                class="px-6 py-3 border border-slate-700 text-slate-300 rounded-lg hover:bg-slate-800 transition-all">
-                Importar do LinkedIn
-              </button>
-            </div>
-          </div>
-        </div>
+        <JobMatch v-if="activeSection === 'job-match'" />
 
         <!-- Career Copilot Section -->
-        <div v-if="activeSection === 'career-copilot'" class="max-w-4xl mx-auto">
-          <div
-            class="bg-gradient-to-br from-blue-600/10 to-purple-600/10 border border-purple-500/30 rounded-2xl p-8 mb-6">
-            <div class="flex items-start justify-between mb-4">
-              <div>
-                <h2 class="text-2xl font-bold mb-2">🚀 Career Copilot</h2>
-                <p class="text-slate-400">Teu assistente pessoal de carreira com IA</p>
-              </div>
-              <span
-                class="px-3 py-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full text-xs font-semibold">Premium</span>
-            </div>
-          </div>
+        <CareerCopilot :activeSection="activeSection" />
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div
-              class="bg-slate-900 border border-slate-800 rounded-xl p-6 hover:border-purple-500/30 transition-all cursor-pointer">
-              <div class="text-3xl mb-4">💬</div>
-              <h3 class="text-lg font-bold mb-2">Simulação de Entrevista</h3>
-              <p class="text-sm text-slate-400 mb-4">Prepara-te com perguntas geradas pela IA baseadas no teu CV</p>
-              <button class="text-purple-500 text-sm font-medium hover:text-purple-400">Começar →</button>
-            </div>
-
-            <div
-              class="bg-slate-900 border border-slate-800 rounded-xl p-6 hover:border-blue-500/30 transition-all cursor-pointer">
-              <div class="text-3xl mb-4">📈</div>
-              <h3 class="text-lg font-bold mb-2">Análise de Carreira</h3>
-              <p class="text-sm text-slate-400 mb-4">Descobre os melhores caminhos para a tua progressão profissional
-              </p>
-              <button class="text-blue-500 text-sm font-medium hover:text-blue-400">Analisar →</button>
-            </div>
-
-            <div
-              class="bg-slate-900 border border-slate-800 rounded-xl p-6 hover:border-cyan-500/30 transition-all cursor-pointer">
-              <div class="text-3xl mb-4">🎯</div>
-              <h3 class="text-lg font-bold mb-2">Lacunas de Competências</h3>
-              <p class="text-sm text-slate-400 mb-4">Identifica skills que faltam para atingir os teus objetivos</p>
-              <button class="text-cyan-500 text-sm font-medium hover:text-cyan-400">Descobrir →</button>
-            </div>
-
-            <div
-              class="bg-slate-900 border border-slate-800 rounded-xl p-6 hover:border-green-500/30 transition-all cursor-pointer">
-              <div class="text-3xl mb-4">📚</div>
-              <h3 class="text-lg font-bold mb-2">Recomendação de Cursos</h3>
-              <p class="text-sm text-slate-400 mb-4">Cursos e formações personalizadas para o teu crescimento</p>
-              <button class="text-green-500 text-sm font-medium hover:text-green-400">Ver Cursos →</button>
-            </div>
-          </div>
-        </div>
 
         <!-- Templates Section -->
         <div v-if="activeSection === 'templates'">
@@ -607,7 +376,8 @@
                   <div class="flex items-center justify-between">
                     <div>
                       <div class="text-lg font-bold">{{ userPlan }}</div>
-                      <div class="text-sm text-slate-400">{{ stats.cvsCreated }}/{{ stats.cvsLimit }} CVs este mês</div>
+                      <div class="text-sm text-slate-400">{{ stats.cvsCreated }}/{{ stats.cvsLimit }} CVs este mês
+                      </div>
                     </div>
                     <router-link to="/upgrade"
                       class="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg hover:shadow-purple-500/30 transition-all font-semibold">
@@ -642,110 +412,141 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script>
 import Sidebar from "../components/dashboard/sidebar.vue"
 import Header from "../components/dashboard/header.vue"
-import { ref } from "vue";
+import { useCVStore } from '../stores/cv'
+import { ref } from 'vue';
 
+// Imports dos componentes Career Copilot
+import AiReview from '../components/dashboard/AIReviewSection.vue'
+import JobMatch from '../components/dashboard/JobMatchSection.vue'
+import MyCVs from '../components/dashboard/MyCVsSection.vue'
+import CareerCopilot from '../components/dashboard/CareerCopilotSection.vue'
 
-// Estado reativo
-const activeSection = ref("dashboard");
-const userPlan = ref("PRO");
-const currentStep = ref(0);
-const newSkill = ref("");
+const activeSection = ref('dashboard');
 
-const cvForm = ref({
-  name: "",
-  email: "",
-  phone: "",
-  location: "",
-  targetRole: "",
-  area: "",
-  summary: "",
-  skills: ["JavaScript", "React", "Node.js", "TypeScript"]
-});
+export default {
+  name: 'Dashboard',
 
-const stats = ref({
-  cvsCreated: 2,
-  cvsLimit: 1,
-  atsScore: 85,
-  applications: 12,
-  interviews: 3
-});
-
-const createSteps = ref(["Info Pessoal", "Objetivo", "Experiência", "Competências"]);
-
-const recentCVs = ref([
-  {
-    id: 1,
-    title: "CV - Full Stack Developer",
-    targetRole: "Senior Developer",
-    template: "Moderno",
-    status: "Publicado",
-    statusColor: "bg-green-500/20 text-green-400",
-    updatedAt: "2 dias"
+  components: {
+    Sidebar,
+    Header,
+    AiReview,
+    JobMatch,
+    MyCVs,
+    CareerCopilot
   },
-  {
-    id: 2,
-    title: "CV - Frontend Specialist",
-    targetRole: "React Developer",
-    template: "Criativo",
-    status: "Rascunho",
-    statusColor: "bg-yellow-500/20 text-yellow-400",
-    updatedAt: "1 semana"
-  }
-]);
 
-const allCVs = ref([
-  {
-    id: 1,
-    title: "CV - Full Stack Developer",
-    targetRole: "Senior Developer",
-    template: "Moderno",
-    icon: "📄",
-    status: "Publicado",
-    statusColor: "bg-green-500/20 text-green-400",
-    updatedAt: "2 dias"
+  data() {
+    return {
+      activeSection: 'dashboard',
+      currentStep: 0,
+
+      stats: {
+        cvsCreated: 0,
+        published: 0,
+        draft: 0,
+        archived: 0
+      },
+      allCVs: [],
+      loading: false,
+      error: null,
+
+
+      templates: [
+        { id: 1, name: "Profissional Moderno", type: "Moderno", isPremium: false },
+        { id: 2, name: "Clássico Executivo", type: "Clássico", isPremium: false },
+        { id: 3, name: "Criativo Designer", type: "Criativo", isPremium: true },
+        { id: 4, name: "Minimalista Clean", type: "Minimalista", isPremium: false },
+        { id: 5, name: "Tech Specialist", type: "Técnico", isPremium: true },
+        { id: 6, name: "Bold & Modern", type: "Moderno", isPremium: true }
+      ],
+
+      createSteps: ["Info Pessoal", "Objetivo", "Experiência", "Competências"]
+    }
   },
-  {
-    id: 2,
-    title: "CV - Frontend Specialist",
-    targetRole: "React Developer",
-    template: "Criativo",
-    icon: "🎨",
-    status: "Rascunho",
-    statusColor: "bg-yellow-500/20 text-yellow-400",
-    updatedAt: "1 semana"
+
+  computed: {
+    cvStore() {
+      return useCVStore()
+    },
+    allCVs() {
+      return this.cvStore.cvs;
+    }
   },
-  {
-    id: 3,
-    title: "CV - Backend Engineer",
-    targetRole: "Node.js Developer",
-    template: "Clássico",
-    icon: "⚙️",
-    status: "Arquivado",
-    statusColor: "bg-slate-500/20 text-slate-400",
-    updatedAt: "1 mês"
+
+  async mounted() {
+    await this.loadData()
+  },
+
+  methods: {
+    async loadData() {
+      try {
+        this.loading = true
+        const response = await this.cvStore.fetchCVs()
+
+        if (!response?.data) return
+
+        // Popula diretamente a store
+        this.cvStore.cvs = response.data.cvs.map(cv => ({
+          id: cv.id,
+          title: cv.title,
+          targetRole: cv.targetRole || 'Não definido',
+          status: cv.status,
+          statusColor: this.getStatusColor(cv.status),
+          template: cv.templateId,
+          updatedAt: this.formatDate(cv.updatedAt)
+        }));
+
+        // Atualiza estatísticas (Dashboard local)
+        this.stats.cvsCreated = response.data.stats.total
+        this.stats.published = response.data.stats.published
+        this.stats.draft = response.data.stats.draft
+        this.stats.archived = response.data.stats.archived
+
+        console.log('✅ CVs recebidos na store:', this.cvStore.cvs)
+      } catch (error) {
+        console.error('Erro ao carregar CVs:', error)
+      } finally {
+        this.loading = false
+      }
+    },
+
+    getStatusColor(status) {
+      switch (status) {
+        case 'PUBLISHED':
+          return 'bg-green-500/20 text-green-400'
+        case 'DRAFT':
+          return 'bg-yellow-500/20 text-yellow-400'
+        case 'ARCHIVED':
+          return 'bg-slate-700 text-slate-400'
+        default:
+          return 'bg-slate-700 text-slate-400'
+      }
+    },
+
+    formatDate(dateString) {
+      const date = new Date(dateString)
+      const now = new Date()
+      const diff = Math.floor((now - date) / (1000 * 60 * 60 * 24))
+      if (diff === 0) return 'hoje'
+      if (diff === 1) return '1 dia'
+      return `${diff} dias`
+    },
+
+    downloadCV(cv) {
+      if (cv.generatedPdfUrl) {
+        window.open(cv.generatedPdfUrl, '_blank')
+      } else if (cv.generatedDocxUrl) {
+        window.open(cv.generatedDocxUrl, '_blank')
+      } else {
+        alert('Este CV ainda não tem ficheiro gerado para download.')
+      }
+    },
+
   }
-]);
-
-const templates = ref([
-  { id: 1, name: "Profissional Moderno", type: "Moderno", isPremium: false },
-  { id: 2, name: "Clássico Executivo", type: "Clássico", isPremium: false },
-  { id: 3, name: "Criativo Designer", type: "Criativo", isPremium: true },
-  { id: 4, name: "Minimalista Clean", type: "Minimalista", isPremium: false },
-  { id: 5, name: "Tech Specialist", type: "Técnico", isPremium: true },
-  { id: 6, name: "Bold & Modern", type: "Moderno", isPremium: true }
-]);
-
-// Métodos
-
-const addSkill = () => {
-  if (newSkill.value.trim()) {
-    cvForm.value.skills.push(newSkill.value.trim());
-    newSkill.value = "";
-  }
-};
+}
 </script>
 
 

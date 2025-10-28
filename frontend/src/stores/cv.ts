@@ -4,30 +4,35 @@ import { CV, CVState } from '../types/cvInterface';
 
 export const useCVStore = defineStore('cv', {
   state: (): CVState => ({
-    cvs: [],
+    cvs: [] as CV[],
     currentCV: null,
     loading: false,
     error: null,
   }),
 
   getters: {
-    draftCVs: (state) => state.cvs.filter(cv => cv.status === 'DRAFT'),
-    publishedCVs: (state) => state.cvs.filter(cv => cv.status === 'PUBLISHED'),
-    archivedCVs: (state) => state.cvs.filter(cv => cv.status === 'ARCHIVED'),
+    allCVs: (state) => state.cvs, // todos os CVs
+
+    stats: (state) => ({
+      total: (state.cvs || []).length,
+      published: (state.cvs || []).filter(cv => cv.status === 'PUBLISHED').length,
+      draft: (state.cvs || []).filter(cv => cv.status === 'DRAFT').length,
+      archived: (state.cvs || []).filter(cv => cv.status === 'ARCHIVED').length,
+    }),
   },
 
   actions: {
-    // ========================================
-    // LISTAR CVs
-    // ========================================
     async fetchCVs(filters?: { status?: string; search?: string }) {
       this.loading = true;
       this.error = null;
-      
+
       try {
-        // ✅ SEM passar token - interceptor faz isso automaticamente!
         const response = await cvApi.getCVs(filters);
-        this.cvs = response.data;
+
+        // Guarda os CVs na store
+        this.cvs = response.data.cvs; // <-- importante!
+
+        return response.data; // opcional
       } catch (error: any) {
         this.error = error.response?.data?.message || 'Erro ao carregar CVs';
         console.error('Erro ao buscar CVs:', error);
@@ -36,13 +41,10 @@ export const useCVStore = defineStore('cv', {
       }
     },
 
-    // ========================================
-    // BUSCAR CV POR ID
-    // ========================================
     async fetchCVById(id: string) {
       this.loading = true;
       this.error = null;
-      
+
       try {
         const response = await cvApi.getCVById(id);
         this.currentCV = response.data;
@@ -54,13 +56,10 @@ export const useCVStore = defineStore('cv', {
       }
     },
 
-    // ========================================
-    // CRIAR NOVO CV
-    // ========================================
     async createCV(cvData: Partial<CV>) {
       this.loading = true;
       this.error = null;
-      
+
       try {
         const response = await cvApi.createCV(cvData);
         this.cvs.push(response.data);
@@ -75,13 +74,10 @@ export const useCVStore = defineStore('cv', {
       }
     },
 
-    // ========================================
-    // ATUALIZAR CV
-    // ========================================
     async updateCV(id: string, cvData: Partial<CV>) {
       this.loading = true;
       this.error = null;
-      
+
       try {
         const response = await cvApi.updateCV(id, cvData);
         const index = this.cvs.findIndex(cv => cv.id === id);
@@ -97,13 +93,10 @@ export const useCVStore = defineStore('cv', {
       }
     },
 
-    // ========================================
-    // APAGAR CV
-    // ========================================
     async deleteCV(id: string) {
       this.loading = true;
       this.error = null;
-      
+
       try {
         await cvApi.deleteCV(id);
         this.cvs = this.cvs.filter(cv => cv.id !== id);
@@ -118,13 +111,10 @@ export const useCVStore = defineStore('cv', {
       }
     },
 
-    // ========================================
-    // DUPLICAR CV
-    // ========================================
     async duplicateCV(id: string) {
       this.loading = true;
       this.error = null;
-      
+
       try {
         const response = await cvApi.duplicateCV(id);
         this.cvs.push(response.data);
@@ -138,13 +128,10 @@ export const useCVStore = defineStore('cv', {
       }
     },
 
-    // ========================================
-    // MUDAR STATUS
-    // ========================================
     async changeStatus(id: string, status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED') {
       this.loading = true;
       this.error = null;
-      
+
       try {
         const response = await cvApi.updateStatus(id, status);
         const index = this.cvs.findIndex(cv => cv.id === id);
@@ -159,28 +146,28 @@ export const useCVStore = defineStore('cv', {
       }
     },
 
-    // ========================================
-    // EXPORTAR CV
-    // ========================================
-    async exportCV(id: string, format: 'PDF' | 'DOCX' = 'PDF') {
+    async downloadCVPDF(id: string) {
+      this.loading = true;
+      this.error = null;
       try {
-        const response = await cvApi.exportCV(id, format);
-        
-        // Cria link de download
-        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const response = await cvApi.downloadCVPDF(id);
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', `cv-${id}.${format.toLowerCase()}`);
+        link.setAttribute('download', `cv-${id}.pdf`);
         document.body.appendChild(link);
         link.click();
         link.remove();
-        
         return { success: true };
       } catch (error: any) {
-        this.error = error.response?.data?.message || 'Erro ao exportar CV';
-        console.error('Erro ao exportar CV:', error);
+        this.error = error.response?.data?.message || 'Erro ao descarregar PDF';
+        console.error('Erro ao descarregar PDF:', error);
         return { success: false, message: this.error };
+      } finally {
+        this.loading = false;
       }
     },
+
   },
 });
