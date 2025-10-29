@@ -19,7 +19,7 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+app.use('/cvs', express.static(path.join(__dirname, 'cloudinary', 'cvs')));
 
 // Rotas
 app.use('/api', router);

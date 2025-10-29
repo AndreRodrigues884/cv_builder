@@ -22,9 +22,6 @@ export const updateCV = (id: string, data: Partial<CV>) =>
 export const deleteCV = (id: string) => 
   api.delete(`${BASE_URL}/${id}`);
 
-export const duplicateCV = (id: string) => 
-  api.post(`${BASE_URL}/${id}/duplicate`, {});
-
 export const updateStatus = (
   id: string, 
   status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'

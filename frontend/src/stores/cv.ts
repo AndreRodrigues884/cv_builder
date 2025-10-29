@@ -111,23 +111,6 @@ export const useCVStore = defineStore('cv', {
       }
     },
 
-    async duplicateCV(id: string) {
-      this.loading = true;
-      this.error = null;
-
-      try {
-        const response = await cvApi.duplicateCV(id);
-        this.cvs.push(response.data);
-        return { success: true, cv: response.data };
-      } catch (error: any) {
-        this.error = error.response?.data?.message || 'Erro ao duplicar CV';
-        console.error('Erro ao duplicar CV:', error);
-        return { success: false, message: this.error };
-      } finally {
-        this.loading = false;
-      }
-    },
-
     async changeStatus(id: string, status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED') {
       this.loading = true;
       this.error = null;

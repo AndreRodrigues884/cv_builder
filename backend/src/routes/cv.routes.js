@@ -106,16 +106,6 @@ router.delete("/:id", authenticateToken,
   CVController.deleteCV
 );
 
-router.post("/:id/duplicate", authenticateToken,
-  [
-    param("id")
-      .notEmpty()
-      .isString()
-      .withMessage("O ID do CV é obrigatório e deve ser uma string válida."),
-  ],
-  CVController.duplicateCV
-);
-
 router.patch("/:id/status", authenticateToken,
   [
     param("id")

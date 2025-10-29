@@ -55,6 +55,11 @@
                             title="Descarregar CV">
                             ⬇
                         </button>
+                        <button @click="deleteCV(cv)"
+                            class="px-3 py-2 border border-red-700 text-red-400 rounded-lg hover:bg-red-900 transition-all"
+                            title="Eliminar CV">
+                            🗑️
+                        </button>
                     </div>
                 </div>
             </div>
@@ -429,7 +434,8 @@ export default {
                 this.activeSection = 'my-cvs'
                 this.editingCV = null
                 // Recarrega os CVs para ter os dados atualizados
-                await this.cvStore.fetchCVs()
+                await this.cvStore.fetchCVs();
+                this.cvs = [...this.cvStore.cvs];
             } else {
                 alert('❌ Erro ao atualizar CV: ' + result.message)
             }
@@ -490,30 +496,27 @@ export default {
             }
         },
 
-    // Versão alternativa sem toast (se não tiveres toast library)
-    async downloadCVSimple(cv) {
-        try {
-            const response = await fetch(`http://localhost:5000/api/cv/${cv.id}/download/pdf`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+        async deleteCV(cv) {
+            if (!cv || !cv.id) return;
+
+            const confirmDelete = confirm(`🗑️ Tens a certeza que queres eliminar o CV "${cv.title}"?`);
+            if (!confirmDelete) return;
+
+            try {
+                const result = await this.cvStore.deleteCV(cv.id);
+                if (result.success) {
+                    this.$toast?.success('✅ CV eliminado com sucesso!');
+                    await this.cvStore.fetchCVs();
+                    this.cvs = [...this.cvStore.cvs]; // atualiza lista local
+                } else {
+                    this.$toast?.error('❌ Erro ao eliminar CV');
                 }
-            });
-
-            if (!response.ok) throw new Error('Erro ao gerar PDF');
-
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `${cv.title || 'CV'}.pdf`;
-            link.click();
-            window.URL.revokeObjectURL(url);
-        } catch (error) {
-            console.error('Erro:', error);
-            alert('Erro ao fazer download: ' + error.message);
+            } catch (error) {
+                console.error('Erro ao eliminar CV:', error);
+                this.$toast?.error('❌ Erro inesperado ao eliminar CV');
+            }
         }
-    }
 
-}
+    }
 }
 </script>

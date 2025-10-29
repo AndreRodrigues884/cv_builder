@@ -101,19 +101,22 @@ class PDFService {
    * Preparar dados do CV para o template
    */
   static prepareCVData(cv, profile) {
-    return {
-      // Informações Pessoais
-      name: profile?.user?.name || profile?.name || 'Nome',
-      email: profile?.user?.email || profile?.email || '',
-      phone: profile?.phone || '',
-      location: profile?.location || '',
-      website: profile?.website || '',
-      linkedin: profile?.linkedin || '',
-      github: profile?.github || '',
+    // Usar contentJson se existir, senão usar dados do profile
+    const contentJson = cv?.contentJson || {};
+    
+    const cvData = {
+      // Informações Pessoais (prioriza contentJson, depois profile, depois user)
+      name: contentJson?.personalInfo?.name || profile?.user?.name || profile?.name || 'Nome',
+      email: contentJson?.personalInfo?.email || profile?.user?.email || profile?.email || '',
+      phone: contentJson?.personalInfo?.phone || profile?.phone || '',
+      location: contentJson?.personalInfo?.location || profile?.location || '',
+      website: contentJson?.personalInfo?.website || profile?.website || '',
+      linkedin: contentJson?.personalInfo?.linkedin || profile?.linkedin || '',
+      github: contentJson?.personalInfo?.github || profile?.github || '',
 
       // Perfil
-      headline: profile?.headline || '',
-      summary: profile?.summary || cv?.summary || '',
+      headline: profile?.headline || contentJson?.headline || '',
+      summary: contentJson?.summary || profile?.summary || cv?.summary || '',
 
       // CV Info
       title: cv?.title || 'Curriculum Vitae',
@@ -121,8 +124,8 @@ class PDFService {
       jobTargetTitle: cv?.jobTargetTitle || cv?.targetRole || '',
       jobTargetArea: cv?.jobTargetArea || '',
 
-      // Experiências
-      experiences: (profile?.experiences || []).map(exp => ({
+      // Experiências (prioriza contentJson)
+      experiences: (contentJson?.experiences || profile?.experiences || []).map(exp => ({
         jobTitle: exp.jobTitle || '',
         company: exp.company || '',
         location: exp.location || '',
@@ -133,8 +136,8 @@ class PDFService {
         skills: exp.skills || [],
       })),
 
-      // Educação
-      educations: (profile?.educations || []).map(edu => ({
+      // Educação (prioriza contentJson)
+      educations: (contentJson?.educations || profile?.educations || []).map(edu => ({
         degree: edu.degree || '',
         institution: edu.institution || '',
         fieldOfStudy: edu.fieldOfStudy || '',
@@ -145,16 +148,16 @@ class PDFService {
         description: edu.description || '',
       })),
 
-      // Competências
-      skills: (profile?.skills || []).map(skill => ({
+      // Competências (prioriza contentJson)
+      skills: (contentJson?.skills || profile?.skills || []).map(skill => ({
         name: skill.name || skill,
         category: skill.category || '',
         level: skill.level || 0,
         yearsOfExp: skill.yearsOfExp || 0,
       })),
 
-      // Certificações
-      certifications: (profile?.certifications || []).map(cert => ({
+      // Certificações (prioriza contentJson)
+      certifications: (contentJson?.certifications || profile?.certifications || []).map(cert => ({
         name: cert.name || '',
         issuingOrg: cert.issuingOrg || '',
         issueDate: this.formatDate(cert.issueDate),
@@ -163,8 +166,8 @@ class PDFService {
         credentialUrl: cert.credentialUrl || '',
       })),
 
-      // Projetos
-      projects: (profile?.projects || []).map(proj => ({
+      // Projetos (prioriza contentJson)
+      projects: (contentJson?.projects || profile?.projects || []).map(proj => ({
         name: proj.name || '',
         description: proj.description || '',
         role: proj.role || '',
@@ -174,12 +177,24 @@ class PDFService {
       })),
 
       // Idiomas
-      languages: profile?.languages || [],
+      languages: contentJson?.languages || profile?.languages || [],
 
       // Metadata do template (cores, fontes, etc)
       templateColors: cv?.template?.metadata?.colors || {},
       templateFonts: cv?.template?.metadata?.fonts || {},
     };
+
+    console.log('📋 [PDFService] cvData final:', {
+      name: cvData.name,
+      email: cvData.email,
+      phone: cvData.phone,
+      summary: cvData.summary,
+      experiencesCount: cvData.experiences.length,
+      educationsCount: cvData.educations.length,
+      skillsCount: cvData.skills.length,
+    });
+
+    return cvData;
   }
 
   /**
@@ -362,11 +377,13 @@ class PDFService {
         <div class="cv-container">
           <header class="cv-header">
             <h1>{{name}}</h1>
-            {{#if headline}}<h2>{{headline}}</h2>{{/if}}
+            {{#if jobTargetTitle}}<h2>{{jobTargetTitle}}</h2>{{/if}}
             <div class="contact">
               {{#if email}}<span>✉️ {{email}}</span>{{/if}}
               {{#if phone}}<span>📱 {{phone}}</span>{{/if}}
               {{#if location}}<span>📍 {{location}}</span>{{/if}}
+              {{#if linkedin}}<span>🔗 {{linkedin}}</span>{{/if}}
+              {{#if github}}<span>💻 {{github}}</span>{{/if}}
             </div>
           </header>
 
@@ -377,41 +394,93 @@ class PDFService {
           </section>
           {{/if}}
 
-          {{#hasItems experiences}}
+          {{#if experiences}}
+          {{#if experiences.length}}
           <section class="section">
             <h3>Experiência Profissional</h3>
             {{#each experiences}}
             <div class="item">
-              <h4>{{jobTitle}}</h4>
-              <p class="meta">{{company}} | {{startDate}} - {{endDate}}</p>
-              {{#if description}}<p class="description">{{description}}</p>{{/if}}
+              <h4>{{this.jobTitle}}</h4>
+              <p class="meta">{{this.company}}{{#if this.location}} • {{this.location}}{{/if}}{{#if this.startDate}} | {{this.startDate}}{{/if}}{{#if this.endDate}} - {{this.endDate}}{{/if}}</p>
+              {{#if this.description}}<p class="description">{{this.description}}</p>{{/if}}
+              {{#if this.achievements}}
+              {{#if this.achievements.length}}
+              <ul class="achievements">
+                {{#each this.achievements}}
+                <li>{{this}}</li>
+                {{/each}}
+              </ul>
+              {{/if}}
+              {{/if}}
             </div>
             {{/each}}
           </section>
-          {{/hasItems}}
+          {{/if}}
+          {{/if}}
 
-          {{#hasItems educations}}
+          {{#if educations}}
+          {{#if educations.length}}
           <section class="section">
             <h3>Formação Académica</h3>
             {{#each educations}}
             <div class="item">
-              <h4>{{degree}}</h4>
-              <p class="meta">{{institution}} | {{startDate}} - {{endDate}}</p>
+              <h4>{{this.degree}}</h4>
+              <p class="meta">{{this.institution}}{{#if this.location}} • {{this.location}}{{/if}}{{#if this.startDate}} | {{this.startDate}}{{/if}}{{#if this.endDate}} - {{this.endDate}}{{/if}}</p>
+              {{#if this.grade}}<p class="grade">Nota: {{this.grade}}</p>{{/if}}
+              {{#if this.description}}<p class="description">{{this.description}}</p>{{/if}}
             </div>
             {{/each}}
           </section>
-          {{/hasItems}}
+          {{/if}}
+          {{/if}}
 
-          {{#hasItems skills}}
+          {{#if skills}}
+          {{#if skills.length}}
           <section class="section">
             <h3>Competências</h3>
             <div class="skills-grid">
               {{#each skills}}
-              <span class="skill-item">{{name}}</span>
+              <span class="skill-item">{{this.name}}</span>
               {{/each}}
             </div>
           </section>
-          {{/hasItems}}
+          {{/if}}
+          {{/if}}
+
+          {{#if certifications}}
+          {{#if certifications.length}}
+          <section class="section">
+            <h3>Certificações</h3>
+            {{#each certifications}}
+            <div class="item">
+              <h4>{{this.name}}</h4>
+              <p class="meta">{{this.issuingOrg}}{{#if this.issueDate}} | {{this.issueDate}}{{/if}}{{#if this.expirationDate}} - {{this.expirationDate}}{{/if}}</p>
+              {{#if this.credentialId}}<p class="description">ID: {{this.credentialId}}</p>{{/if}}
+            </div>
+            {{/each}}
+          </section>
+          {{/if}}
+          {{/if}}
+
+          {{#if projects}}
+          {{#if projects.length}}
+          <section class="section">
+            <h3>Projetos</h3>
+            {{#each projects}}
+            <div class="item">
+              <h4>{{this.name}}</h4>
+              <p class="meta">{{this.role}}{{#if this.url}} • {{this.url}}{{/if}}</p>
+              {{#if this.description}}<p class="description">{{this.description}}</p>{{/if}}
+              {{#if this.technologies}}
+              {{#if this.technologies.length}}
+              <p class="tech"><strong>Tecnologias:</strong> {{#each this.technologies}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}</p>
+              {{/if}}
+              {{/if}}
+            </div>
+            {{/each}}
+          </section>
+          {{/if}}
+          {{/if}}
         </div>
       `,
       css: `
@@ -429,7 +498,7 @@ class PDFService {
           width: 21cm;
           min-height: 29.7cm;
           margin: 0 auto;
-          padding: 2cm;
+          padding: 1.5cm 2cm;
           background: white;
         }
         
@@ -441,9 +510,10 @@ class PDFService {
         }
         
         .cv-header h1 {
-          font-size: 32pt;
+          font-size: 28pt;
           color: #1F2937;
           margin-bottom: 0.5rem;
+          font-weight: bold;
         }
         
         .cv-header h2 {
@@ -456,61 +526,97 @@ class PDFService {
         .contact {
           display: flex;
           justify-content: center;
-          gap: 1.5rem;
+          gap: 1rem;
           flex-wrap: wrap;
-          font-size: 10pt;
+          font-size: 9pt;
           color: #6B7280;
         }
         
+        .contact span {
+          white-space: nowrap;
+        }
+        
         .section {
-          margin-bottom: 2rem;
-          page-break-inside: avoid;
-        }
-        
-        .section h3 {
-          font-size: 16pt;
-          color: #3B82F6;
-          border-bottom: 2px solid #E5E7EB;
-          padding-bottom: 0.5rem;
-          margin-bottom: 1rem;
-        }
-        
-        .item {
           margin-bottom: 1.5rem;
           page-break-inside: avoid;
         }
         
+        .section h3 {
+          font-size: 14pt;
+          color: #3B82F6;
+          border-bottom: 2px solid #E5E7EB;
+          padding-bottom: 0.4rem;
+          margin-bottom: 1rem;
+          font-weight: bold;
+        }
+        
+        .item {
+          margin-bottom: 1.2rem;
+          page-break-inside: avoid;
+        }
+        
         .item h4 {
-          font-size: 12pt;
+          font-size: 11pt;
           color: #1F2937;
-          margin-bottom: 0.25rem;
+          margin-bottom: 0.2rem;
+          font-weight: bold;
         }
         
         .meta {
-          font-size: 10pt;
+          font-size: 9pt;
           color: #6B7280;
-          margin-bottom: 0.5rem;
+          margin-bottom: 0.4rem;
+          font-style: italic;
+        }
+        
+        .grade {
+          font-size: 9pt;
+          color: #059669;
+          margin-bottom: 0.4rem;
         }
         
         .description {
-          font-size: 10pt;
-          line-height: 1.6;
+          font-size: 9.5pt;
+          line-height: 1.5;
           color: #4B5563;
+          margin-bottom: 0.4rem;
+          text-align: justify;
+        }
+        
+        .achievements {
+          margin-left: 1.2rem;
+          margin-top: 0.4rem;
+          margin-bottom: 0.4rem;
+        }
+        
+        .achievements li {
+          font-size: 9.5pt;
+          line-height: 1.5;
+          color: #4B5563;
+          margin-bottom: 0.2rem;
+        }
+        
+        .tech {
+          font-size: 9pt;
+          color: #6B7280;
+          margin-top: 0.3rem;
         }
         
         .skills-grid {
           display: flex;
           flex-wrap: wrap;
-          gap: 0.5rem;
+          gap: 0.4rem;
         }
         
         .skill-item {
           display: inline-block;
-          padding: 0.5rem 1rem;
-          background: #F3F4F6;
-          border-radius: 0.25rem;
-          font-size: 10pt;
-          color: #1F2937;
+          padding: 0.4rem 0.8rem;
+          background: #EFF6FF;
+          border: 1px solid #BFDBFE;
+          border-radius: 0.3rem;
+          font-size: 9pt;
+          color: #1E40AF;
+          font-weight: 500;
         }
       `,
       metadata: {},
