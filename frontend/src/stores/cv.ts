@@ -29,8 +29,7 @@ export const useCVStore = defineStore('cv', {
       try {
         const response = await cvApi.getCVs(filters);
 
-        // Guarda os CVs na store
-        this.cvs = response.data.cvs; // <-- importante!
+        this.cvs = response.data.data.cvs; 
 
         return response.data; // opcional
       } catch (error: any) {
@@ -47,7 +46,7 @@ export const useCVStore = defineStore('cv', {
 
       try {
         const response = await cvApi.getCVById(id);
-        this.currentCV = response.data;
+        this.currentCV = response.data.data.cv;
       } catch (error: any) {
         this.error = error.response?.data?.message || 'CV não encontrado';
         console.error('Erro ao buscar CV:', error);
@@ -62,9 +61,9 @@ export const useCVStore = defineStore('cv', {
 
       try {
         const response = await cvApi.createCV(cvData);
-        this.cvs.push(response.data);
-        this.currentCV = response.data;
-        return { success: true, cv: response.data };
+        this.cvs.push(response.data.data.cv);
+        this.currentCV = response.data.data.cv;
+        return { success: true, cv: response.data.data.cv };
       } catch (error: any) {
         this.error = error.response?.data?.message || 'Erro ao criar CV';
         console.error('Erro ao criar CV:', error);
@@ -80,10 +79,11 @@ export const useCVStore = defineStore('cv', {
 
       try {
         const response = await cvApi.updateCV(id, cvData);
+        const cvResposta = response.data.data.cv;
         const index = this.cvs.findIndex(cv => cv.id === id);
-        if (index !== -1) this.cvs[index] = response.data;
-        if (this.currentCV?.id === id) this.currentCV = response.data;
-        return { success: true, cv: response.data };
+        if (index !== -1) this.cvs[index] = cvResposta;
+        if (this.currentCV?.id === id) this.currentCV = cvResposta;
+        return { success: true, cv: cvResposta };
       } catch (error: any) {
         this.error = error.response?.data?.message || 'Erro ao atualizar CV';
         console.error('Erro ao atualizar CV:', error);

@@ -77,7 +77,7 @@ export const matchCVToJob = async (req, res) => {
 
     // Adaptar CV com IA
     const adaptedContent = await aiService.adaptCVToJob(
-      cv.content,
+      cv.contentJson,
       job.parsedText,
       job.extractedSkills
     );
@@ -135,7 +135,7 @@ export const analyzeMatch = async (req, res) => {
 
     // Análise de compatibilidade com IA
     const matchAnalysis = await aiService.analyzeJobMatch(
-      cv.content,
+      cv.contentJson,
       jobDescription
     );
 

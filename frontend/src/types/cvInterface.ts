@@ -6,7 +6,7 @@ export interface CV {
   template?: string;
   status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
   generatedPdfUrl?: string;
-  content: any;
+  contentJson: any;
   createdAt: string;
   updatedAt: string;
 }

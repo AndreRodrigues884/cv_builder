@@ -1,6 +1,6 @@
 <template>
     <div v-if="activeSection === 'my-cvs'">
-        <!-- Cabeçalho e filtros -->
+        <!-- 🔹 Cabeçalho e filtros -->
         <div class="flex justify-between items-center mb-6">
             <div class="flex gap-4">
                 <button class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium">
@@ -13,16 +13,18 @@
                     Rascunhos
                 </button>
             </div>
+
             <button @click="activeSection = 'create-cv'"
                 class="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg hover:shadow-purple-500/30 transition-all font-medium">
                 + Novo CV
             </button>
         </div>
 
-        <!-- Lista de CVs -->
+        <!-- 🔹 Lista de CVs -->
         <div v-if="allCVs.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div v-for="cv in allCVs" :key="cv.id"
                 class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden hover:border-blue-500/30 hover:-translate-y-1 transition-all group">
+
                 <div
                     class="h-48 bg-gradient-to-br from-slate-800 to-slate-900 p-6 flex items-center justify-center relative overflow-hidden">
                     <div class="text-center">
@@ -31,6 +33,7 @@
                     </div>
                     <div class="absolute inset-0 bg-blue-600/0 group-hover:bg-blue-600/5 transition-all"></div>
                 </div>
+
                 <div class="p-6">
                     <div class="flex items-start justify-between mb-3">
                         <div>
@@ -42,9 +45,9 @@
                             {{ cv.status || 'Rascunho' }}
                         </span>
                     </div>
-                    <div class="text-xs text-slate-500 mb-4">
-                        Atualizado {{ cv.updatedAt || 'recentemente' }}
-                    </div>
+
+                    <div class="text-xs text-slate-500 mb-4">Atualizado {{ cv.updatedAt || 'recentemente' }}</div>
+
                     <div class="flex gap-2">
                         <button @click="startEditCV(cv)"
                             class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-all text-sm font-medium">
@@ -65,7 +68,7 @@
             </div>
         </div>
 
-        <!-- Empty State -->
+        <!-- 🔹 Empty State -->
         <div v-else class="text-center py-12">
             <div class="text-6xl mb-4">📄</div>
             <h3 class="text-xl font-bold mb-2">Ainda não tens CVs</h3>
@@ -77,9 +80,11 @@
         </div>
     </div>
 
-    <!-- Seção de edição -->
-    <div v-if="activeSection === 'edit-cv'" class="max-w-4xl mx-auto">
-        <!-- Cabeçalho -->
+    <!-- ===================================== -->
+    <!-- 🔧 SEÇÃO DE EDIÇÃO -->
+    <!-- ===================================== -->
+    <div v-if="activeSection === 'edit-cv'" class="max-w-5xl mx-auto">
+        <!-- 🔹 Cabeçalho -->
         <div class="flex items-center justify-between mb-6">
             <button @click="cancelEdit"
                 class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
@@ -98,213 +103,186 @@
             </div>
         </div>
 
-        <!-- Título da Página -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 mb-6">
-            <div class="flex items-center gap-3 mb-4">
-                <div
-                    class="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-2xl">
-                    ✏️
-                </div>
-                <div>
-                    <h2 class="text-2xl font-bold">Editar CV</h2>
-                    <p class="text-slate-400 text-sm">{{ editingCV?.title || 'Sem título' }}</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Formulário de Edição -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8">
-            <div class="space-y-6">
-                <!-- Informações Básicas -->
-                <div>
-                    <h3 class="text-lg font-bold mb-4">📝 Informações Básicas</h3>
-
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium mb-2">Título do CV</label>
-                            <input v-model="editForm.title" type="text"
-                                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none transition-all text-white"
-                                placeholder="Ex: CV para Google" />
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium mb-2">Cargo Alvo</label>
-                            <input v-model="editForm.targetRole" type="text"
-                                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none transition-all text-white"
-                                placeholder="Ex: Senior Full Stack Developer" />
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium mb-2">Template</label>
-                            <select v-model="editForm.template"
-                                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none transition-all text-white">
-                                <option value="modern">Moderno</option>
-                                <option value="classic">Clássico</option>
-                                <option value="creative">Criativo</option>
-                                <option value="executive">Executivo</option>
-                            </select>
-                        </div>
+        <!-- 🔹 Formulário -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 space-y-8">
+            <!-- 📝 Informações básicas -->
+            <section>
+                <h3 class="text-lg font-bold mb-4">📝 Informações Básicas</h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm mb-2">Título</label>
+                        <input v-model="editForm.title"
+                            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white"
+                            placeholder="Ex: CV para Google" />
+                    </div>
+                    <div>
+                        <label class="block text-sm mb-2">Cargo Alvo</label>
+                        <input v-model="editForm.targetRole"
+                            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white"
+                            placeholder="Ex: Backend Engineer" />
                     </div>
                 </div>
+            </section>
 
-                <!-- Dados Pessoais -->
-                <div class="pt-6 border-t border-slate-800">
-                    <h3 class="text-lg font-bold mb-4">👤 Dados Pessoais</h3>
+            <!-- 👤 Dados pessoais -->
+            <section class="border-t border-slate-800 pt-6">
+                <h3 class="text-lg font-bold mb-4">👤 Dados Pessoais</h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <input v-model="editForm.personalInfo.name" placeholder="Nome completo" class="input" />
+                    <input v-model="editForm.personalInfo.email" placeholder="Email" class="input" />
+                    <input v-model="editForm.personalInfo.phone" placeholder="Telefone" class="input" />
+                    <input v-model="editForm.personalInfo.location" placeholder="Localização" class="input" />
+                    <input v-model="editForm.personalInfo.github" placeholder="GitHub" class="input" />
+                    <input v-model="editForm.personalInfo.linkedin" placeholder="LinkedIn" class="input" />
+                </div>
+            </section>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium mb-2">Nome Completo</label>
-                            <input v-model="editForm.personalInfo.name" type="text"
-                                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none transition-all text-white"
-                                placeholder="João Silva" />
-                        </div>
+            <!-- 💬 Sumário -->
+            <section class="border-t border-slate-800 pt-6">
+                <h3 class="text-lg font-bold mb-4">💬 Sumário Profissional</h3>
+                <textarea v-model="editForm.summary" rows="4"
+                    class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white"
+                    placeholder="Resumo sobre tua experiência e objetivos..."></textarea>
+            </section>
 
-                        <div>
-                            <label class="block text-sm font-medium mb-2">Email</label>
-                            <input v-model="editForm.personalInfo.email" type="email"
-                                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none transition-all text-white"
-                                placeholder="joao@example.com" />
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium mb-2">Telefone</label>
-                            <input v-model="editForm.personalInfo.phone" type="tel"
-                                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none transition-all text-white"
-                                placeholder="+351 912 345 678" />
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium mb-2">Localização</label>
-                            <input v-model="editForm.personalInfo.location" type="text"
-                                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none transition-all text-white"
-                                placeholder="Porto, Portugal" />
-                        </div>
-                    </div>
+            <!-- 💼 Experiências -->
+            <section class="border-t border-slate-800 pt-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold">💼 Experiências</h3>
+                    <button @click="addExperience" class="text-blue-500 hover:text-blue-400 text-sm">+
+                        Adicionar</button>
                 </div>
 
-                <!-- Sumário Profissional -->
-                <div class="pt-6 border-t border-slate-800">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-bold">💼 Sumário Profissional</h3>
-                        <button class="text-purple-500 text-sm hover:text-purple-400 flex items-center gap-1">
-                            ✨ Melhorar com IA
+                <div v-for="(exp, i) in editForm.experiences" :key="i"
+                    class="mb-4 bg-slate-800 border border-slate-700 rounded-lg p-4 space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-slate-400 text-sm">Experiência #{{ i + 1 }}</span>
+                        <button @click="editForm.experiences.splice(i, 1)"
+                            class="text-red-400 hover:text-red-300 text-sm">
+                            Remover
                         </button>
                     </div>
+                    <input v-model="exp.jobTitle" placeholder="Cargo" class="input" />
+                    <input v-model="exp.company" placeholder="Empresa" class="input" />
+                    <div class="grid grid-cols-2 gap-2">
+                        <input v-model="exp.startDate" type="month" class="input" />
+                        <input v-model="exp.endDate" type="month" class="input" />
+                    </div>
+                    <textarea v-model="exp.description" placeholder="Descrição..." rows="3" class="input"></textarea>
+                </div>
+            </section>
 
-                    <textarea v-model="editForm.summary" rows="4"
-                        class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none transition-all text-white"
-                        placeholder="Breve descrição sobre ti e tua experiência..."></textarea>
+            <!-- 🎓 Educação -->
+            <section class="border-t border-slate-800 pt-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold">🎓 Formação Académica</h3>
+                    <button @click="addEducation" class="text-blue-500 hover:text-blue-400 text-sm">+ Adicionar</button>
                 </div>
 
-                <!-- Experiência Profissional -->
-                <div class="pt-6 border-t border-slate-800">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-bold">💼 Experiência Profissional</h3>
-                        <button @click="addExperience" class="text-blue-500 text-sm hover:text-blue-400">+
-                            Adicionar</button>
-                    </div>
-
-                    <div v-if="editForm.experiences.length === 0" class="text-center py-8 text-slate-400">
-                        <p>Nenhuma experiência adicionada</p>
-                        <button @click="addExperience" class="mt-3 text-blue-500 hover:text-blue-400">
-                            + Adicionar primeira experiência
+                <div v-for="(edu, i) in editForm.educations" :key="i"
+                    class="mb-4 bg-slate-800 border border-slate-700 rounded-lg p-4 space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-slate-400 text-sm">Formação #{{ i + 1 }}</span>
+                        <button @click="editForm.educations.splice(i, 1)"
+                            class="text-red-400 hover:text-red-300 text-sm">
+                            Remover
                         </button>
                     </div>
-
-                    <div v-for="(exp, index) in editForm.experiences" :key="index"
-                        class="mb-4 bg-slate-800 border border-slate-700 rounded-lg p-4">
-                        <div class="flex justify-between items-start mb-3">
-                            <span class="text-sm text-slate-400">Experiência #{{ index + 1 }}</span>
-                            <button @click="editForm.experiences.splice(index, 1)"
-                                class="text-red-400 hover:text-red-300 text-sm">
-                                Remover
-                            </button>
-                        </div>
-
-                        <div class="space-y-3">
-                            <input v-model="exp.jobTitle" type="text" placeholder="Cargo"
-                                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none text-white" />
-                            <input v-model="exp.company" type="text" placeholder="Empresa"
-                                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none text-white" />
-                            <div class="grid grid-cols-2 gap-3">
-                                <input v-model="exp.startDate" type="month" placeholder="Data Início"
-                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none text-white" />
-                                <input v-model="exp.endDate" type="month" placeholder="Data Fim"
-                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none text-white" />
-                            </div>
-                            <textarea v-model="exp.description" rows="3" placeholder="Descrição e conquistas..."
-                                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none text-white"></textarea>
-                            <button class="text-purple-500 text-sm hover:text-purple-400">✨ Melhorar com IA</button>
-                        </div>
+                    <input v-model="edu.degree" placeholder="Grau" class="input" />
+                    <input v-model="edu.institution" placeholder="Instituição" class="input" />
+                    <div class="grid grid-cols-2 gap-2">
+                        <input v-model="edu.startDate" type="month" class="input" />
+                        <input v-model="edu.endDate" type="month" class="input" />
                     </div>
                 </div>
+            </section>
 
-                <!-- Formação Académica -->
-                <div class="pt-6 border-t border-slate-800">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-bold">🎓 Formação Académica</h3>
-                        <button @click="addEducation" class="text-blue-500 text-sm hover:text-blue-400">+
-                            Adicionar</button>
-                    </div>
-
-                    <div v-if="editForm.educations.length === 0" class="text-center py-8 text-slate-400">
-                        <p>Nenhuma formação adicionada</p>
-                        <button @click="addEducation" class="mt-3 text-blue-500 hover:text-blue-400">
-                            + Adicionar primeira formação
-                        </button>
-                    </div>
-
-                    <div v-for="(edu, index) in editForm.educations" :key="index"
-                        class="mb-4 bg-slate-800 border border-slate-700 rounded-lg p-4">
-                        <div class="flex justify-between items-start mb-3">
-                            <span class="text-sm text-slate-400">Formação #{{ index + 1 }}</span>
-                            <button @click="editForm.educations.splice(index, 1)"
-                                class="text-red-400 hover:text-red-300 text-sm">
-                                Remover
-                            </button>
-                        </div>
-
-                        <div class="space-y-3">
-                            <input v-model="edu.degree" type="text" placeholder="Grau"
-                                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none text-white" />
-                            <input v-model="edu.institution" type="text" placeholder="Instituição"
-                                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none text-white" />
-                            <div class="grid grid-cols-2 gap-3">
-                                <input v-model="edu.startDate" type="month" placeholder="Data Início"
-                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none text-white" />
-                                <input v-model="edu.endDate" type="month" placeholder="Data Fim"
-                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none text-white" />
-                            </div>
-                        </div>
-                    </div>
+            <!-- Projects -->
+            <section class="border-t border-slate-800 pt-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold">💻 Projetos</h3>
+                    <button @click="addProject" class="text-blue-500 hover:text-blue-400 text-sm">+ Adicionar</button>
                 </div>
 
-                <!-- Competências -->
-                <div class="pt-6 border-t border-slate-800">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-bold">🎯 Competências</h3>
-                        <button class="text-purple-500 text-sm hover:text-purple-400">✨ IA sugerir</button>
+                <div v-for="(proj, i) in editForm.projects" :key="i"
+                    class="mb-4 bg-slate-800 border border-slate-700 rounded-lg p-4 space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-slate-400 text-sm">Projeto #{{ i + 1 }}</span>
+                        <button @click="editForm.projects.splice(i, 1)"
+                            class="text-red-400 hover:text-red-300 text-sm">Remover</button>
                     </div>
-
-                    <div class="flex flex-wrap gap-2 mb-4">
-                        <span v-for="(skill, index) in editForm.skills" :key="index"
-                            class="px-3 py-1 bg-blue-600/20 text-blue-400 border border-blue-600/30 rounded-full text-sm flex items-center gap-2">
-                            {{ skill }}
-                            <button @click="editForm.skills.splice(index, 1)" class="hover:text-red-400">×</button>
-                        </span>
-                    </div>
-
-                    <div class="flex gap-2">
-                        <input v-model="newSkill" @keyup.enter="addSkill" type="text"
-                            placeholder="Adicionar competência..."
-                            class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none text-white" />
-                        <button @click="addSkill"
-                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-all">
-                            Adicionar
-                        </button>
-                    </div>
+                    <input v-model="proj.name" placeholder="Nome do projeto" class="input" />
+                    <input v-model="proj.role" placeholder="Função" class="input" />
+                    <input v-model="proj.url" placeholder="URL" class="input" />
+                    <textarea v-model="proj.description" placeholder="Descrição" rows="3" class="input"></textarea>
+                    <input v-model="proj.technologies" placeholder="Tecnologias (vírgula separadas)" class="input" />
+                    <input v-model="proj.highlights" placeholder="Destaques (vírgula separadas)" class="input" />
                 </div>
-            </div>
+            </section>
+
+
+            <!-- Certifications -->
+            <section class="border-t border-slate-800 pt-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold">📜 Certificações</h3>
+                    <button @click="addCertification" class="text-blue-500 hover:text-blue-400 text-sm">+
+                        Adicionar</button>
+                </div>
+
+                <div v-for="(cert, i) in editForm.certifications" :key="i"
+                    class="mb-4 bg-slate-800 border border-slate-700 rounded-lg p-4 space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-slate-400 text-sm">Certificação #{{ i + 1 }}</span>
+                        <button @click="editForm.certifications.splice(i, 1)"
+                            class="text-red-400 hover:text-red-300 text-sm">Remover</button>
+                    </div>
+                    <input v-model="cert.name" placeholder="Nome da certificação" class="input" />
+                    <input v-model="cert.issuingOrg" placeholder="Org. Emissora" class="input" />
+                    <input v-model="cert.issueDate" type="month" placeholder="Data de emissão" class="input" />
+                    <input v-model="cert.expirationDate" type="month" placeholder="Data de expiração" class="input"
+                        :disabled="cert.doesNotExpire" />
+                    <input type="checkbox" v-model="cert.doesNotExpire" /> Não expira
+                    <input v-model="cert.credentialId" placeholder="ID da credencial" class="input" />
+                    <input v-model="cert.credentialUrl" placeholder="URL da credencial" class="input" />
+                </div>
+            </section>
+
+            <!-- 🧠 Skills -->
+            <section class="border-t border-slate-800 pt-6">
+                <h3 class="text-lg font-bold mb-4">🧠 Competências</h3>
+                <div class="flex flex-wrap gap-2 mb-3">
+                    <span v-for="(skill, i) in editForm.skills" :key="i"
+                        class="px-3 py-1 bg-blue-600/20 text-blue-400 border border-blue-600/30 rounded-full text-sm flex items-center gap-2">
+                        {{ skill.name || skill }}
+                        <button @click="editForm.skills.splice(i, 1)" class="hover:text-red-400">×</button>
+                    </span>
+                </div>
+                <div class="flex gap-2">
+                    <input v-model="newSkill" @keyup.enter="addSkill" placeholder="Adicionar skill..."
+                        class="input flex-1" />
+                    <button @click="addSkill" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-500">
+                        Adicionar
+                    </button>
+                </div>
+            </section>
+
+
+            <!-- Languages -->
+            <section class="border-t border-slate-800 pt-6">
+                <h3 class="text-lg font-bold mb-4">🌐 Idiomas</h3>
+                <div class="flex flex-wrap gap-2 mb-3">
+                    <span v-for="(lang, i) in editForm.languages" :key="i"
+                        class="px-3 py-1 bg-blue-600/20 text-blue-400 border border-blue-600/30 rounded-full text-sm flex items-center gap-2">
+                        {{ lang }}
+                        <button @click="editForm.languages.splice(i, 1)" class="hover:text-red-400">×</button>
+                    </span>
+                </div>
+                <input v-model="newLanguage" @keyup.enter="addLanguage" placeholder="Adicionar idioma..."
+                    class="input flex-1" />
+                <button @click="addLanguage"
+                    class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-500">Adicionar</button>
+            </section>
+
         </div>
     </div>
 </template>
@@ -322,11 +300,14 @@ export default {
             editForm: {
                 title: '',
                 targetRole: '',
-                template: 'modern',
+                template: '',
                 personalInfo: { name: '', email: '', phone: '', location: '' },
                 summary: '',
                 experiences: [],
                 educations: [],
+                projects: [],
+                certifications: [],
+                languages: [],
                 skills: [],
             },
             newSkill: '',
@@ -348,34 +329,55 @@ export default {
     },
 
     async mounted() {
-        if (!this.cvStore.cvs.length) {
-            await this.cvStore.fetchCVs()
-        }
+        await this.cvStore.fetchCVs();
     },
+
 
     methods: {
         startEditCV(cv) {
-            console.log('📝 Editando CV:', cv)
             this.editingCV = cv
+            const content = cv.contentJson || {};
+
 
             // Preenche o formulário com valores existentes ou defaults
             this.editForm = {
+                id: cv.id,
                 title: cv.title || '',
                 targetRole: cv.targetRole || '',
-                template: cv.template || 'modern',
+                template: cv.templateId || 'template_classic',
+                summary: content.summary || '',
                 personalInfo: {
-                    name: cv.personalInfo?.name || '',
-                    email: cv.personalInfo?.email || '',
-                    phone: cv.personalInfo?.phone || '',
-                    location: cv.personalInfo?.location || '',
+                    name: content.personalInfo?.name || '',
+                    email: content.personalInfo?.email || '',
+                    phone: content.personalInfo?.phone || '',
+                    location: content.personalInfo?.location || '',
+                    github: content.personalInfo?.github || '',
+                    linkedin: content.personalInfo?.linkedin || '',
                 },
-                summary: cv.summary || '',
-                experiences: cv.experiences ? JSON.parse(JSON.stringify(cv.experiences)) : [],
-                educations: cv.educations ? JSON.parse(JSON.stringify(cv.educations)) : [],
-                skills: cv.skills ? [...cv.skills] : [],
+                experiences: content.experiences
+                    ? JSON.parse(JSON.stringify(content.experiences))
+                    : [],
+
+                educations: content.educations
+                    ? JSON.parse(JSON.stringify(content.educations))
+                    : [],
+
+                projects: content.projects
+                    ? JSON.parse(JSON.stringify(content.projects))
+                    : [],
+
+                certifications: content.certifications
+                    ? JSON.parse(JSON.stringify(content.certifications))
+                    : [],
+
+                skills: content.skills
+                    ? JSON.parse(JSON.stringify(content.skills))
+                    : [],
+                languages: content.languages
+                    ? JSON.parse(JSON.stringify(content.languages))
+                    : [],
             }
 
-            console.log('📋 Formulário preenchido:', this.editForm)
             this.activeSection = 'edit-cv'
         },
 
@@ -409,6 +411,37 @@ export default {
             })
         },
 
+        addProject() {
+            this.editForm.projects.push({
+                name: '',
+                role: '',
+                url: '',
+                description: '',
+                technologies: [],
+                highlights: []
+            })
+        },
+
+        removeProject(index) {
+            this.editForm.projects.splice(index, 1)
+        },
+
+        addCertification() {
+            this.editForm.certifications.push({
+                name: '',
+                issuingOrg: '',
+                issueDate: '',
+                expirationDate: '',
+                credentialId: '',
+                credentialUrl: '',
+                doesNotExpire: false,
+            })
+        },
+
+        removeCertification(index) {
+            this.editForm.certifications.splice(index, 1)
+        },
+
         // Salvar edição - CORRIGIDO
         async saveEditCV() {
             if (!this.editingCV) return
@@ -417,15 +450,20 @@ export default {
             const payload = {
                 title: this.editForm.title,
                 targetRole: this.editForm.targetRole,
-                template: this.editForm.template,
-                personalInfo: this.editForm.personalInfo,
-                summary: this.editForm.summary,
-                experiences: this.editForm.experiences,
-                educations: this.editForm.educations,
-                skills: this.editForm.skills,
+                templateId: this.editForm.template || 'template_classic', // ✅ fallback
+                language: 'PT',
+                contentJson: {
+                    personalInfo: this.editForm.personalInfo,
+                    summary: this.editForm.summary,
+                    experiences: this.editForm.experiences,
+                    educations: this.editForm.educations,
+                    projects: this.editForm.projects,
+                    certifications: this.editForm.certifications,
+                    skills: this.editForm.skills,
+                    languages: this.editForm.languages,
+                },
             }
 
-            console.log('📤 Enviando para API:', payload)
 
             const result = await this.cvStore.updateCV(this.editingCV.id, payload)
 

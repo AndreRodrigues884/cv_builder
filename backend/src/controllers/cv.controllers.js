@@ -25,7 +25,7 @@ export const createCV = async (req, res) => {
       language = 'PT',
       jobTargetTitle,
       jobTargetArea,
-      content,             // ← RENOMEAR de contentJson para content
+      contentJson,
       generatePdf = true,  // ← ADICIONAR flag
     } = req.body;
 
@@ -134,15 +134,15 @@ export const createCV = async (req, res) => {
     // ========================================
     console.log('🤖 Melhorando conteúdo com IA...');
 
-    let improvedContent = content;
+    let improvedContent = contentJson;
 
     try {
       // Se user tem plano PRO ou superior, usar IA
       if (billing.plan === 'PRO' || billing.plan === 'PREMIUM') {
         improvedContent = await AIService.improveCV({
-          summary: content.summary || profile.summary,
-          experiences: content.experiences || profile.experiences,
-          skills: content.skills || profile.skills,
+          summary: contentJson.summary || profile.summary,
+          experiences: contentJson.experiences || profile.experiences,
+          skills: contentJson.skills || profile.skills,
           targetRole: targetRole || jobTargetTitle,
         });
       }
@@ -255,13 +255,14 @@ export const createCV = async (req, res) => {
           language: cv.language,
           jobTargetTitle: cv.jobTargetTitle,
           jobTargetArea: cv.jobTargetArea,
-          generatedPdfUrl: pdfUrl, // ← IMPORTANTE!
+          generatedPdfUrl: pdfUrl,
           template: {
             id: cv.template.id,
             name: cv.template.name,
             slug: cv.template.slug,
             type: cv.template.type,
           },
+          contentJson: cv.contentJson,
           createdAt: cv.createdAt,
           aiImproved: billing.plan !== 'FREE', // ← Indica se usou IA
         },
@@ -292,20 +293,15 @@ export const getCVs = async (req, res) => {
       search,
       sortBy = 'updatedAt',
       order = 'desc',
-      page = 1,        // ⭐ ADICIONAR paginação
-      limit = 10       // ⭐ ADICIONAR limite
+      page = 1,
+      limit = 10
     } = req.query;
 
-    // ========================================
-    // VALIDAÇÃO DE SORTBY (segurança)
-    // ========================================
     const allowedSortFields = ['createdAt', 'updatedAt', 'title', 'status'];
     const validSortBy = allowedSortFields.includes(sortBy) ? sortBy : 'updatedAt';
     const validOrder = order === 'asc' ? 'asc' : 'desc';
 
-    // ========================================
-    // CONSTRUIR FILTROS
-    // ========================================
+
     const where = {
       userId,
     };
@@ -334,16 +330,21 @@ export const getCVs = async (req, res) => {
     const [cvs, totalCount] = await Promise.all([
       prisma.cV.findMany({
         where,
-        include: {
+        select: {
+          id: true,
+          title: true,
+          targetRole: true,
+          status: true,
+          language: true,
+          templateId: true,
+          contentJson: true, 
+          generatedPdfUrl: true,
+          generatedDocxUrl: true,
+          viewCount: true,
+          createdAt: true,
+          updatedAt: true,
           template: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-              type: true,
-              isPremium: true,
-              previewUrl: true, // ⭐ ADICIONAR
-            },
+            select: { id: true, name: true, slug: true, type: true, isPremium: true, previewUrl: true },
           },
           aiReviews: {
             take: 1,
@@ -397,16 +398,24 @@ export const getCVs = async (req, res) => {
         cvs: cvs.map(cv => ({
           id: cv.id,
           title: cv.title,
-          targetRole: cv.targetRole, // ⭐ CORRIGIR nome
+          targetRole: cv.targetRole,
           status: cv.status,
           language: cv.language,
-          template: cv.templateId,
+          templateId: cv.templateId,
+          template: cv.template?.name || 'Modern',
+          contentJson: cv.contentJson,
           lastReview: cv.aiReviews[0] || null,
           generatedPdfUrl: cv.generatedPdfUrl,
           generatedDocxUrl: cv.generatedDocxUrl,
           viewCount: cv.viewCount,
           createdAt: cv.createdAt,
           updatedAt: cv.updatedAt,
+          statusColor: cv.status === 'PUBLISHED'
+            ? 'bg-green-500/20 text-green-400'
+            : cv.status === 'DRAFT'
+              ? 'bg-yellow-500/20 text-yellow-400'
+              : 'bg-slate-500/20 text-slate-400',
+          icon: '📄',
         })),
         stats,
         pagination: {
@@ -518,7 +527,7 @@ export const getCVById = async (req, res) => {
           jobTargetTitle: cv.jobTargetTitle,
           jobTargetArea: cv.jobTargetArea,
           isAtsOptimized: cv.isAtsOptimized,
-          content: cv.content, // ⭐ CORRIGIR de contentJson
+          contentJson: cv.contentJson, // ⭐ CORRIGIR de contentJson
           template: cv.template,
           generatedPdfUrl: cv.generatedPdfUrl,
           generatedDocxUrl: cv.generatedDocxUrl,
@@ -560,7 +569,7 @@ export const updateCV = async (req, res) => {
       language,
       jobTargetTitle,
       jobTargetArea,
-      content,           // ⭐ CORRIGIR de contentJson
+      contentJson,           // ⭐ CORRIGIR de contentJson
       status,
       regeneratePdf,     // ⭐ ADICIONAR flag
       improveWithAI,     // ⭐ ADICIONAR flag
@@ -632,9 +641,9 @@ export const updateCV = async (req, res) => {
     // ========================================
     // MELHORAR CONTEÚDO COM IA (se solicitado)
     // ========================================
-    let finalContent = content || existingCV.content;
+    let finalContent = contentJson || existingCV.contentJson;
 
-    if (improveWithAI && content) {
+    if (improveWithAI && contentJson) {
       try {
         const billing = await prisma.billing.findUnique({
           where: { userId },
@@ -644,9 +653,9 @@ export const updateCV = async (req, res) => {
           console.log('🤖 Melhorando conteúdo atualizado com IA...');
 
           finalContent = await AIService.improveCV({
-            summary: content.summary,
-            experiences: content.experiences,
-            skills: content.skills,
+            summary: contentJson.summary,
+            experiences: contentJson.experiences,
+            skills: contentJson.skills,
             targetRole: targetRole || jobTargetTitle,
           });
         }
@@ -666,11 +675,11 @@ export const updateCV = async (req, res) => {
     if (language !== undefined) updateData.language = language;
     if (jobTargetTitle !== undefined) updateData.jobTargetTitle = jobTargetTitle;
     if (jobTargetArea !== undefined) updateData.jobTargetArea = jobTargetArea;
-    if (finalContent !== undefined) updateData.content = finalContent;
+    if (finalContent !== undefined) updateData.contentJson = finalContent;
     if (status !== undefined) updateData.status = status;
 
     // ⭐ Se conteúdo mudou, invalidar PDFs antigos
-    if (content !== undefined && !regeneratePdf) {
+    if (contentJson !== undefined && !regeneratePdf) {
       updateData.generatedPdfUrl = null;
       updateData.generatedDocxUrl = null;
     }
@@ -746,6 +755,7 @@ export const updateCV = async (req, res) => {
           id: updatedCV.id,
           title: updatedCV.title,
           targetRole: updatedCV.targetRole,
+          contentJson: updatedCV.contentJson,
           status: updatedCV.status,
           language: updatedCV.language,
           template: updatedCV.template,
