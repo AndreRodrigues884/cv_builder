@@ -43,38 +43,34 @@
         <span v-if="loading">A analisar...</span>
         <span v-else>🎯 Analisar Lacunas</span>
       </button>
+
+      <p v-if="error" class="text-red-400 mt-4">{{ error }}</p>
     </div>
 
     <!-- Results -->
     <div v-else class="space-y-4">
       <div
-        v-for="(gap, idx) in skillGapsData.skillGaps"
+        v-for="(gap, idx) in skillGapsData.suggestions"
         :key="idx"
         class="bg-slate-900 border border-slate-800 rounded-xl p-6"
       >
         <div class="flex items-start justify-between mb-4">
           <div>
             <h3 class="text-xl font-bold mb-1">{{ gap.skill }}</h3>
-            <p class="text-sm text-slate-400">{{ gap.currentLevel }} → {{ gap.requiredLevel }}</p>
+            <p class="text-sm text-slate-400">Categoria: {{ gap.category }}</p>
+            <p class="text-sm text-slate-400">Motivo: {{ gap.reason }}</p>
           </div>
           <span
             :class="{
-              'bg-red-600/20 text-red-400': gap.priority === 'Alta',
-              'bg-yellow-600/20 text-yellow-400': gap.priority === 'Média',
-              'bg-green-600/20 text-green-400': gap.priority === 'Baixa'
+              'bg-red-600/20 text-red-400': gap.priority === 'high',
+              'bg-yellow-600/20 text-yellow-400': gap.priority === 'medium',
+              'bg-green-600/20 text-green-400': gap.priority === 'low'
             }"
             class="px-3 py-1 rounded-full text-xs font-semibold"
           >
             Prioridade {{ gap.priority }}
           </span>
         </div>
-        <div class="relative w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-          <div
-            class="absolute left-0 top-0 h-full bg-gradient-to-r from-cyan-600 to-blue-600 rounded-full transition-all"
-            :style="{ width: `${100 - gap.gap}%` }"
-          />
-        </div>
-        <p class="text-sm text-slate-400 mt-2">Gap: {{ gap.gap }}%</p>
       </div>
 
       <div class="bg-gradient-to-br from-purple-600/10 to-pink-600/10 border border-purple-500/30 rounded-xl p-6">
@@ -101,37 +97,46 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue';
+<script>
+import { useAIStore } from '../../stores/ai'
 
-defineEmits(['back', 'navigate']);
+export default {
+  name: 'SkillGaps',
+  emits: ['back', 'navigate'],
+  data() {
+    return {
+      targetRole: '',
+      targetCompany: '',
+      loading: false,
+      error: null,
+      skillGapsData: null,
+      aiStore: null
+    }
+  },
+  created() {
+    this.aiStore = useAIStore()
+  },
+  methods: {
+    async analyzeGaps() {
+      if (!this.targetRole) return
 
-const targetRole = ref('');
-const targetCompany = ref('');
-const loading = ref(false);
-const skillGapsData = ref(null);
+      this.loading = true
+      this.error = null
 
-const analyzeGaps = () => {
-  loading.value = true;
+      try {
+        const data = await this.aiStore.analyzeSkillGaps({
+          targetRole: this.targetRole,
+          targetCompany: this.targetCompany || undefined
+        })
 
-  setTimeout(() => {
-    skillGapsData.value = {
-      skillGaps: [
-        { skill: 'React', currentLevel: 'Intermediário', requiredLevel: 'Avançado', gap: 40, priority: 'Alta' },
-        { skill: 'Node.js', currentLevel: 'Básico', requiredLevel: 'Intermediário', gap: 60, priority: 'Média' },
-        { skill: 'TypeScript', currentLevel: 'Intermediário', requiredLevel: 'Avançado', gap: 50, priority: 'Alta' },
-        { skill: 'Testes Unitários', currentLevel: 'Básico', requiredLevel: 'Intermediário', gap: 70, priority: 'Alta' },
-        { skill: 'Design de UI/UX', currentLevel: 'Básico', requiredLevel: 'Intermediário', gap: 65, priority: 'Média' },
-      ],
-      priorityActions: [
-        'Focar em React e TypeScript com projetos práticos',
-        'Aprender fundamentos de Node.js e criar APIs simples',
-        'Praticar Testes Unitários em projetos existentes',
-        'Estudar Design de UI/UX para melhorar front-end'
-      ]
-    };
-
-    loading.value = false;
-  }, 1200); // delay simulado
-};
+        this.skillGapsData = data
+      } catch (err) {
+        console.error('Erro ao analisar lacunas:', err)
+        this.error = err.message || 'Erro desconhecido'
+      } finally {
+        this.loading = false
+      }
+    }
+  }
+}
 </script>

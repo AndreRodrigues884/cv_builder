@@ -6,3 +6,9 @@ temp/
 .DS_Store
 dist/
 coverage/
+
+/cloudinary/cvs
+/prisma/migrations
+/src/services
+Dockerfile
+/src/controllers

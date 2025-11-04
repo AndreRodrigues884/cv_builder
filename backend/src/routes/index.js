@@ -4,7 +4,7 @@ import authRoutes from './auth.routes.js';
 import userRoutes from './user.routes.js';
 import profileRoutes from './profile.routes.js';
 import cvRoutes from './cv.routes.js';
-/* import templateRoutes from './template.routes.js'; */
+import templateRoutes from './template.routes.js';
 import aiRoutes from './ai.routes.js';
 import jobRoutes from './job.routes.js';
 import billingRoutes from './billing.routes.js';
@@ -29,7 +29,7 @@ router.use('/auth', authRoutes);
 router.use('/users', userRoutes);
 router.use('/profile', profileRoutes);
 router.use('/cv', cvRoutes);
-/* router.use('/templates', templateRoutes); */
+router.use('/templates', templateRoutes);
 router.use('/ai', aiRoutes);
 router.use('/jobs', jobRoutes);
 router.use('/billing', billingRoutes);

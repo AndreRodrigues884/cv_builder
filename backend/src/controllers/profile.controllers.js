@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 export const getMyProfile = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user.id;
 
     const profile = await prisma.profile.findUnique({
       where: { userId },
@@ -57,7 +57,7 @@ export const updateProfile = async (req, res) => {
       });
     }
 
-    const userId = req.user.userId;
+    const userId = req.user.id;
     const {
       headline,
       summary,
@@ -193,7 +193,7 @@ export const addExperience = async (req, res) => {
       });
     }
 
-    const userId = req.user.userId;
+    const userId = req.user.id;
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
     });
@@ -250,7 +250,7 @@ export const addExperience = async (req, res) => {
 export const updateExperience = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.userId;
+    const userId = req.user.id;
 
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
@@ -315,7 +315,7 @@ export const updateExperience = async (req, res) => {
 export const deleteExperience = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.userId;
+    const userId = req.user.id;
 
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
@@ -370,7 +370,7 @@ export const addEducation = async (req, res) => {
       });
     }
 
-    const userId = req.user.userId;
+    const userId = req.user.id;
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
     });
@@ -424,7 +424,7 @@ export const addEducation = async (req, res) => {
 export const updateEducation = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.userId;
+    const userId = req.user.id;
 
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
@@ -493,7 +493,7 @@ export const updateEducation = async (req, res) => {
 export const deleteEducation = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.userId;
+    const userId = req.user.id;
 
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
@@ -548,7 +548,7 @@ export const addSkill = async (req, res) => {
       });
     }
 
-    const userId = req.user.userId;
+    const userId = req.user.id;
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
     });
@@ -587,7 +587,7 @@ export const addSkill = async (req, res) => {
 export const updateSkill = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.userId;
+    const userId = req.user.id;
 
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
@@ -641,7 +641,7 @@ export const updateSkill = async (req, res) => {
 export const deleteSkill = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.userId;
+    const userId = req.user.id;
 
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
@@ -688,7 +688,7 @@ export const deleteSkill = async (req, res) => {
  */
 export const addCertification = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user.id;
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
     });
@@ -738,7 +738,7 @@ export const addCertification = async (req, res) => {
 export const updateCertification = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.userId;
+    const userId = req.user.id;
 
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
@@ -784,7 +784,7 @@ export const updateCertification = async (req, res) => {
 export const deleteCertification = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.userId;
+    const userId = req.user.id;
 
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
@@ -831,7 +831,7 @@ export const deleteCertification = async (req, res) => {
  */
 export const addProject = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user.id;
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
     });
@@ -885,7 +885,7 @@ export const addProject = async (req, res) => {
 export const updateProject = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.userId;
+    const userId = req.user.id;
 
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },
@@ -931,7 +931,7 @@ export const updateProject = async (req, res) => {
 export const deleteProject = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.userId;
+    const userId = req.user.id;
 
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },

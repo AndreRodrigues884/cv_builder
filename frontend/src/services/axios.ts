@@ -1,6 +1,9 @@
+// src/services/axios.ts
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { useAuthStore } from '../stores/auth';
 import router from '../router';
+
+console.log("🌍 API Base URL:", import.meta.env.VITE_API_URL);
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -31,12 +34,20 @@ const processQueue = (error: Error | null, token: string | null = null) => {
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const authStore = useAuthStore();
-    
+
+    // ⚡ Sincroniza tokens com localStorage se ainda não estiverem na store
+    if (!authStore.accessToken) {
+      authStore.accessToken = localStorage.getItem('accessToken');
+    }
+    if (!authStore.refreshToken) {
+      authStore.refreshToken = localStorage.getItem('refreshToken');
+    }
+
     // Adiciona token automaticamente em todas as requests
     if (authStore.accessToken && config.headers) {
       config.headers.Authorization = `Bearer ${authStore.accessToken}`;
     }
-    
+
     return config;
   },
   (error) => Promise.reject(error)
@@ -87,7 +98,7 @@ api.interceptors.response.use(
 
         const { accessToken, refreshToken } = response.data;
 
-        // Atualiza tokens na store
+        // Atualiza tokens na store e localStorage
         authStore.accessToken = accessToken;
         authStore.refreshToken = refreshToken;
         localStorage.setItem('accessToken', accessToken);
@@ -105,12 +116,10 @@ api.interceptors.response.use(
         return api(originalRequest);
 
       } catch (refreshError) {
-        // Se refresh falhar, desloga usuário
         processQueue(refreshError as Error, null);
         authStore.clearSession();
         router.push('/login');
         return Promise.reject(refreshError);
-        
       } finally {
         isRefreshing = false;
       }
@@ -121,8 +130,6 @@ api.interceptors.response.use(
     // ========================================
     if (error.response?.status === 403) {
       console.error('❌ Acesso negado (403)');
-      
-      // Se for erro de "user não encontrado", desloga
       if ((error.response.data as { error?: string })?.error?.includes('não encontrado')) {
         authStore.clearSession();
         router.push('/login');

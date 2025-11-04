@@ -8,7 +8,7 @@ class AIService {
 
     // Modelos que vamos usar
     this.models = {
-       textGeneration: "gpt2",  
+      textGeneration: "mistralai/Mistral-7B-Instruct-v0.1",
       textAnalysis: 'facebook/bart-large-mnli', // Para análise
       embeddings: 'sentence-transformers/all-MiniLM-L6-v2', // Para comparações
     };
@@ -73,29 +73,52 @@ Responde em JSON com o CV adaptado.
   /**
    * Analisar compatibilidade CV x Vaga
    */
-  async analyzeJobMatch(cvContent, jobDescription) {
-    const prompt = `
-Analisa a compatibilidade entre o CV e a vaga:
+  async callHuggingFace(modelUrl, payload, retries = 3) {
+    for (let i = 0; i < retries; i++) {
+      try {
+        console.log(`🔄 Tentativa ${i + 1}/${retries}`);
 
-CV:
-${JSON.stringify(cvContent, null, 2)}
+        const response = await fetch(modelUrl, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
 
-VAGA:
-${jobDescription}
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
 
-Responde em JSON:
-{
-  "score": 85,
-  "matchingSkills": ["React", "Node.js"],
-  "missingSkills": ["Kubernetes", "AWS"],
-  "recommendations": ["Destaca projeto X", "Adiciona certificação Y"],
-  "strengths": ["Experiência forte em frontend"],
-  "gaps": ["Falta experiência em cloud"]
-}
-`;
+          // Modelo carregando (503)
+          if (response.status === 503) {
+            const waitTime = errorData.estimated_time || 20;
+            console.log(`⏳ Modelo a carregar, aguardando ${waitTime}s...`);
 
-    const response = await this.callAI(prompt);
-    return JSON.parse(response);
+            if (i < retries - 1) {
+              await new Promise(resolve => setTimeout(resolve, waitTime * 1000));
+              continue;
+            }
+          }
+
+          throw new Error(`HTTP ${response.status}: ${JSON.stringify(errorData)}`);
+        }
+
+        const data = await response.json();
+        console.log('✅ Resposta recebida');
+        return data;
+
+      } catch (error) {
+        console.error(`❌ Erro na tentativa ${i + 1}:`, error.message);
+
+        if (i === retries - 1) {
+          throw error;
+        }
+
+        // Aguarda antes de tentar novamente
+        await new Promise(resolve => setTimeout(resolve, 3000));
+      }
+    }
   }
 
   /**
@@ -146,28 +169,41 @@ Responde em JSON:
    */
   async generateText(prompt, maxTokens = 500, temperature = 0.7) {
     try {
-      // Remove os [INST] tags para FLAN-T5
-      const cleanPrompt = prompt
-        .replace(/\[INST\]/g, '')
-        .replace(/\[\/INST\]/g, '')
-        .trim();
+      // Mistral usa formato específico de prompt
+      const mistralPrompt = `<s>[INST] ${prompt} [/INST]`;
+
+      console.log('🤖 Prompt enviado ao Mistral');
 
       const response = await this.callHuggingFace(
-        this.models.textGeneration,
+        `${this.baseURL}/${this.models.textGeneration}`,
         {
-          inputs: cleanPrompt,
+          inputs: mistralPrompt,
           parameters: {
             max_new_tokens: maxTokens,
             temperature: temperature,
+            top_p: 0.95,
+            do_sample: true,
             return_full_text: false,
           },
         }
       );
 
-      return response[0]?.generated_text || '';
+      console.log('📥 Resposta recebida');
+
+      // Mistral retorna array com generated_text
+      if (Array.isArray(response) && response[0]?.generated_text) {
+        return response[0].generated_text;
+      }
+
+      if (response?.generated_text) {
+        return response.generated_text;
+      }
+
+      throw new Error('Formato de resposta inesperado');
+
     } catch (error) {
-      console.error('Erro ao gerar texto:', error);
-      throw new Error('Erro ao gerar texto com IA');
+      console.error('❌ Erro ao gerar texto:', error.message);
+      throw new Error(`Erro ao gerar texto com IA: ${error.message}`);
     }
   }
 
@@ -284,38 +320,54 @@ Responda no formato JSON:
       const currentSkills = profile.skills?.map(s => s.name).join(', ') || 'Nenhuma';
       const experiences = profile.experiences?.map(e => e.jobTitle).join(', ') || 'Nenhuma';
 
-      const prompt = `[INST] Você é um consultor de carreira especializado em ${jobArea || 'tecnologia'}. 
+      // Prompt otimizado para Mistral
+      const prompt = `Você é um consultor de carreira especializado. Analise o perfil abaixo e sugira 6 competências profissionais importantes.
 
-Perfil atual:
-- Cargo alvo: ${jobTitle || 'Não especificado'}
+Perfil:
+- Cargo desejado: ${jobTitle || 'Não especificado'}
+- Área: ${jobArea || 'Tecnologia'}
 - Competências atuais: ${currentSkills}
-- Experiências: ${experiences}
+- Experiências anteriores: ${experiences}
 
-Sugira 5-8 competências que este profissional deveria adicionar ao CV, organizadas por prioridade.
+IMPORTANTE: Responda APENAS com um objeto JSON válido, sem texto adicional.
 
-Responda no formato JSON:
+Formato da resposta:
 {
   "suggestions": [
     {
       "skill": "nome da competência",
-      "category": "Frontend|Backend|DevOps|Soft Skills|etc",
-      "priority": "high|medium|low",
-      "reason": "por que é importante"
+      "category": "Frontend ou Backend ou DevOps ou Soft Skills ou Cloud ou Database",
+      "priority": "high ou medium ou low",
+      "reason": "explicação breve de por que é importante"
     }
   ]
-}
-[/INST]`;
+}`;
 
-      const response = await this.generateText(prompt, 800, 0.6);
+      const response = await this.generateText(prompt, 800, 0.7);
 
+      console.log('📝 Resposta bruta do Mistral:', response);
+
+      // Tenta extrair JSON da resposta
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]);
+        try {
+          const parsed = JSON.parse(jsonMatch[0]);
+
+          // Valida a estrutura
+          if (parsed.suggestions && Array.isArray(parsed.suggestions)) {
+            return parsed;
+          }
+        } catch (e) {
+          console.error('❌ Erro ao parsear JSON:', e.message);
+        }
       }
 
+      // Se falhar, usa fallback
+      console.log('⚠️ Usando fallback');
       return this.getFallbackSkillSuggestions(jobArea);
+
     } catch (error) {
-      console.error('Erro ao sugerir skills:', error);
+      console.error('❌ Erro ao sugerir skills:', error);
       return this.getFallbackSkillSuggestions(jobArea);
     }
   }
@@ -759,20 +811,36 @@ Responda no formato JSON:
   }
 
   getFallbackSkillSuggestions(jobArea) {
-    const suggestions = {
-      tecnologia: [
-        { skill: 'Docker', category: 'DevOps', priority: 'high', reason: 'Essencial para desenvolvimento moderno' },
-        { skill: 'Kubernetes', category: 'DevOps', priority: 'medium', reason: 'Importante para orquestração' },
-        { skill: 'CI/CD', category: 'DevOps', priority: 'high', reason: 'Standard da indústria' },
+    const fallbackSkills = {
+      'frontend': [
+        { skill: 'React', category: 'Frontend', priority: 'high', reason: 'Framework mais popular' },
+        { skill: 'TypeScript', category: 'Frontend', priority: 'high', reason: 'Type safety essencial' },
+        { skill: 'Tailwind CSS', category: 'Frontend', priority: 'medium', reason: 'Styling moderno' },
+        { skill: 'Next.js', category: 'Frontend', priority: 'medium', reason: 'SSR e performance' },
+        { skill: 'Testing (Jest)', category: 'Frontend', priority: 'medium', reason: 'Qualidade de código' },
+        { skill: 'Git', category: 'Tools', priority: 'high', reason: 'Controlo de versão' },
       ],
-      design: [
-        { skill: 'Figma', category: 'Design Tools', priority: 'high', reason: 'Ferramenta mais usada' },
-        { skill: 'User Research', category: 'UX', priority: 'high', reason: 'Fundamental para UX' },
+      'backend': [
+        { skill: 'Node.js', category: 'Backend', priority: 'high', reason: 'Runtime popular' },
+        { skill: 'Express.js', category: 'Backend', priority: 'high', reason: 'Framework essencial' },
+        { skill: 'PostgreSQL', category: 'Database', priority: 'high', reason: 'Base de dados robusta' },
+        { skill: 'Docker', category: 'DevOps', priority: 'medium', reason: 'Containerização' },
+        { skill: 'REST APIs', category: 'Backend', priority: 'high', reason: 'Comunicação entre serviços' },
+        { skill: 'Git', category: 'Tools', priority: 'high', reason: 'Controlo de versão' },
       ],
+      'fullstack': [
+        { skill: 'React', category: 'Frontend', priority: 'high', reason: 'UI moderna' },
+        { skill: 'Node.js', category: 'Backend', priority: 'high', reason: 'Backend JavaScript' },
+        { skill: 'TypeScript', category: 'Frontend', priority: 'high', reason: 'Full-stack type safety' },
+        { skill: 'PostgreSQL', category: 'Database', priority: 'medium', reason: 'Persistência de dados' },
+        { skill: 'Docker', category: 'DevOps', priority: 'medium', reason: 'Deploy e ambiente' },
+        { skill: 'Git', category: 'Tools', priority: 'high', reason: 'Essencial para equipa' },
+      ]
     };
 
+    const area = jobArea?.toLowerCase() || 'fullstack';
     return {
-      suggestions: suggestions[jobArea?.toLowerCase()] || suggestions.tecnologia,
+      suggestions: fallbackSkills[area] || fallbackSkills['fullstack']
     };
   }
 

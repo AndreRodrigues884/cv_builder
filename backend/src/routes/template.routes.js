@@ -1,8 +1,8 @@
 
 import { Router } from 'express';
-import { authenticateToken, optionalAuth } from '../middleware/auth.js';
-import { checkRole } from '../middleware/checkRole.js'
-import { body, param, query  } from 'express-validator';
+import { authenticateToken } from '../middleware/auth.js';
+import { authorizeRoles } from '../middleware/checkRole.js'
+import { body, param  } from 'express-validator';
 import * as templateController from '../controllers/template.controllers.js';
 
 const router = Router();
@@ -34,7 +34,7 @@ router.get('/premium', templateController.getPremiumTemplates);
  * @desc    Estatísticas de uso dos templates (Admin)
  * @access  Private (Admin)
  */
-router.get('/stats/usage', authenticateToken, checkRole('ADMIN'), templateController.getUsageStats);
+router.get('/stats/usage', authenticateToken, authorizeRoles('ADMIN'), templateController.getUsageStats);
 
 /**
  * @route   GET /api/templates/type/:type
@@ -54,7 +54,6 @@ router.get(
  */
 router.get(
   '/recommend/:jobArea',
-  optionalAuth,
   [param('jobArea').notEmpty().withMessage('Área profissional é obrigatória')],
   templateController.recommendTemplate
 );
@@ -89,7 +88,7 @@ router.get(
 router.post(
   '/',
   authenticateToken,
-  checkRole('ADMIN'),
+  authorizeRoles('ADMIN'),
   [
     body('name').trim().notEmpty().withMessage('Nome é obrigatório'),
     body('slug')
@@ -118,7 +117,7 @@ router.post(
 router.put(
   '/:id',
   authenticateToken,
-  checkRole('ADMIN'),
+  authorizeRoles('ADMIN'),
   [
     param('id').notEmpty().withMessage('ID é obrigatório'),
     body('name').optional().trim().notEmpty(),
@@ -149,7 +148,7 @@ router.put(
 router.delete(
   '/:id',
   authenticateToken,
-  checkRole('ADMIN'),
+  authorizeRoles('ADMIN'),
   [param('id').notEmpty().withMessage('ID é obrigatório')],
   templateController.deleteTemplate
 );
@@ -162,9 +161,9 @@ router.delete(
 router.put(
   '/:id/toggle',
   authenticateToken,
-  checkRole('ADMIN'),
+  authorizeRoles('ADMIN'),
   [param('id').notEmpty().withMessage('ID é obrigatório')],
   templateController.toggleActive
 );
 
-module.exports = router;
+export default router;

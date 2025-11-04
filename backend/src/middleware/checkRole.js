@@ -1,7 +1,7 @@
-export const authorizeRoles = (...allowedRoles) => {
+export const authorizeRoles = () => {
   return (req, res, next) => {
-    if (!req.user || !allowedRoles.includes(req.user.role)) {
-      return res.status(403).json({ message: 'Acesso negado.' });
+    if (!req.user || req.user.role !== 'ADMIN') {
+      return res.status(403).json({ message: 'Acesso negado. Apenas administradores podem executar esta ação.' });
     }
     next();
   };

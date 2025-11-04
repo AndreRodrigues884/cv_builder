@@ -17,7 +17,7 @@ export const createCV = async (req, res) => {
       });
     }
 
-    const userId = req.user.userId;
+    const userId = req.user.id;
     const {
       title,
       targetRole,          // ← ADICIONAR (importante para IA)
@@ -287,7 +287,7 @@ export const createCV = async (req, res) => {
 
 export const getCVs = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user.id;
     const {
       status,
       search,
@@ -440,7 +440,7 @@ export const getCVs = async (req, res) => {
 export const getCVById = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.userId;
+    const userId = req.user.id;
 
     const cv = await prisma.cV.findFirst({
       where: {
@@ -561,7 +561,7 @@ export const updateCV = async (req, res) => {
     }
 
     const { id } = req.params;
-    const userId = req.user.userId;
+    const userId = req.user.id;
     const {
       title,
       targetRole,
@@ -779,24 +779,15 @@ export const updateCV = async (req, res) => {
 export const downloadCVPDF = async (req, res) => {
   try {
     const cvId = req.params.id;
-    const userId = req.user?.id || req.user?.userId; // ← Tenta ambos
-
-    console.log('👤 User ID:', userId);
-    console.log('📄 CV ID:', cvId);
+    const userId = req.user?.id || req.user?.userId;
 
     if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: 'Utilizador não autenticado',
-      });
+      return res.status(401).json({ success: false, message: 'Utilizador não autenticado' });
     }
 
     // Buscar CV completo com profile
     const cv = await prisma.cV.findFirst({
-      where: {
-        id: cvId,
-        userId: userId,
-      },
+      where: { id: cvId, userId: userId },
       include: {
         template: true,
         user: {
@@ -816,37 +807,24 @@ export const downloadCVPDF = async (req, res) => {
     });
 
     if (!cv) {
-      return res.status(404).json({
-        success: false,
-        message: 'CV não encontrado',
-      });
+      return res.status(404).json({ success: false, message: 'CV não encontrado' });
     }
 
-    console.log('📄 Gerando PDF para CV:', cv.id);
-
-    // Preparar dados combinados (contentJson + profile)
-    const profileForPdf = {
-      ...cv.user.profile,
-      user: cv.user,
-    };
+    // Preparar dados do CV
+    const profileForPdf = { ...cv.user.profile, user: cv.user };
+    const templateData = await PDFService.loadTemplate(cv.template);
+    const cvData = PDFService.prepareCVData(cv, profileForPdf);
+    const htmlContent = PDFService.compileTemplate(templateData, cvData);
 
     // Gerar PDF
-    const pdfBuffer = await PDFService.generatePDF(cv, profileForPdf);
-
-    // Converte para Buffer se for Uint8Array
-    const pdfBufferFinal = Buffer.isBuffer(pdfBuffer)
-      ? pdfBuffer
-      : Buffer.from(pdfBuffer);
+    const pdfBuffer = await PDFService.generatePDF(htmlContent);
 
     // Salvar PDF no servidor
     const filename = `cv_${userId}_${cvId}_${Date.now()}.pdf`;
     const cvsDir = path.join(process.cwd(), 'cloudinary', 'cvs');
-
-    // Criar diretório se não existir
     await fs.mkdir(cvsDir, { recursive: true });
-
     const filepath = path.join(cvsDir, filename);
-    await fs.writeFile(filepath, pdfBufferFinal);
+    await fs.writeFile(filepath, pdfBuffer);
 
     // Atualizar URL no CV
     const pdfUrl = `/cvs/${filename}`;
@@ -855,16 +833,12 @@ export const downloadCVPDF = async (req, res) => {
       data: { generatedPdfUrl: pdfUrl },
     });
 
-    console.log('✅ PDF gerado e salvo:', pdfUrl);
-
     // Enviar PDF para download
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="${cv.title?.replace(/[^a-zA-Z0-9]/g, '_') || 'CV'}.pdf"`);
-    res.setHeader('Content-Length', pdfBufferFinal.length);
+    res.setHeader('Content-Length', pdfBuffer.length);
     res.setHeader('Cache-Control', 'no-cache');
-
-    // IMPORTANTE: Enviar como Buffer
-    return res.end(pdfBufferFinal, 'binary');
+    return res.end(pdfBuffer, 'binary');
 
   } catch (error) {
     console.error('❌ Erro ao gerar PDF:', error);
@@ -967,7 +941,7 @@ export const getCVPdfUrl = async (req, res) => {
 export const deleteCV = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.userId;
+    const userId = req.user.id;
 
     // Verificar se CV existe e pertence ao utilizador
     const cv = await prisma.cV.findFirst({
@@ -1014,7 +988,7 @@ export const updateStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
-    const userId = req.user.userId;
+    const userId = req.user.id;
 
     if (!['DRAFT', 'PUBLISHED', 'ARCHIVED'].includes(status)) {
       return res.status(400).json({
@@ -1066,7 +1040,7 @@ export const changeTemplate = async (req, res) => {
   try {
     const { id } = req.params;
     const { templateId } = req.body;
-    const userId = req.user.userId;
+    const userId = req.user.id;
 
     // Verificar se CV existe
     const cv = await prisma.cV.findFirst({

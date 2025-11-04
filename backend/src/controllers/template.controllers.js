@@ -1,6 +1,6 @@
 // src/controllers/template.controller.js
-const { PrismaClient } = require('@prisma/client');
-const { validationResult } = require('express-validator');
+import { PrismaClient } from '@prisma/client';
+import {validationResult} from 'express-validator';
 
 const prisma = new PrismaClient();
 

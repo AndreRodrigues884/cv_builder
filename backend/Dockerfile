@@ -3,11 +3,28 @@
 # -------------------------------
 FROM node:20-alpine AS base
 
-# Instala dependências do sistema necessárias para Prisma
-RUN apk add --no-cache libc6-compat openssl1.1-compat bash curl git
+# Instala dependências do sistema + Chromium para Puppeteer
+RUN apk add --no-cache \
+    libc6-compat \
+    openssl \
+    bash \
+    curl \
+    git \
+    chromium \
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont \
+    font-noto-emoji
+
+# Configura Puppeteer para usar Chromium do sistema
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 WORKDIR /app
 COPY package*.json ./
+COPY prisma ./prisma
 
 # -------------------------------
 # 🔹 Development stage
@@ -16,7 +33,7 @@ FROM base AS development
 RUN npm install
 COPY . .
 
-# Gera o cliente Prisma
+# Gera o cliente Prisma (precisa do schema já copiado)
 RUN npx prisma generate
 
 EXPOSE 5000
@@ -37,18 +54,29 @@ RUN npm run build
 FROM node:20-alpine AS production
 WORKDIR /app
 
-# Dependências de produção + libs do sistema
-RUN apk add --no-cache libc6-compat openssl1.1-compat
+# Instala dependências do sistema + Chromium para produção também
+RUN apk add --no-cache \
+    libc6-compat \
+    openssl \
+    chromium \
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont
+
+# Configura Puppeteer
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 COPY package*.json ./
+COPY prisma ./prisma
 RUN npm ci --only=production && npm cache clean --force
 
-# Copia build e Prisma
 COPY --from=build /app/dist ./dist
-COPY --from=build /app/prisma ./prisma
 
-# Gera o cliente Prisma em produção
+# Gera o cliente Prisma novamente (para garantir compatibilidade)
 RUN npx prisma generate
 
-EXPOSE 4000
+EXPOSE 5000
 CMD ["npm", "start"]

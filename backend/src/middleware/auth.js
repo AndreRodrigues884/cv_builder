@@ -1,21 +1,24 @@
 import jwt from 'jsonwebtoken';
+import { PrismaClient } from '@prisma/client'
 
-export const authenticateToken = (req, res, next) => {
+const prisma = new PrismaClient(); 
+
+export const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // "Bearer <token>"
+  const token = authHeader && authHeader.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'Token não fornecido' });
 
-  if (!token) {
-    return res.status(401).json({ message: 'Token não fornecido.' });
-  }
+  try {
+    const payload = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+    const user = await prisma.user.findUnique({ where: { id: payload.userId } });
 
-  jwt.verify(token, process.env.JWT_ACCESS_SECRET, (err, user) => {
-    if (err) {
-      console.error('Erro na verificação do token:', err);
-      return res.status(403).json({ message: 'Token inválido ou expirado.' });
-    }
+    if (!user) return res.status(401).json({ error: 'Usuário não encontrado' });
 
-    req.user = user; // coloca o userId decodificado no req
+    req.user = user;
     next();
-  });
+  } catch (err) {
+    console.error('Erro na verificação do token:', err);
+    return res.status(401).json({ error: 'Token inválido ou expirado' });
+  }
 };
 

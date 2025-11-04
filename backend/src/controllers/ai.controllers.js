@@ -225,8 +225,6 @@ export const getReviewHistory = async (req, res) => {
   }
 }
 
-/* <!-- Create CV Section --> */
-
 /**
  * Melhorar texto de uma secção
  * POST /api/ai/improve-text
@@ -268,7 +266,7 @@ export const improveText = async (req, res) => {
  */
 export const suggestSkills = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user.id;
     const { jobTitle, jobArea } = req.body;
 
     // Buscar perfil do utilizador
@@ -312,7 +310,7 @@ export const suggestSkills = async (req, res) => {
  */
 export const generateSummary = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user.id;
     const { jobTitle, targetArea, tone } = req.body;
 
     console.log('🔍 Dados recebidos:', { userId, jobTitle, targetArea, tone });
@@ -479,7 +477,7 @@ export const generateInterviewQuestions = async (req, res) => {
 export const suggestCareerPath = async (req, res) => {
 
   try {
-    const userId = req.user.userId;
+    const userId = req.user.id;
 
     const profile = await prisma.profile.findUnique({
       where: { userId: userId },

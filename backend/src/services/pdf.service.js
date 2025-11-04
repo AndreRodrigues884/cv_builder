@@ -10,45 +10,80 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 class PDFService {
-  /**
-   * Gerar PDF a partir de um CV e Template
-   */
-  static async generatePDF(cv, profile) {
+
+  static async generatePDF(htmlContent, options = {}) {
+    let browser;
     try {
-      console.log('📄 [PDFService] Gerando PDF para CV:', cv.id);
-      console.log('📦 [PDFService] Profile:', {
-        hasUser: !!profile?.user,
-        userName: profile?.user?.name,
-        hasExperiences: !!profile?.experiences,
-        experiencesCount: profile?.experiences?.length || 0,
+      console.log('🚀 Iniciando geração de PDF...');
+
+      // Configuração otimizada para Alpine Linux
+      browser = await puppeteer.launch({
+        headless: 'new',
+        executablePath: '/usr/bin/chromium-browser',
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu',
+          '--disable-software-rasterizer',
+          '--disable-extensions',
+          '--disable-background-networking',
+          '--disable-background-timer-throttling',
+          '--disable-backgrounding-occluded-windows',
+          '--disable-breakpad',
+          '--disable-component-extensions-with-background-pages',
+          '--disable-features=TranslateUI',
+          '--disable-ipc-flooding-protection',
+          '--disable-renderer-backgrounding',
+          '--force-color-profile=srgb',
+          '--hide-scrollbars',
+          '--metrics-recording-only',
+          '--mute-audio',
+          '--no-first-run',
+          '--no-default-browser-check',
+          '--no-zygote',
+          '--single-process', // Importante para Alpine
+        ],
       });
 
-      // 1. Carregar template
-      const template = cv.template;
-      console.log('🎨 [PDFService] Template:', template?.name || 'default');
+      console.log('✅ Browser iniciado');
+
+      const page = await browser.newPage();
       
-      const templateHTML = await this.loadTemplate(template);
-
-      // 2. Preparar dados do CV
-      const cvData = this.prepareCVData(cv, profile);
-      console.log('📋 [PDFService] Dados preparados:', {
-        name: cvData.name,
-        hasExperiences: cvData.experiences?.length > 0,
-        hasEducations: cvData.educations?.length > 0,
+      await page.setContent(htmlContent, {
+        waitUntil: 'networkidle0',
+        timeout: 30000,
       });
 
-      // 3. Compilar template com dados
-      const html = this.compileTemplate(templateHTML, cvData, template);
-      console.log('✅ [PDFService] HTML compilado, tamanho:', html.length);
+      console.log('📄 Gerando PDF...');
 
-      // 4. Gerar PDF com puppeteer
-      const pdf = await this.convertHTMLToPDF(html);
-      console.log('✅ [PDFService] PDF gerado, tamanho:', pdf.length, 'bytes');
+      const pdfBuffer = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        margin: {
+          top: '20px',
+          right: '20px',
+          bottom: '20px',
+          left: '20px',
+        },
+        ...options,
+      });
 
-      return pdf;
+      console.log('✅ PDF gerado com sucesso');
+      
+      await browser.close();
+      return pdfBuffer;
+
     } catch (error) {
-      console.error('❌ [PDFService] Erro ao gerar PDF:', error);
-      throw new Error('Erro ao gerar PDF: ' + error.message);
+      console.error('❌ Erro ao gerar PDF:', error);
+      if (browser) {
+        try {
+          await browser.close();
+        } catch (e) {
+          console.error('Erro ao fechar browser:', e);
+        }
+      }
+      throw error;
     }
   }
 
