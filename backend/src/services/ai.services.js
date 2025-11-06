@@ -70,6 +70,36 @@ Responde em JSON com o CV adaptado.
     return JSON.parse(response);
   }
 
+  async analyzeTemplateLayout(imagePath) {
+    // Aqui podes implementar a análise de layout via IA ou usar placeholders
+    console.log('🔍 [AIService] Analisando template em:', imagePath);
+
+    // Exemplo de retorno fictício
+    return {
+      header: { height: 120, color: '#ffffff' },
+      body: { sections: 3, colors: ['#f0f0f0', '#333333'] },
+      footer: { height: 80, color: '#222222' },
+    };
+  }
+
+  async generateTemplateCode(layoutAnalysis) {
+    console.log('🎨 [AIService] Gerando HTML/CSS com base na análise:', layoutAnalysis);
+
+    // Exemplo de retorno fictício
+    const html = `<div class="header" style="height:${layoutAnalysis.header.height}px;background:${layoutAnalysis.header.color}"></div>
+<div class="body">...</div>
+<div class="footer" style="height:${layoutAnalysis.footer.height}px;background:${layoutAnalysis.footer.color}"></div>`;
+
+    const css = `
+.header { text-align:center; }
+.body { padding:20px; }
+.footer { text-align:center; }
+`;
+
+    return { html, css };
+  }
+
+
   /**
    * Analisar compatibilidade CV x Vaga
    */

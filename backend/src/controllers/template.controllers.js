@@ -1,10 +1,9 @@
 // src/controllers/template.controller.js - ATUALIZADO
 import { PrismaClient } from '@prisma/client';
-import { validationResult } from 'express-validator';
 import multer from 'multer';
 import sharp from 'sharp';
 import storageService from '../services/storage.services.js';
-import aiService from '../services/ai.service.js';
+import aiService from '../services/ai.services.js';
 
 const prisma = new PrismaClient();
 
@@ -74,6 +73,7 @@ export const uploadTemplateDesign = [
       // Analisar layout com IA
       console.log('🔍 Analisando layout do template...');
       const layoutAnalysis = await aiService.analyzeTemplateLayout(localImagePath);
+      
 
       // Gerar HTML/CSS baseado no layout
       console.log('🎨 Gerando código do template...');

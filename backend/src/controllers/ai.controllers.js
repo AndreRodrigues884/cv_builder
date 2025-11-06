@@ -1,7 +1,7 @@
 // src/controllers/ai.controller.js
 import { PrismaClient } from '@prisma/client';
 import { validationResult } from 'express-validator';
-import aiService from '../services/ai.service.js';
+import aiService from '../services/ai.services.js';
 
 const prisma = new PrismaClient();
 

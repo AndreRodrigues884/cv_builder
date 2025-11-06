@@ -463,4 +463,4 @@ class StorageService {
   }
 }
 
-export default StorageService;
+export default new StorageService();
