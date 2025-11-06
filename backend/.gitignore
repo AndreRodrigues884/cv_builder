@@ -1,14 +1,22 @@
+# Prisma generated
 /generated/prisma
+
+# Dependencies
 node_modules/
+
+# Environment
 .env
+
+# Temporary
 temp/
 *.log
+
+# OS
 .DS_Store
+
+# Build
 dist/
 coverage/
 
+# Cloudinary uploads (local)
 /cloudinary/cvs
-/prisma/migrations
-/src/services
-Dockerfile
-/src/controllers
