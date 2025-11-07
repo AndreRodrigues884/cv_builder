@@ -141,19 +141,29 @@
         <!-- Templates Section -->
         <div v-if="activeSection === 'templates'">
           <div class="flex gap-4 mb-6">
-            <button class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium">Todos</button>
-            <button class="px-4 py-2 text-slate-400 hover:bg-slate-800 rounded-lg transition-all">Moderno</button>
-            <button class="px-4 py-2 text-slate-400 hover:bg-slate-800 rounded-lg transition-all">Clássico</button>
-            <button class="px-4 py-2 text-slate-400 hover:bg-slate-800 rounded-lg transition-all">Criativo</button>
-            <button class="px-4 py-2 text-slate-400 hover:bg-slate-800 rounded-lg transition-all">Executivo</button>
+            <button class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium"
+              @click="templateStore.fetchTemplates()">
+              Todos
+            </button>
+            <button class="px-4 py-2 text-slate-400 hover:bg-slate-800 rounded-lg transition-all"
+              @click="templateStore.fetchTemplatesByType('MODERN')">
+              Moderno
+            </button>
+            <button class="px-4 py-2 text-slate-400 hover:bg-slate-800 rounded-lg transition-all"
+              @click="templateStore.fetchTemplatesByType('CLASSIC')">
+              Clássico
+            </button>
           </div>
 
+          <div v-if="templateStore.loading" class="text-slate-400">Carregando templates...</div>
+          <div v-else-if="templateStore.templates.length === 0" class="text-slate-500">Nenhum template encontrado.</div>
+
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div v-for="template in templates" :key="template.id"
+            <div v-for="template in templateStore.templates" :key="template.id"
               class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden hover:border-blue-500/30 hover:-translate-y-1 transition-all group cursor-pointer">
               <div
                 class="h-64 bg-gradient-to-br from-slate-800 to-slate-900 p-6 flex items-center justify-center relative">
-                <div class="w-full h-full bg-slate-800/50 rounded-lg"></div>
+                <img :src="template.previewImageUrl" alt="preview" class="object-contain w-full h-full rounded-lg" />
                 <div
                   class="absolute inset-0 bg-blue-600/0 group-hover:bg-blue-600/5 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
                   <button
@@ -173,6 +183,7 @@
             </div>
           </div>
         </div>
+
 
         <!-- Settings Section -->
         <div v-if="activeSection === 'settings'" class="max-w-4xl mx-auto">
@@ -241,25 +252,24 @@
       </div>
     </main>
   </div>
+
 </template>
 
 <script>
 import Sidebar from "../components/dashboard/sidebar.vue"
 import Header from "../components/dashboard/header.vue"
-import { useCVStore } from '../stores/cv'
-import { ref } from 'vue';
+import { useCVStore } from "../stores/cv"
+import { useTemplateStore } from "../stores/template"
 
-// Imports dos componentes Career Copilot
-import AiReview from '../components/dashboard/AIReviewSection.vue'
-import JobMatch from '../components/dashboard/JobMatchSection.vue'
-import MyCVs from '../components/dashboard/MyCVsSection.vue'
-import CareerCopilot from '../components/dashboard/CareerCopilotSection.vue'
-import CreateCV from '../components/dashboard/CreateCVSection.vue'
-
-const activeSection = ref('dashboard');
+// Componentes de secções
+import AiReview from "../components/dashboard/AIReviewSection.vue"
+import JobMatch from "../components/dashboard/JobMatchSection.vue"
+import MyCVs from "../components/dashboard/MyCVsSection.vue"
+import CareerCopilot from "../components/dashboard/CareerCopilotSection.vue"
+import CreateCV from "../components/dashboard/CreateCVSection.vue"
 
 export default {
-  name: 'Dashboard',
+  name: "Dashboard",
 
   components: {
     Sidebar,
@@ -273,30 +283,15 @@ export default {
 
   data() {
     return {
-      activeSection: 'dashboard',
-      currentStep: 0,
-
+      activeSection: "dashboard",
+      loading: false,
       stats: {
         cvsCreated: 0,
         published: 0,
         draft: 0,
         archived: 0
       },
-      allCVs: [],
-      loading: false,
-      error: null,
-
-
-      templates: [
-        { id: 1, name: "Profissional Moderno", type: "Moderno", isPremium: false },
-        { id: 2, name: "Clássico Executivo", type: "Clássico", isPremium: false },
-        { id: 3, name: "Criativo Designer", type: "Criativo", isPremium: true },
-        { id: 4, name: "Minimalista Clean", type: "Minimalista", isPremium: false },
-        { id: 5, name: "Tech Specialist", type: "Técnico", isPremium: true },
-        { id: 6, name: "Bold & Modern", type: "Moderno", isPremium: true }
-      ],
-
-      createSteps: ["Info Pessoal", "Objetivo", "Experiência", "Competências"]
+      error: null
     }
   },
 
@@ -304,43 +299,58 @@ export default {
     cvStore() {
       return useCVStore()
     },
+    templateStore() {
+      return useTemplateStore()
+    },
     allCVs() {
-      return this.cvStore.cvs;
+      return this.cvStore.cvs
+    },
+    templates() {
+      return this.templateStore.templates
     }
   },
 
+
   async mounted() {
-    await this.loadData()
+    await Promise.all([
+      this.loadData(),
+      this.templateStore.fetchTemplates()
+    ])
   },
 
   methods: {
     async loadData() {
       try {
         this.loading = true
-        const response = await this.cvStore.fetchCVs()
 
+        // 🔹 Primeiro, carrega os templates
+        await this.templateStore.fetchTemplates()
+
+        // 🔹 Depois, carrega os CVs
+        const response = await this.cvStore.fetchCVs()
         if (!response?.data) return
 
-        // Popula diretamente a store
-        this.cvStore.cvs = response.data.cvs.map(cv => ({
-          id: cv.id,
-          title: cv.title,
-          targetRole: cv.targetRole || 'Não definido',
-          status: cv.status,
-          statusColor: this.getStatusColor(cv.status),
-          template: cv.templateId,
-          updatedAt: this.formatDate(cv.updatedAt)
-        }));
+        this.cvStore.cvs = response.data.cvs.map(cv => {
+          const template = this.templateStore.templates.find(t => t.id === cv.templateId)
+          return {
+            id: cv.id,
+            title: cv.title,
+            targetRole: cv.targetRole || "Não definido",
+            status: cv.status,
+            statusColor: this.getStatusColor(cv.status),
+            template: template ? template.name : "Desconhecido", // 👈 Mostra o nome
+            updatedAt: this.formatDate(cv.updatedAt)
+          }
+        })
 
-        // Atualiza estatísticas (Dashboard local)
         this.stats.cvsCreated = response.data.stats.total
         this.stats.published = response.data.stats.published
         this.stats.draft = response.data.stats.draft
         this.stats.archived = response.data.stats.archived
 
-        console.log('✅ CVs recebidos na store:', this.cvStore.cvs)
       } catch (error) {
-        console.error('Erro ao carregar CVs:', error)
+        console.error("Erro ao carregar CVs:", error)
+        this.error = error
       } finally {
         this.loading = false
       }
@@ -348,14 +358,14 @@ export default {
 
     getStatusColor(status) {
       switch (status) {
-        case 'PUBLISHED':
-          return 'bg-green-500/20 text-green-400'
-        case 'DRAFT':
-          return 'bg-yellow-500/20 text-yellow-400'
-        case 'ARCHIVED':
-          return 'bg-slate-700 text-slate-400'
+        case "PUBLISHED":
+          return "bg-green-500/20 text-green-400"
+        case "DRAFT":
+          return "bg-yellow-500/20 text-yellow-400"
+        case "ARCHIVED":
+          return "bg-slate-700 text-slate-400"
         default:
-          return 'bg-slate-700 text-slate-400'
+          return "bg-slate-700 text-slate-400"
       }
     },
 
@@ -363,24 +373,24 @@ export default {
       const date = new Date(dateString)
       const now = new Date()
       const diff = Math.floor((now - date) / (1000 * 60 * 60 * 24))
-      if (diff === 0) return 'hoje'
-      if (diff === 1) return '1 dia'
+      if (diff === 0) return "hoje"
+      if (diff === 1) return "1 dia"
       return `${diff} dias`
     },
 
     downloadCV(cv) {
       if (cv.generatedPdfUrl) {
-        window.open(cv.generatedPdfUrl, '_blank')
+        window.open(cv.generatedPdfUrl, "_blank")
       } else if (cv.generatedDocxUrl) {
-        window.open(cv.generatedDocxUrl, '_blank')
+        window.open(cv.generatedDocxUrl, "_blank")
       } else {
-        alert('Este CV ainda não tem ficheiro gerado para download.')
+        alert("Este CV ainda não tem ficheiro gerado para download.")
       }
-    },
-
+    }
   }
 }
 </script>
+
 
 
 <style scoped>
