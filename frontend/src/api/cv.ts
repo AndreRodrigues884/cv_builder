@@ -1,38 +1,41 @@
 import { CV } from '../types/cvInterface';
 import api from '../services/axios';
 
-const BASE_URL = '/cv'; 
+const BASE_URL = '/cv';
 
-export const getCVs = (params?: { 
-  status?: string; 
-  search?: string; 
-  sortBy?: string; 
-  order?: string;
-}) => api.get(BASE_URL, { params });
+const cvApi = {
+  getCVs: (params?: {
+    status?: string;
+    search?: string;
+    sortBy?: string;
+    order?: string;
+  }) => api.get(BASE_URL, { params }),
 
-export const getCVById = (id: string) => 
-  api.get(`${BASE_URL}/${id}`);
+  getCVById: (id: string) => api.get(`${BASE_URL}/${id}`),
 
-export const createCV = (data: Partial<CV>) => 
-  api.post(BASE_URL, data);
+  createCV: (data: Partial<CV>) => api.post(BASE_URL, data),
 
-export const updateCV = (id: string, data: Partial<CV>) => 
-  api.put(`${BASE_URL}/${id}`, data);
+  updateCV: (id: string, data: Partial<CV>) => api.put(`${BASE_URL}/${id}`, data),
 
-export const deleteCV = (id: string) => 
-  api.delete(`${BASE_URL}/${id}`);
+  deleteCV: (id: string) => api.delete(`${BASE_URL}/${id}`),
 
-export const updateStatus = (
-  id: string, 
-  status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'
-) => api.patch(`${BASE_URL}/${id}/status`, { status });
+  updateStatus: (id: string, status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED') =>
+    api.patch(`${BASE_URL}/${id}/status`, { status }),
 
-export const changeTemplate = (id: string, templateId: string) => 
-  api.patch(`${BASE_URL}/${id}/template`, { templateId });
+  changeTemplate: (id: string, templateId: string) =>
+    api.patch(`${BASE_URL}/${id}/template`, { templateId }),
 
+  previewCV: (id: string) =>
+    api.get(`${BASE_URL}/${id}/preview`, {
+      responseType: 'text', // Retorna HTML como texto
+    }),
 
-  export const downloadCVPDF = async (id: string) => {
-  return api.get(`${BASE_URL}/${id}/download/pdf`, {
-    responseType: 'blob', // muito importante para ficheiros binários
-  });
+  downloadCV: async (id: string) => {
+    // Retorna o blob do PDF diretamente
+    return api.get(`${BASE_URL}/${id}/download/pdf`, {
+      responseType: 'blob', // muito importante
+    });
+  },
 };
+
+export default cvApi;

@@ -85,28 +85,38 @@
   </aside>
 </template>
 
-<script setup lang="ts">
-import { defineProps, defineEmits } from "vue";
+<script>
 import { useAuthStore } from "../../stores/auth";
 import { useRouter } from "vue-router";
 
-const store = useAuthStore();
-const router = useRouter();
+export default {
+  name: 'Sidebar',
 
-// Props e eventos
-const props = defineProps<{ activeSection: string }>();
-const emit = defineEmits(["change-section"]);
+  props: {
+    activeSection: {
+      type: String,
+      required: true
+    }
+  },
 
-// Função para mudar de secção
-const changeSection = (section: string) => {
-  emit("change-section", section);
-};
+  emits: ['change-section'],
 
-// Logout
-const handleLogout = async () => {
-  await store.logout();  
-  router.push("/login");       
-  window.location.reload(); 
-};
+  created() {
+    this.authStore = useAuthStore();
+    this.router = useRouter();
+  },
+
+  methods: {
+    changeSection(section) {
+      this.$emit("change-section", section);
+    },
+    async handleLogout() {
+      this.authStore.logout();
+      this.router.push("/login");
+      window.location.reload();
+    },
+  }
+
+}
 
 </script>

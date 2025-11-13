@@ -19,7 +19,6 @@ export const useTemplateStore = defineStore('template', {
 
       try {
         const res = await templateApi.getAllTemplates()
-        console.log('📦 Resposta da API:', res.data)
 
         // Corrigido para acessar a estrutura correta:
         this.templates = res.data?.data?.templates || []

@@ -66,12 +66,33 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue';
+<script>
 import InterviewSimulation from '@/components/InterviewSimulation.vue';
 import CareerAnalysis from '@/components/CareerAnalysis.vue';
 import SkillGaps from '@/components/SkillGaps.vue';
 import CoursesRecommendation from '@/components/CoursesRecommendation.vue';
 
-const activeComponent = ref('menu');
+export default {
+  name: 'CareerCopilotSection', // dê o nome que fizer sentido
+
+  components: {
+    InterviewSimulation,
+    CareerAnalysis,
+    SkillGaps,
+    CoursesRecommendation
+  },
+
+  data() {
+    return {
+      activeComponent: 'menu' 
+    }
+  },
+
+  methods: {
+  
+    setActiveComponent(componentName) {
+      this.activeComponent = componentName;
+    }
+  }
+}
 </script>

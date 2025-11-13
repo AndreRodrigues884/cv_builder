@@ -1,0 +1,355 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "created_at": "2025-01-15",
+    "total_examples": 5,
+    "languages": ["pt-PT"],
+    "description": "Dataset de sumários profissionais para diferentes perfis e níveis de senioridade",
+    "tone_types": ["professional", "casual", "confident"]
+  },
+  "examples": [
+    {
+      "id": "sum_001",
+      "profile": {
+        "job_title": "Software Engineer",
+        "target_job": "Senior Full Stack Developer",
+        "target_area": "Technology",
+        "years_experience": 5,
+        "education": {
+          "degree": "Mestrado em Engenharia Informática",
+          "institution": "Universidade do Minho",
+          "graduation_year": 2018
+        },
+        "top_skills": [
+          "React",
+          "Node.js",
+          "TypeScript",
+          "PostgreSQL",
+          "Docker",
+          "AWS",
+          "MongoDB",
+          "GraphQL"
+        ],
+        "experiences": [
+          {
+            "job_title": "Full Stack Developer",
+            "company": "Tech Startup XYZ",
+            "duration_years": 3,
+            "is_current": true
+          },
+          {
+            "job_title": "Frontend Developer",
+            "company": "Digital Agency ABC",
+            "duration_years": 2,
+            "is_current": false
+          }
+        ],
+        "achievements": [
+          "Desenvolveu sistema que processa 1M+ transações/dia",
+          "Liderou migração de monólito para microservices",
+          "Reduziu custos de infraestrutura em 40%"
+        ]
+      },
+      "tone": "professional",
+      "generated_summaries": {
+        "main": "Engenheiro de Software Full Stack com 5 anos de experiência especializado em React, Node.js e TypeScript. Mestrado em Engenharia Informática com histórico comprovado de arquitetura e deployment de sistemas escaláveis em AWS, processando 1M+ transações diárias. Expertise em liderar migrações de arquitetura e otimização de infraestrutura cloud, resultando em redução de 40% em custos operacionais.",
+        "variations": [
+          "Full Stack Developer experiente com track record de 5 anos desenvolvendo soluções de alta performance com React e Node.js. Especialista em arquiteturas cloud-native (AWS) e containerização (Docker), com projetos servindo milhões de utilizadores. Mestrado em Engenharia Informática combinando formação académica sólida com resultados práticos mensuráveis.",
+          "Profissional de Software Engineering com 5 anos construindo produtos web escaláveis. Domínio avançado do stack React/Node.js/TypeScript e infraestruturas cloud (AWS, Docker, Kubernetes). Liderou com sucesso migração de monólito para microservices e implementou práticas DevOps que reduziram deployment time em 70%."
+        ],
+        "keywords_used": [
+          "Full Stack",
+          "5 anos",
+          "React",
+          "Node.js",
+          "TypeScript",
+          "AWS",
+          "1M+ transações",
+          "40%",
+          "escaláveis",
+          "cloud-native"
+        ],
+        "ats_score": 92,
+        "tips": [
+          "Personalize mencionando tecnologias específicas da vaga (ex: se pedem Next.js, adicione ao sumário)",
+          "Inclua o tamanho da equipa que liderou se relevante para a posição",
+          "Adapte as métricas conforme a indústria (fintech valoriza transações, e-commerce valoriza utilizadores)"
+        ]
+      }
+    },
+    {
+      "id": "sum_002",
+      "profile": {
+        "job_title": "Digital Marketing Specialist",
+        "target_job": "Growth Marketing Manager",
+        "target_area": "Marketing",
+        "years_experience": 4,
+        "education": {
+          "degree": "Licenciatura em Marketing e Publicidade",
+          "institution": "ISCTE",
+          "graduation_year": 2019
+        },
+        "top_skills": [
+          "Google Ads",
+          "Meta Ads",
+          "SEO",
+          "Google Analytics",
+          "Growth Hacking",
+          "Email Marketing",
+          "Conversion Optimization",
+          "A/B Testing"
+        ],
+        "experiences": [
+          {
+            "job_title": "Digital Marketing Specialist",
+            "company": "E-commerce Startup",
+            "duration_years": 2.5,
+            "is_current": true
+          },
+          {
+            "job_title": "Marketing Coordinator",
+            "company": "Agência de Marketing Digital",
+            "duration_years": 1.5,
+            "is_current": false
+          }
+        ],
+        "achievements": [
+          "Reduziu CAC em 55% através de otimização de campanhas",
+          "Aumentou tráfego orgânico em 200% em 12 meses",
+          "Geriu orçamento anual de €300K em paid media"
+        ]
+      },
+      "tone": "confident",
+      "generated_summaries": {
+        "main": "Growth Marketing Specialist com 4 anos otimizando funnels de aquisição e conversão em startups B2C. Expertise comprovada em Google Ads, Meta Ads e SEO técnico, com resultados que incluem redução de 55% no CAC, crescimento de 200% em tráfego orgânico e gestão eficiente de orçamentos de €300K+. Orientado a dados e obsessivo por métricas de performance.",
+        "variations": [
+          "Digital Marketer data-driven com 4 anos transformando investimento em paid media em crescimento sustentável. Track record de redução de CAC em 55% e triplicar tráfego orgânico através de estratégias integradas de SEO, Google Ads e Meta Ads. Experiência em e-commerce e startups de crescimento rápido.",
+          "Especialista em Marketing Digital focado em growth hacking e otimização de conversão. 4 anos gerindo campanhas multi-canal (Google Ads, Meta Ads, SEO) que resultaram em €300K+ em orçamento otimizado e ROI consistente de 4:1. Certificado em Google Ads e Google Analytics com mindset analítico e orientado a resultados."
+        ],
+        "keywords_used": [
+          "Growth Marketing",
+          "4 anos",
+          "B2C",
+          "Google Ads",
+          "Meta Ads",
+          "SEO",
+          "55% CAC",
+          "200%",
+          "€300K",
+          "data-driven"
+        ],
+        "ats_score": 89,
+        "tips": [
+          "Destaque certificações relevantes (Google Ads, Analytics) logo no sumário",
+          "Mencione indústrias específicas se a vaga for especializada (e-commerce, SaaS, fintech)",
+          "Inclua ROI ou ROAS se tiver dados fortes para mostrar eficiência em paid media"
+        ]
+      }
+    },
+    {
+      "id": "sum_003",
+      "profile": {
+        "job_title": "Junior Data Analyst",
+        "target_job": "Data Analyst",
+        "target_area": "Data Science",
+        "years_experience": 2,
+        "education": {
+          "degree": "Licenciatura em Estatística",
+          "institution": "Faculdade de Ciências da Universidade de Lisboa",
+          "graduation_year": 2021
+        },
+        "top_skills": [
+          "Python",
+          "SQL",
+          "Pandas",
+          "Tableau",
+          "Excel Avançado",
+          "Power BI",
+          "Statistics",
+          "Data Visualization"
+        ],
+        "experiences": [
+          {
+            "job_title": "Junior Data Analyst",
+            "company": "Fintech Company",
+            "duration_years": 2,
+            "is_current": true
+          }
+        ],
+        "achievements": [
+          "Criou dashboards em Tableau usados por 50+ stakeholders",
+          "Automatizou processos de reporting, poupando 20h/semana",
+          "Identificou padrões que resultaram em €150K economia"
+        ]
+      },
+      "tone": "professional",
+      "generated_summaries": {
+        "main": "Data Analyst com 2 anos de experiência transformando dados complexos em insights acionáveis. Formação em Estatística com proficiência em Python (Pandas, NumPy), SQL avançado e ferramentas de visualização (Tableau, Power BI). Histórico de criação de dashboards estratégicos e automação de processos de reporting que pouparam 20h semanais e identificaram oportunidades de €150K+ em economia.",
+        "variations": [
+          "Analista de Dados com sólida formação em Estatística e 2 anos aplicando técnicas analíticas em ambiente fintech. Especialista em SQL, Python e Tableau para extrair, transformar e visualizar dados que suportam decisões de negócio. Reconhecido por automatizar processos manuais e criar dashboards que democratizam acesso à informação.",
+          "Profissional de Data Analytics combinando conhecimento estatístico com skills técnicas em Python e SQL. 2 anos desenvolvendo soluções de BI e análises ad-hoc que impactaram diretamente decisões estratégicas. Criador de dashboards Tableau e Power BI utilizados por equipas de produto, marketing e operações."
+        ],
+        "keywords_used": [
+          "Data Analyst",
+          "2 anos",
+          "Python",
+          "Pandas",
+          "SQL",
+          "Tableau",
+          "Power BI",
+          "Estatística",
+          "dashboards",
+          "€150K"
+        ],
+        "ats_score": 87,
+        "tips": [
+          "Mencione indústria específica (fintech, healthcare, retail) se tiver experiência relevante",
+          "Adicione menção a técnicas estatísticas avançadas se aplicável (regressão, clustering, etc)",
+          "Destaque impacto de negócio das tuas análises, não apenas as ferramentas utilizadas"
+        ]
+      }
+    },
+    {
+      "id": "sum_004",
+      "profile": {
+        "job_title": "UX/UI Designer",
+        "target_job": "Senior Product Designer",
+        "target_area": "Design",
+        "years_experience": 6,
+        "education": {
+          "degree": "Licenciatura em Design de Comunicação",
+          "institution": "Faculdade de Belas-Artes da Universidade do Porto",
+          "graduation_year": 2017
+        },
+        "top_skills": [
+          "Figma",
+          "Design Systems",
+          "User Research",
+          "Prototyping",
+          "Accessibility (WCAG)",
+          "Design Thinking",
+          "Adobe XD",
+          "Usability Testing"
+        ],
+        "experiences": [
+          {
+            "job_title": "Senior UX/UI Designer",
+            "company": "SaaS Product Company",
+            "duration_years": 3,
+            "is_current": true
+          },
+          {
+            "job_title": "UX/UI Designer",
+            "company": "Digital Agency",
+            "duration_years": 3,
+            "is_current": false
+          }
+        ],
+        "achievements": [
+          "Liderou redesign que aumentou conversão em 38%",
+          "Criou design system adotado por 20+ produtos",
+          "Conduziu 100+ sessões de user research e usability testing"
+        ]
+      },
+      "tone": "casual",
+      "generated_summaries": {
+        "main": "Product Designer com 6 anos criando experiências digitais que utilizadores adoram e que geram resultados de negócio. Especialista em design systems escaláveis e metodologias user-centered (Design Thinking, Jobs-to-be-Done). Portfolio inclui redesign que aumentou conversão em 38% e design system utilizado por 20+ produtos. Domínio avançado de Figma e forte compromisso com acessibilidade WCAG 2.1.",
+        "variations": [
+          "UX/UI Designer experiente com 6 anos combinando research rigoroso, design estratégico e execução pixel-perfect. Criei design systems que escalaram para dezenas de produtos e liderei projetos de redesign com impacto direto em conversão (+38%) e satisfação de utilizador. Apaixonado por acessibilidade e design inclusivo.",
+          "Designer de Produto com track record de 6 anos transformando problemas complexos em interfaces intuitivas e bonitas. Experiência em todo o ciclo de design (research → prototyping → testing → handoff). Liderei criação de design system enterprise e conduzi 100+ sessões de research. Proficiente em Figma, design tokens e acessibilidade."
+        ],
+        "keywords_used": [
+          "Product Designer",
+          "6 anos",
+          "design systems",
+          "Figma",
+          "38%",
+          "20+ produtos",
+          "user research",
+          "WCAG 2.1",
+          "Design Thinking",
+          "user-centered"
+        ],
+        "ats_score": 90,
+        "tips": [
+          "Inclua link para portfolio no sumário ou logo abaixo (essencial para designers)",
+          "Menciona empresas conhecidas ou tipos de produto (B2B SaaS, mobile apps, e-commerce)",
+          "Se tens especialização (mobile, web, design systems), deixa claro desde o início"
+        ]
+      }
+    },
+    {
+      "id": "sum_005",
+      "profile": {
+        "job_title": "DevOps Engineer",
+        "target_job": "Senior DevOps Engineer",
+        "target_area": "Technology",
+        "years_experience": 7,
+        "education": {
+          "degree": "Licenciatura em Engenharia Informática",
+          "institution": "Instituto Superior Técnico",
+          "graduation_year": 2016
+        },
+        "top_skills": [
+          "Kubernetes",
+          "Docker",
+          "AWS",
+          "Terraform",
+          "CI/CD",
+          "Python",
+          "Jenkins",
+          "Prometheus",
+          "Grafana",
+          "Linux"
+        ],
+        "experiences": [
+          {
+            "job_title": "DevOps Engineer",
+            "company": "Scale-up Fintech",
+            "duration_years": 4,
+            "is_current": true
+          },
+          {
+            "job_title": "Systems Administrator",
+            "company": "Tech Consultancy",
+            "duration_years": 3,
+            "is_current": false
+          }
+        ],
+        "achievements": [
+          "Arquitetou infraestrutura Kubernetes para 50+ microservices",
+          "Reduziu deployment time de 2h para 8 minutos",
+          "Alcançou 99.97% uptime em ambiente de produção",
+          "Poupou €200K/ano em custos de cloud através de otimizações"
+        ]
+      },
+      "tone": "professional",
+      "generated_summaries": {
+        "main": "DevOps Engineer com 7 anos arquitetando e gerindo infraestruturas cloud-native de alta disponibilidade. Expertise em Kubernetes, Docker, AWS e Terraform, com histórico de redução de deployment time de 2h para 8 minutos e manutenção de 99.97% uptime. Certificado AWS Solutions Architect e CKA, com foco em automação, observabilidade e otimização de custos (€200K+ poupados anualmente).",
+        "variations": [
+          "Site Reliability Engineer com 7 anos implementando práticas DevOps e SRE em ambientes de produção críticos. Especialista em orquestração de containers (Kubernetes), IaC (Terraform) e pipelines CI/CD. Liderou migração para cloud-native architecture servindo 1M+ utilizadores com 99.97% disponibilidade e redução significativa de custos operacionais.",
+          "Engenheiro DevOps experiente com 7 anos automatizando infraestrutura e melhorando reliability de sistemas distribuídos. Domínio de Kubernetes, AWS, Terraform e ferramentas de observabilidade (Prometheus, Grafana). Track record de projetos que reduziram deployment time em 93%, aumentaram uptime para 99.97% e otimizaram custos de cloud em €200K anuais."
+        ],
+        "keywords_used": [
+          "DevOps Engineer",
+          "7 anos",
+          "Kubernetes",
+          "Docker",
+          "AWS",
+          "Terraform",
+          "CI/CD",
+          "99.97% uptime",
+          "8 minutos",
+          "€200K",
+          "cloud-native"
+        ],
+        "ats_score": 94,
+        "tips": [
+          "Menciona certificações relevantes (CKA, AWS, Terraform) - são muito valorizadas em DevOps",
+          "Inclui métricas de reliability (uptime, MTTR, deployment frequency) se possível",
+          "Destaca economia de custos - CFOs adoram DevOps Engineers que otimizam infra"
+        ]
+      }
+    }
+  ]
+}

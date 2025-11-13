@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-4xl mx-auto">
     <button
-      @click="$emit('back')"
+      @click="goBack"
       class="flex items-center gap-2 text-slate-400 hover:text-white mb-6 transition-colors"
     >
       <span>←</span>
@@ -107,7 +107,7 @@
       </div>
 
       <button
-        @click="coursesData = null"
+        @click="resetCourses"
         class="w-full bg-slate-800 border border-slate-700 text-white py-3 rounded-lg font-medium hover:bg-slate-700 transition-all"
       >
         Procurar Novamente
@@ -116,61 +116,77 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue';
+<script>
+export default {
+  name: 'CoursesRecommendation',
 
-defineEmits(['back']);
+  props: ['back'],
 
-const budget = ref('');
-const timeAvailable = ref('');
-const loading = ref(false);
-const coursesData = ref(null);
-
-const recommendCourses = () => {
-  loading.value = true;
-
-  // Simulação de delay
-  setTimeout(() => {
-    coursesData.value = {
-      totalCost: '€350',
-      totalTime: '25 horas',
-      recommendations: [
-        {
-          title: 'Advanced React & Redux',
-          platform: 'Udemy',
-          price: '€50',
-          rating: 4.7,
-          duration: 10,
-          skillsCovered: ['React', 'Redux', 'Hooks']
-        },
-        {
-          title: 'TypeScript Fundamentals',
-          platform: 'Coursera',
-          price: '€40',
-          rating: 4.6,
-          duration: 8,
-          skillsCovered: ['TypeScript', 'JS', 'Typing']
-        },
-        {
-          title: 'Node.js & Express - Build APIs',
-          platform: 'Udemy',
-          price: '€60',
-          rating: 4.8,
-          duration: 7,
-          skillsCovered: ['Node.js', 'Express', 'APIs']
-        },
-        {
-          title: 'UI/UX Design for Developers',
-          platform: 'LinkedIn Learning',
-          price: '€100',
-          rating: 4.5,
-          duration: 5,
-          skillsCovered: ['UI Design', 'UX', 'Figma']
-        }
-      ],
-      learningPlan: 'Começa pelo curso de TypeScript, depois React & Redux, seguido de Node.js APIs e finaliza com UI/UX Design.'
+  data() {
+    return {
+      budget: '',
+      timeAvailable: '',
+      loading: false,
+      coursesData: null
     };
-    loading.value = false;
-  }, 1200);
+  },
+
+  methods: {
+    goBack() {
+      this.$emit('back');
+    },
+
+    recommendCourses() {
+      this.loading = true;
+
+      setTimeout(() => {
+        this.coursesData = {
+          totalCost: '€350',
+          totalTime: '25 horas',
+          recommendations: [
+            {
+              title: 'Advanced React & Redux',
+              platform: 'Udemy',
+              price: '€50',
+              rating: 4.7,
+              duration: 10,
+              skillsCovered: ['React', 'Redux', 'Hooks']
+            },
+            {
+              title: 'TypeScript Fundamentals',
+              platform: 'Coursera',
+              price: '€40',
+              rating: 4.6,
+              duration: 8,
+              skillsCovered: ['TypeScript', 'JS', 'Typing']
+            },
+            {
+              title: 'Node.js & Express - Build APIs',
+              platform: 'Udemy',
+              price: '€60',
+              rating: 4.8,
+              duration: 7,
+              skillsCovered: ['Node.js', 'Express', 'APIs']
+            },
+            {
+              title: 'UI/UX Design for Developers',
+              platform: 'LinkedIn Learning',
+              price: '€100',
+              rating: 4.5,
+              duration: 5,
+              skillsCovered: ['UI Design', 'UX', 'Figma']
+            }
+          ],
+          learningPlan: 'Começa pelo curso de TypeScript, depois React & Redux, seguido de Node.js APIs e finaliza com UI/UX Design.'
+        };
+        this.loading = false;
+      }, 1200);
+    },
+
+    resetCourses() {
+      this.coursesData = null;
+    }
+  }
 };
 </script>
+

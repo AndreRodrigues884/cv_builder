@@ -1,0 +1,498 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "area": "Marketing",
+    "created_at": "2025-01-15",
+    "total_keywords": 250,
+    "description": "Keywords ATS otimizadas para área de marketing"
+  },
+  "action_verbs": {
+    "high_priority": [
+      "executou",
+      "otimizou",
+      "aumentou",
+      "gerou",
+      "lançou",
+      "desenvolveu",
+      "implementou",
+      "geri",
+      "coordenou",
+      "analisou"
+    ],
+    "medium_priority": [
+      "criou",
+      "produziu",
+      "planeou",
+      "monitorizou",
+      "testou",
+      "segmentou",
+      "personalizou",
+      "automatizou",
+      "colaborou",
+      "reportou"
+    ],
+    "leadership": [
+      "liderou",
+      "dirigiu",
+      "supervisionou",
+      "mentorizou",
+      "treinou",
+      "delegou",
+      "estrategizou"
+    ]
+  },
+  "digital_marketing": {
+    "paid_advertising": {
+      "platforms": [
+        "Google Ads",
+        "Meta Ads",
+        "Facebook Ads",
+        "Instagram Ads",
+        "LinkedIn Ads",
+        "Twitter Ads",
+        "TikTok Ads",
+        "Pinterest Ads",
+        "Snapchat Ads",
+        "YouTube Ads"
+      ],
+      "skills": [
+        "PPC",
+        "SEM",
+        "display advertising",
+        "retargeting",
+        "remarketing",
+        "programmatic advertising",
+        "bid management",
+        "ad copywriting",
+        "A/B testing",
+        "campaign optimization"
+      ],
+      "metrics": [
+        "CPC (Cost Per Click)",
+        "CPM (Cost Per Mille)",
+        "CPA (Cost Per Acquisition)",
+        "ROAS (Return on Ad Spend)",
+        "CTR (Click-Through Rate)",
+        "conversion rate",
+        "quality score",
+        "impression share"
+      ]
+    },
+    "seo": {
+      "skills": [
+        "SEO on-page",
+        "SEO off-page",
+        "SEO técnico",
+        "keyword research",
+        "link building",
+        "content optimization",
+        "local SEO",
+        "e-commerce SEO",
+        "mobile SEO",
+        "voice search optimization"
+      ],
+      "tools": [
+        "Google Search Console",
+        "SEMrush",
+        "Ahrefs",
+        "Moz",
+        "Screaming Frog",
+        "Google Keyword Planner",
+        "Ubersuggest"
+      ],
+      "metrics": [
+        "organic traffic",
+        "domain authority",
+        "page authority",
+        "backlinks",
+        "keyword rankings",
+        "organic CTR",
+        "dwell time",
+        "bounce rate"
+      ]
+    },
+    "content_marketing": {
+      "skills": [
+        "content strategy",
+        "content creation",
+        "copywriting",
+        "storytelling",
+        "blog writing",
+        "video content",
+        "infographics",
+        "white papers",
+        "case studies",
+        "ebooks"
+      ],
+      "content_types": [
+        "blog posts",
+        "artigos",
+        "landing pages",
+        "email campaigns",
+        "social media posts",
+        "videos",
+        "podcasts",
+        "webinars",
+        "newsletters"
+      ]
+    },
+    "social_media": {
+      "platforms": [
+        "Facebook",
+        "Instagram",
+        "LinkedIn",
+        "Twitter/X",
+        "TikTok",
+        "YouTube",
+        "Pinterest",
+        "Snapchat"
+      ],
+      "skills": [
+        "social media management",
+        "community management",
+        "social listening",
+        "influencer marketing",
+        "social commerce",
+        "user-generated content",
+        "social media advertising",
+        "content calendar",
+        "engagement strategies"
+      ],
+      "metrics": [
+        "engagement rate",
+        "reach",
+        "impressions",
+        "followers growth",
+        "share of voice",
+        "sentiment analysis",
+        "social ROI"
+      ]
+    },
+    "email_marketing": {
+      "platforms": [
+        "Mailchimp",
+        "HubSpot",
+        "ActiveCampaign",
+        "SendGrid",
+        "Klaviyo",
+        "Constant Contact",
+        "ConvertKit"
+      ],
+      "skills": [
+        "email automation",
+        "drip campaigns",
+        "segmentation",
+        "personalization",
+        "A/B testing",
+        "list management",
+        "email design",
+        "deliverability",
+        "GDPR compliance"
+      ],
+      "metrics": [
+        "open rate",
+        "click rate",
+        "conversion rate",
+        "unsubscribe rate",
+        "bounce rate",
+        "list growth rate",
+        "email ROI"
+      ]
+    },
+    "analytics": {
+      "tools": [
+        "Google Analytics",
+        "Google Analytics 4 (GA4)",
+        "Google Tag Manager",
+        "Adobe Analytics",
+        "Mixpanel",
+        "Amplitude",
+        "Hotjar",
+        "Crazy Egg"
+      ],
+      "skills": [
+        "data analysis",
+        "reporting",
+        "dashboard creation",
+        "conversion tracking",
+        "attribution modeling",
+        "funnel analysis",
+        "cohort analysis",
+        "predictive analytics"
+      ]
+    }
+  },
+  "growth_marketing": {
+    "skills": [
+      "growth hacking",
+      "funnel optimization",
+      "conversion rate optimization (CRO)",
+      "user acquisition",
+      "retention strategies",
+      "viral marketing",
+      "referral programs",
+      "product-led growth",
+      "experimentation",
+      "lifecycle marketing"
+    ],
+    "metrics": [
+      "CAC (Customer Acquisition Cost)",
+      "LTV (Lifetime Value)",
+      "churn rate",
+      "retention rate",
+      "activation rate",
+      "viral coefficient",
+      "payback period",
+      "MRR (Monthly Recurring Revenue)",
+      "ARR (Annual Recurring Revenue)"
+    ]
+  },
+  "brand_marketing": {
+    "skills": [
+      "brand strategy",
+      "brand positioning",
+      "brand identity",
+      "brand awareness",
+      "brand storytelling",
+      "creative direction",
+      "visual identity",
+      "brand guidelines",
+      "rebranding"
+    ],
+    "metrics": [
+      "brand awareness",
+      "brand recall",
+      "brand sentiment",
+      "share of voice",
+      "Net Promoter Score (NPS)"
+    ]
+  },
+  "performance_marketing": {
+    "channels": [
+      "paid search",
+      "paid social",
+      "display",
+      "affiliate marketing",
+      "influencer marketing",
+      "native advertising"
+    ],
+    "skills": [
+      "media buying",
+      "budget allocation",
+      "campaign management",
+      "performance tracking",
+      "ROI optimization",
+      "multi-channel attribution"
+    ]
+  },
+  "marketing_automation": {
+    "platforms": [
+      "HubSpot",
+      "Marketo",
+      "Pardot",
+      "ActiveCampaign",
+      "Eloqua",
+      "Salesforce Marketing Cloud"
+    ],
+    "skills": [
+      "workflow automation",
+      "lead nurturing",
+      "lead scoring",
+      "CRM integration",
+      "behavioral triggers",
+      "marketing workflows"
+    ]
+  },
+  "ecommerce_marketing": {
+    "platforms": [
+      "Shopify",
+      "WooCommerce",
+      "Magento",
+      "BigCommerce"
+    ],
+    "skills": [
+      "product marketing",
+      "cart abandonment",
+      "upselling",
+      "cross-selling",
+      "product feed optimization",
+      "marketplace optimization",
+      "Amazon SEO",
+      "shopping ads"
+    ]
+  },
+  "b2b_marketing": {
+    "skills": [
+      "account-based marketing (ABM)",
+      "demand generation",
+      "lead generation",
+      "sales enablement",
+      "marketing qualified leads (MQL)",
+      "sales qualified leads (SQL)",
+      "pipeline marketing",
+      "marketing operations"
+    ],
+    "content": [
+      "white papers",
+      "case studies",
+      "webinars",
+      "demos",
+      "sales collateral",
+      "product sheets"
+    ]
+  },
+  "soft_skills": {
+    "analytical": [
+      "data-driven decision making",
+      "analytical thinking",
+      "problem solving",
+      "strategic thinking",
+      "ROI focus"
+    ],
+    "creative": [
+      "criatividade",
+      "storytelling",
+      "copywriting",
+      "design thinking",
+      "innovation"
+    ],
+    "communication": [
+      "comunicação interpessoal",
+      "apresentações",
+      "stakeholder management",
+      "cross-functional collaboration",
+      "client management"
+    ],
+    "project_management": [
+      "gestão de projetos",
+      "priorização",
+      "multitasking",
+      "deadline management",
+      "budget management"
+    ]
+  },
+  "certifications": [
+    "Google Ads Certification",
+    "Google Analytics Certification",
+    "HubSpot Inbound Marketing",
+    "HubSpot Content Marketing",
+    "Facebook Blueprint Certification",
+    "Meta Certified Digital Marketing Associate",
+    "Hootsuite Social Marketing Certification",
+    "SEMrush Certification",
+    "Moz SEO Certification",
+    "Digital Marketing Institute Certification"
+  ],
+  "industry_specific": {
+    "saas": [
+      "product marketing",
+      "user onboarding",
+      "feature adoption",
+      "trial-to-paid conversion",
+      "SaaS metrics",
+      "product-led growth"
+    ],
+    "ecommerce": [
+      "conversion rate optimization",
+      "cart abandonment recovery",
+      "product recommendations",
+      "seasonal campaigns",
+      "marketplace advertising"
+    ],
+    "fintech": [
+      "compliance marketing",
+      "trust building",
+      "educational content",
+      "regulatory awareness"
+    ]
+  },
+  "metrics_keywords": [
+    "ROI",
+    "ROAS",
+    "conversions",
+    "leads generated",
+    "pipeline value",
+    "revenue attribution",
+    "customer lifetime value",
+    "acquisition cost",
+    "engagement rate",
+    "traffic growth",
+    "conversion rate improvement",
+    "cost reduction",
+    "efficiency gains"
+  ],
+  "quantifiable_terms": [
+    "aumentou tráfego em X%",
+    "gerou X leads",
+    "reduziu CAC em X%",
+    "aumentou conversão em X%",
+    "ROI de X:1",
+    "ROAS de X%",
+    "crescimento de X% em receita",
+    "alcançou X impressões",
+    "X% engagement rate",
+    "geriu orçamento de €X",
+    "X campanhas executadas",
+    "X% redução em custo"
+  ],
+  "job_specific_keywords": {
+    "digital_marketing_specialist": [
+      "multi-channel campaigns",
+      "paid media",
+      "organic growth",
+      "conversion optimization",
+      "performance tracking",
+      "data analysis",
+      "campaign management"
+    ],
+    "content_marketing_manager": [
+      "content strategy",
+      "editorial calendar",
+      "SEO content",
+      "content distribution",
+      "content performance",
+      "brand voice",
+      "content team management"
+    ],
+    "social_media_manager": [
+      "social media strategy",
+      "content creation",
+      "community management",
+      "social listening",
+      "influencer partnerships",
+      "crisis management",
+      "social analytics"
+    ],
+    "growth_marketing_manager": [
+      "growth experiments",
+      "funnel optimization",
+      "retention strategies",
+      "viral loops",
+      "product-market fit",
+      "scaling strategies",
+      "data-driven growth"
+    ],
+    "performance_marketing_manager": [
+      "media buying",
+      "budget optimization",
+      "multi-channel attribution",
+      "performance dashboards",
+      "ROI optimization",
+      "campaign scaling"
+    ]
+  },
+  "trending_2025": [
+    "AI-powered marketing",
+    "predictive analytics",
+    "marketing automation",
+    "personalization at scale",
+    "video marketing",
+    "influencer marketing",
+    "voice search optimization",
+    "conversational marketing",
+    "privacy-first marketing",
+    "zero-party data",
+    "Web3 marketing",
+    "metaverse marketing"
+  ]
+}

@@ -37,7 +37,7 @@ export const uploadTemplateDesign = [
         });
       }
 
-      const { templateName, slug } = req.body;
+      const { templateName, slug, templateId } = req.body; // templateId enviado pelo front
 
       if (!slug) {
         return res.status(400).json({
@@ -73,21 +73,66 @@ export const uploadTemplateDesign = [
       // Analisar layout com IA
       console.log('🔍 Analisando layout do template...');
       const layoutAnalysis = await aiService.analyzeTemplateLayout(localImagePath);
-      
 
       // Gerar HTML/CSS baseado no layout
       console.log('🎨 Gerando código do template...');
       const { html, css } = await aiService.generateTemplateCode(layoutAnalysis);
 
+      // Se templateId foi fornecido, atualizar template existente
+      if (templateId) {
+        const existingTemplate = await prisma.template.findUnique({
+          where: { id: templateId },
+        });
+
+        if (existingTemplate) {
+          await prisma.template.update({
+            where: { id: templateId },
+            data: {
+              name: templateName || existingTemplate.name,
+              previewImageUrl: uploadResult.preview.url,
+              generatedHTML: html,
+              generatedCSS: css,
+              layoutData: layoutAnalysis,
+              metadata: {
+                ...(existingTemplate.metadata || {}),
+                originalImageUrl: uploadResult.original.url,
+                images: uploadResult,
+                layoutAnalysis,
+                generatedBy: 'ai',
+                generatedAt: new Date().toISOString(),
+              },
+            },
+          });
+
+          return res.status(200).json({
+            success: true,
+            message: 'Template atualizado com sucesso',
+            data: {
+              templateId,
+              images: uploadResult,
+              layoutAnalysis,
+              generatedCode: { html, css },
+            },
+          });
+        }
+      }
+
+      // Retornar dados para o frontend criar o template depois
       return res.status(200).json({
         success: true,
         message: 'Design carregado e analisado com sucesso',
         data: {
           images: uploadResult,
           layoutAnalysis,
-          generatedCode: {
-            html,
-            css,
+          generatedCode: { html, css },
+          templateData: {
+            name: templateName,
+            slug,
+            previewImageUrl: uploadResult.preview.url,
+            originalImageUrl: uploadResult.original.url,
+            layoutData: layoutAnalysis,
+            generatedHTML: html,
+            generatedCSS: css,
           },
         },
       });
@@ -100,6 +145,7 @@ export const uploadTemplateDesign = [
     }
   },
 ];
+
 
 /**
  * Criar template a partir do design

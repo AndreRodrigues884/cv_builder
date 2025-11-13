@@ -18,6 +18,11 @@ RUN apt-get update && apt-get install -y \
     fonts-noto-color-emoji \
     python3 \
     build-essential \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libjpeg-dev \
+    libgif-dev \
+    librsvg2-dev \
     --no-install-recommends && \
     rm -rf /var/lib/apt/lists/*
 
@@ -35,15 +40,14 @@ COPY package*.json ./
 # -------------------------------
 FROM base AS development
 
-# IMPORTANTE: Instala dependências DENTRO do container
-# Isso garante que o Sharp seja compilado para Linux
+# Instala dependências dentro do container
 RUN npm install --include=optional
 
-# DEPOIS copia o resto do código
+# Copia o resto do código
 COPY . .
 COPY prisma ./prisma
 
-# Rebuild do Sharp para garantir compatibilidade
+# Rebuild do Sharp para compatibilidade
 RUN npm rebuild sharp
 
 # Gera cliente Prisma
@@ -61,9 +65,7 @@ RUN npm ci --include=optional
 COPY . .
 COPY prisma ./prisma
 
-# Rebuild do Sharp
 RUN npm rebuild sharp
-
 RUN npx prisma generate
 RUN npm run build
 
@@ -72,12 +74,17 @@ RUN npm run build
 # -------------------------------
 FROM node:20-slim AS production
 
-# Instala apenas runtime dependencies
+# Instala apenas runtime dependencies + libs do canvas
 RUN apt-get update && apt-get install -y \
     libvips \
     chromium \
     ca-certificates \
     fonts-freefont-ttf \
+    libcairo2 \
+    libpango-1.0-0 \
+    libjpeg62-turbo \
+    libgif7 \
+    librsvg2-2 \
     --no-install-recommends && \
     rm -rf /var/lib/apt/lists/*
 
@@ -85,7 +92,6 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 WORKDIR /app
 
-# Copia pacotes
 COPY package*.json ./
 
 # Instala dependências de produção
@@ -93,11 +99,9 @@ RUN npm ci --omit=dev --include=optional && \
     npm rebuild sharp && \
     npm cache clean --force
 
-# Copia código e prisma
 COPY --from=build /app/dist ./dist
 COPY prisma ./prisma
 
-# Gera cliente Prisma
 RUN npx prisma generate
 
 EXPOSE 5000

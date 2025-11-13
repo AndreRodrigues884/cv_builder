@@ -53,6 +53,7 @@ export default {
 
     data() {
         return {
+            activeSection: 'job-match',
             selectedCVId: '',
             jobDescription: '',
             adaptedCV: null,
@@ -69,15 +70,6 @@ export default {
         allCVs() {
             return this.cvStore.cvs
         },
-
-        activeSection: {
-            get() {
-                return this.$parent.activeSection
-            },
-            set(value) {
-                this.$parent.activeSection = value
-            }
-        }
     },
 
     async mounted() {
@@ -112,7 +104,7 @@ export default {
             } finally {
                 this.loading = false
             }
-        },
+        }, 
 
         importLinkedIn() {
             alert('Funcionalidade de importação do LinkedIn ainda não implementada.')

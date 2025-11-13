@@ -1,0 +1,834 @@
+{
+    "metadata": {
+        "version": "1.0.0",
+        "created_at": "2025-01-15",
+        "total_skills": 500,
+        "total_categories": 15,
+        "languages": [
+            "pt-PT",
+            "en-US"
+        ],
+        "description": "Base de dados completa de skills profissionais por área e categoria",
+        "last_updated": "2025-01-15"
+    },
+    "technology": {
+        "frontend": [
+            {
+                "name": "React",
+                "category": "Frontend Framework",
+                "priority": "high",
+                "demand_score": 95,
+                "avg_salary_impact": "+18%",
+                "years_to_master": 2,
+                "related_skills": [
+                    "JavaScript",
+                    "TypeScript",
+                    "Redux",
+                    "Next.js"
+                ],
+                "certifications": [
+                    "Meta Front-End Developer",
+                    "React Developer Certification"
+                ],
+                "learning_resources": [
+                    "React Official Documentation",
+                    "Frontend Masters - Complete React",
+                    "Udemy - React - The Complete Guide"
+                ],
+                "job_postings_count": 45000,
+                "trend": "growing",
+                "companies_using": [
+                    "Meta",
+                    "Netflix",
+                    "Airbnb",
+                    "Uber",
+                    "Tesla"
+                ]
+            },
+            {
+                "name": "Vue.js",
+                "category": "Frontend Framework",
+                "priority": "high",
+                "demand_score": 85,
+                "avg_salary_impact": "+15%",
+                "years_to_master": 1.5,
+                "related_skills": [
+                    "JavaScript",
+                    "TypeScript",
+                    "Vuex",
+                    "Nuxt.js"
+                ],
+                "certifications": [
+                    "Vue.js Certification"
+                ],
+                "learning_resources": [
+                    "Vue.js Official Documentation",
+                    "Vue Mastery",
+                    "Udemy - Vue - The Complete Guide"
+                ],
+                "job_postings_count": 28000,
+                "trend": "stable",
+                "companies_using": [
+                    "Alibaba",
+                    "GitLab",
+                    "Nintendo",
+                    "Grammarly"
+                ]
+            },
+            {
+                "name": "TypeScript",
+                "category": "Programming Language",
+                "priority": "high",
+                "demand_score": 92,
+                "avg_salary_impact": "+20%",
+                "years_to_master": 1,
+                "related_skills": [
+                    "JavaScript",
+                    "React",
+                    "Node.js",
+                    "Angular"
+                ],
+                "certifications": [
+                    "Microsoft TypeScript Certification"
+                ],
+                "learning_resources": [
+                    "TypeScript Official Handbook",
+                    "Execute Program - TypeScript",
+                    "Total TypeScript by Matt Pocock"
+                ],
+                "job_postings_count": 52000,
+                "trend": "growing",
+                "companies_using": [
+                    "Microsoft",
+                    "Google",
+                    "Slack",
+                    "Asana",
+                    "Airbnb"
+                ]
+            },
+            {
+                "name": "Next.js",
+                "category": "Meta Framework",
+                "priority": "high",
+                "demand_score": 88,
+                "avg_salary_impact": "+16%",
+                "years_to_master": 1,
+                "related_skills": [
+                    "React",
+                    "Node.js",
+                    "Vercel",
+                    "TypeScript"
+                ],
+                "certifications": [
+                    "Vercel Next.js Developer"
+                ],
+                "learning_resources": [
+                    "Next.js Official Learn Course",
+                    "Lee Robinson YouTube Channel",
+                    "Next.js Patterns"
+                ],
+                "job_postings_count": 35000,
+                "trend": "growing",
+                "companies_using": [
+                    "Vercel",
+                    "TikTok",
+                    "Twitch",
+                    "Hulu",
+                    "Nike"
+                ]
+            },
+            {
+                "name": "Tailwind CSS",
+                "category": "CSS Framework",
+                "priority": "medium",
+                "demand_score": 82,
+                "avg_salary_impact": "+10%",
+                "years_to_master": 0.5,
+                "related_skills": [
+                    "CSS",
+                    "HTML",
+                    "React",
+                    "Vue.js"
+                ],
+                "certifications": [],
+                "learning_resources": [
+                    "Tailwind CSS Official Documentation",
+                    "Tailwind Labs YouTube",
+                    "Tailwind UI Components"
+                ],
+                "job_postings_count": 25000,
+                "trend": "growing",
+                "companies_using": [
+                    "GitHub",
+                    "Shopify",
+                    "OpenAI",
+                    "Laravel",
+                    "Algolia"
+                ]
+            }
+        ],
+        "backend": [
+            {
+                "name": "Node.js",
+                "category": "Runtime Environment",
+                "priority": "high",
+                "demand_score": 93,
+                "avg_salary_impact": "+18%",
+                "years_to_master": 2,
+                "related_skills": [
+                    "JavaScript",
+                    "Express",
+                    "TypeScript",
+                    "MongoDB",
+                    "PostgreSQL"
+                ],
+                "certifications": [
+                    "OpenJS Node.js Services Developer",
+                    "OpenJS Node.js Application Developer"
+                ],
+                "learning_resources": [
+                    "Node.js Official Documentation",
+                    "NodeSchool",
+                    "The Complete Node.js Developer Course"
+                ],
+                "job_postings_count": 48000,
+                "trend": "stable",
+                "companies_using": [
+                    "Netflix",
+                    "PayPal",
+                    "LinkedIn",
+                    "Uber",
+                    "NASA"
+                ]
+            },
+            {
+                "name": "Python",
+                "category": "Programming Language",
+                "priority": "high",
+                "demand_score": 96,
+                "avg_salary_impact": "+22%",
+                "years_to_master": 2,
+                "related_skills": [
+                    "Django",
+                    "FastAPI",
+                    "Flask",
+                    "Pandas",
+                    "NumPy"
+                ],
+                "certifications": [
+                    "PCEP",
+                    "PCAP",
+                    "PCPP1",
+                    "PCPP2"
+                ],
+                "learning_resources": [
+                    "Python Official Documentation",
+                    "Real Python",
+                    "Python for Everybody Specialization"
+                ],
+                "job_postings_count": 78000,
+                "trend": "growing",
+                "companies_using": [
+                    "Google",
+                    "Instagram",
+                    "Spotify",
+                    "Dropbox",
+                    "NASA"
+                ]
+            },
+            {
+                "name": "Django",
+                "category": "Web Framework",
+                "priority": "medium",
+                "demand_score": 80,
+                "avg_salary_impact": "+15%",
+                "years_to_master": 1.5,
+                "related_skills": [
+                    "Python",
+                    "PostgreSQL",
+                    "REST APIs",
+                    "Celery",
+                    "Redis"
+                ],
+                "certifications": [],
+                "learning_resources": [
+                    "Django Official Documentation",
+                    "Django for Beginners",
+                    "Two Scoops of Django"
+                ],
+                "job_postings_count": 22000,
+                "trend": "stable",
+                "companies_using": [
+                    "Instagram",
+                    "Mozilla",
+                    "Pinterest",
+                    "NASA",
+                    "Spotify"
+                ]
+            },
+            {
+                "name": "GraphQL",
+                "category": "API Technology",
+                "priority": "medium",
+                "demand_score": 75,
+                "avg_salary_impact": "+12%",
+                "years_to_master": 1,
+                "related_skills": [
+                    "REST APIs",
+                    "Node.js",
+                    "Apollo",
+                    "TypeScript"
+                ],
+                "certifications": [
+                    "Apollo Graph Developer Professional"
+                ],
+                "learning_resources": [
+                    "GraphQL Official Documentation",
+                    "How to GraphQL",
+                    "Apollo Odyssey"
+                ],
+                "job_postings_count": 18000,
+                "trend": "growing",
+                "companies_using": [
+                    "Facebook",
+                    "GitHub",
+                    "Shopify",
+                    "Twitter",
+                    "Netflix"
+                ]
+            },
+            {
+                "name": "FastAPI",
+                "category": "Web Framework",
+                "priority": "medium",
+                "demand_score": 78,
+                "avg_salary_impact": "+14%",
+                "years_to_master": 1,
+                "related_skills": [
+                    "Python",
+                    "Pydantic",
+                    "Uvicorn",
+                    "PostgreSQL",
+                    "Docker"
+                ],
+                "certifications": [],
+                "learning_resources": [
+                    "FastAPI Official Documentation",
+                    "TestDriven.io FastAPI Course",
+                    "FastAPI Best Practices"
+                ],
+                "job_postings_count": 15000,
+                "trend": "growing",
+                "companies_using": [
+                    "Microsoft",
+                    "Uber",
+                    "Netflix",
+                    "Explosion AI"
+                ]
+            }
+        ],
+        "devops": [
+            {
+                "name": "Docker",
+                "category": "Containerization",
+                "priority": "high",
+                "demand_score": 94,
+                "avg_salary_impact": "+20%",
+                "years_to_master": 1.5,
+                "related_skills": [
+                    "Kubernetes",
+                    "Linux",
+                    "CI/CD",
+                    "Docker Compose"
+                ],
+                "certifications": [
+                    "Docker Certified Associate"
+                ],
+                "learning_resources": [
+                    "Docker Official Documentation",
+                    "Docker Mastery by Bret Fisher",
+                    "Play with Docker"
+                ],
+                "job_postings_count": 55000,
+                "trend": "stable",
+                "companies_using": [
+                    "Google",
+                    "AWS",
+                    "Microsoft",
+                    "Netflix",
+                    "PayPal"
+                ]
+            },
+            {
+                "name": "Kubernetes",
+                "category": "Container Orchestration",
+                "priority": "high",
+                "demand_score": 90,
+                "avg_salary_impact": "+25%",
+                "years_to_master": 2,
+                "related_skills": [
+                    "Docker",
+                    "Helm",
+                    "Terraform",
+                    "Prometheus",
+                    "Grafana"
+                ],
+                "certifications": [
+                    "CKA",
+                    "CKAD",
+                    "CKS"
+                ],
+                "learning_resources": [
+                    "Kubernetes Official Documentation",
+                    "Kubernetes the Hard Way",
+                    "KodeKloud Kubernetes Courses"
+                ],
+                "job_postings_count": 42000,
+                "trend": "growing",
+                "companies_using": [
+                    "Google",
+                    "Spotify",
+                    "Reddit",
+                    "Slack",
+                    "Airbnb"
+                ]
+            },
+            {
+                "name": "AWS",
+                "category": "Cloud Platform",
+                "priority": "high",
+                "demand_score": 92,
+                "avg_salary_impact": "+22%",
+                "years_to_master": 2,
+                "related_skills": [
+                    "EC2",
+                    "S3",
+                    "Lambda",
+                    "CloudFormation",
+                    "Terraform"
+                ],
+                "certifications": [
+                    "AWS Solutions Architect",
+                    "AWS Developer",
+                    "AWS DevOps Engineer"
+                ],
+                "learning_resources": [
+                    "AWS Official Documentation",
+                    "A Cloud Guru",
+                    "AWS Skill Builder"
+                ],
+                "job_postings_count": 68000,
+                "trend": "stable",
+                "companies_using": [
+                    "Netflix",
+                    "Airbnb",
+                    "Lyft",
+                    "Adobe",
+                    "Samsung"
+                ]
+            },
+            {
+                "name": "Terraform",
+                "category": "Infrastructure as Code",
+                "priority": "high",
+                "demand_score": 85,
+                "avg_salary_impact": "+18%",
+                "years_to_master": 1.5,
+                "related_skills": [
+                    "AWS",
+                    "Azure",
+                    "GCP",
+                    "Ansible",
+                    "Docker"
+                ],
+                "certifications": [
+                    "HashiCorp Certified: Terraform Associate"
+                ],
+                "learning_resources": [
+                    "Terraform Official Documentation",
+                    "HashiCorp Learn",
+                    "Terraform Up & Running Book"
+                ],
+                "job_postings_count": 32000,
+                "trend": "growing",
+                "companies_using": [
+                    "Uber",
+                    "Slack",
+                    "GitHub",
+                    "Square",
+                    "Twitch"
+                ]
+            },
+            {
+                "name": "CI/CD",
+                "category": "Development Practice",
+                "priority": "high",
+                "demand_score": 91,
+                "avg_salary_impact": "+17%",
+                "years_to_master": 1,
+                "related_skills": [
+                    "Jenkins",
+                    "GitHub Actions",
+                    "GitLab CI",
+                    "Docker",
+                    "Kubernetes"
+                ],
+                "certifications": [
+                    "Jenkins Certified Engineer"
+                ],
+                "learning_resources": [
+                    "GitLab CI/CD Documentation",
+                    "GitHub Actions Documentation",
+                    "Continuous Delivery by Jez Humble"
+                ],
+                "job_postings_count": 45000,
+                "trend": "stable",
+                "companies_using": [
+                    "Google",
+                    "Netflix",
+                    "Amazon",
+                    "Microsoft",
+                    "Facebook"
+                ]
+            }
+        ],
+        "data_science": [
+            {
+                "name": "Machine Learning",
+                "category": "AI/ML",
+                "priority": "high",
+                "demand_score": 95,
+                "avg_salary_impact": "+30%",
+                "years_to_master": 3,
+                "related_skills": [
+                    "Python",
+                    "TensorFlow",
+                    "PyTorch",
+                    "Scikit-learn",
+                    "Statistics"
+                ],
+                "certifications": [
+                    "Google ML Engineer",
+                    "AWS ML Specialty",
+                    "TensorFlow Developer"
+                ],
+                "learning_resources": [
+                    "Andrew Ng's ML Course",
+                    "Fast.ai",
+                    "Hands-On Machine Learning Book"
+                ],
+                "job_postings_count": 62000,
+                "trend": "growing",
+                "companies_using": [
+                    "Google",
+                    "Meta",
+                    "Amazon",
+                    "Netflix",
+                    "Tesla"
+                ]
+            },
+            {
+                "name": "PyTorch",
+                "category": "ML Framework",
+                "priority": "high",
+                "demand_score": 87,
+                "avg_salary_impact": "+24%",
+                "years_to_master": 2,
+                "related_skills": [
+                    "Python",
+                    "Deep Learning",
+                    "NumPy",
+                    "CUDA",
+                    "TensorFlow"
+                ],
+                "certifications": [],
+                "learning_resources": [
+                    "PyTorch Official Tutorials",
+                    "Deep Learning with PyTorch",
+                    "Fast.ai PyTorch Course"
+                ],
+                "job_postings_count": 35000,
+                "trend": "growing",
+                "companies_using": [
+                    "Meta",
+                    "Tesla",
+                    "Uber",
+                    "OpenAI",
+                    "Microsoft"
+                ]
+            },
+            {
+                "name": "Pandas",
+                "category": "Data Analysis",
+                "priority": "high",
+                "demand_score": 92,
+                "avg_salary_impact": "+18%",
+                "years_to_master": 1,
+                "related_skills": [
+                    "Python",
+                    "NumPy",
+                    "SQL",
+                    "Jupyter",
+                    "Matplotlib"
+                ],
+                "certifications": [],
+                "learning_resources": [
+                    "Pandas Official Documentation",
+                    "Python for Data Analysis Book",
+                    "Kaggle Learn Pandas"
+                ],
+                "job_postings_count": 48000,
+                "trend": "stable",
+                "companies_using": [
+                    "Netflix",
+                    "JPMorgan",
+                    "Airbnb",
+                    "Spotify",
+                    "NASA"
+                ]
+            },
+            {
+                "name": "SQL",
+                "category": "Database Query Language",
+                "priority": "high",
+                "demand_score": 98,
+                "avg_salary_impact": "+15%",
+                "years_to_master": 1.5,
+                "related_skills": [
+                    "PostgreSQL",
+                    "MySQL",
+                    "Database Design",
+                    "Python",
+                    "Tableau"
+                ],
+                "certifications": [
+                    "Oracle SQL Certification",
+                    "Microsoft SQL Server Certification"
+                ],
+                "learning_resources": [
+                    "SQLZoo",
+                    "Mode Analytics SQL Tutorial",
+                    "SQL for Data Science on Coursera"
+                ],
+                "job_postings_count": 95000,
+                "trend": "stable",
+                "companies_using": [
+                    "Every major company uses SQL"
+                ]
+            },
+            {
+                "name": "Tableau",
+                "category": "Data Visualization",
+                "priority": "medium",
+                "demand_score": 83,
+                "avg_salary_impact": "+14%",
+                "years_to_master": 1,
+                "related_skills": [
+                    "SQL",
+                    "Data Analysis",
+                    "Power BI",
+                    "Excel",
+                    "Statistics"
+                ],
+                "certifications": [
+                    "Tableau Desktop Specialist",
+                    "Tableau Certified Data Analyst"
+                ],
+                "learning_resources": [
+                    "Tableau Official Training",
+                    "Tableau Tim on YouTube",
+                    "DataCamp Tableau Courses"
+                ],
+                "job_postings_count": 38000,
+                "trend": "stable",
+                "companies_using": [
+                    "Salesforce",
+                    "LinkedIn",
+                    "Coca-Cola",
+                    "Walmart",
+                    "Deloitte"
+                ]
+            }
+        ]
+    },
+    "marketing": {
+        "digital_marketing": [
+            {
+                "name": "Google Ads",
+                "category": "Paid Advertising",
+                "priority": "high",
+                "demand_score": 90,
+                "avg_salary_impact": "+18%",
+                "years_to_master": 1.5,
+                "related_skills": [
+                    "SEO",
+                    "Analytics",
+                    "Conversion Optimization",
+                    "PPC"
+                ],
+                "certifications": [
+                    "Google Ads Certification",
+                    "Google Analytics Certification"
+                ],
+                "learning_resources": [
+                    "Google Skillshop",
+                    "WordStream PPC University",
+                    "Surfside PPC YouTube"
+                ],
+                "job_postings_count": 42000,
+                "trend": "stable",
+                "companies_using": [
+                    "Amazon",
+                    "eBay",
+                    "Booking.com",
+                    "Shopify",
+                    "HubSpot"
+                ]
+            },
+            {
+                "name": "SEO",
+                "category": "Organic Marketing",
+                "priority": "high",
+                "demand_score": 92,
+                "avg_salary_impact": "+16%",
+                "years_to_master": 2,
+                "related_skills": [
+                    "Google Analytics",
+                    "Content Marketing",
+                    "Technical SEO",
+                    "Link Building"
+                ],
+                "certifications": [
+                    "Google Analytics",
+                    "SEMrush Certification",
+                    "Moz SEO Certification"
+                ],
+                "learning_resources": [
+                    "Moz Beginner's Guide to SEO",
+                    "Ahrefs Academy",
+                    "Google Search Central"
+                ],
+                "job_postings_count": 38000,
+                "trend": "stable",
+                "companies_using": [
+                    "Amazon",
+                    "Airbnb",
+                    "Shopify",
+                    "HubSpot",
+                    "Zillow"
+                ]
+            },
+            {
+                "name": "Google Analytics",
+                "category": "Analytics",
+                "priority": "high",
+                "demand_score": 95,
+                "avg_salary_impact": "+12%",
+                "years_to_master": 1,
+                "related_skills": [
+                    "Google Tag Manager",
+                    "Data Analysis",
+                    "SEO",
+                    "Marketing"
+                ],
+                "certifications": [
+                    "Google Analytics Individual Qualification (GAIQ)",
+                    "GA4 Certification"
+                ],
+                "learning_resources": [
+                    "Google Analytics Academy",
+                    "Analytics Mania",
+                    "Measure School YouTube"
+                ],
+                "job_postings_count": 52000,
+                "trend": "growing",
+                "companies_using": [
+                    "Every digital company uses Google Analytics"
+                ]
+            },
+            {
+                "name": "Meta Ads",
+                "category": "Paid Social",
+                "priority": "high",
+                "demand_score": 88,
+                "avg_salary_impact": "+17%",
+                "years_to_master": 1,
+                "related_skills": [
+                    "Instagram Ads",
+                    "Audience Targeting",
+                    "Creative Strategy",
+                    "Analytics"
+                ],
+                "certifications": [
+                    "Meta Certified Digital Marketing Associate",
+                    "Meta Blueprint Certification"
+                ],
+                "learning_resources": [
+                    "Meta Blueprint",
+                    "Social Media Examiner",
+                    "Jon Loomer Digital"
+                ],
+                "job_postings_count": 35000,
+                "trend": "stable",
+                "companies_using": [
+                    "E-commerce brands",
+                    "D2C companies",
+                    "Agencies"
+                ]
+            },
+            {
+                "name": "Content Marketing",
+                "category": "Content Strategy",
+                "priority": "medium",
+                "demand_score": 85,
+                "avg_salary_impact": "+14%",
+                "years_to_master": 2,
+                "related_skills": [
+                    "Copywriting",
+                    "SEO",
+                    "Social Media",
+                    "Email Marketing"
+                ],
+                "certifications": [
+                    "HubSpot Content Marketing",
+                    "Content Marketing Institute"
+                ],
+                "learning_resources": [
+                    "HubSpot Academy",
+                    "Content Marketing Institute",
+                    "Copyblogger"
+                ],
+                "job_postings_count": 32000,
+                "trend": "stable",
+                "companies_using": [
+                    "HubSpot",
+                    "Buffer",
+                    "Mailchimp",
+                    "Shopify",
+                    "Zendesk"
+                ]
+            }
+        ]
+    },
+    "soft_skills": [
+        {
+            "name": "Liderança",
+            "category": "Leadership",
+            "priority": "high",
+            "demand_score": 98,
+            "avg_salary_impact": "+25%",
+            "years_to_master": 5,
+            "related_skills": [
+                "Gestão de Pessoas",
+                "Comunicação",
+                "Tomada de Decisão",
+                "Coaching"
+            ],
+            "certifications": [
+                "Certified Scrum Master",
+                "PMP",
+                "Six Sigma Black Belt"
+            ]
+        }
+    ]
+}

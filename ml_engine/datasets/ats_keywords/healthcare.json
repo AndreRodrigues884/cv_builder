@@ -1,0 +1,384 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "area": "Healthcare",
+    "created_at": "2025-01-15",
+    "total_keywords": 250,
+    "description": "ATS-optimized keywords for the healthcare, clinical, and health technology sectors"
+  },
+  "action_verbs": {
+    "high_priority": [
+      "diagnosed",
+      "treated",
+      "monitored",
+      "administered",
+      "evaluated",
+      "implemented",
+      "improved",
+      "managed",
+      "supervised",
+      "performed"
+    ],
+    "medium_priority": [
+      "assessed",
+      "recorded",
+      "coordinated",
+      "educated",
+      "documented",
+      "communicated",
+      "supported",
+      "collaborated",
+      "assisted",
+      "scheduled"
+    ],
+    "leadership": [
+      "led",
+      "directed",
+      "mentored",
+      "trained",
+      "oversaw",
+      "coordinated",
+      "delegated"
+    ]
+  },
+  "clinical_skills": {
+    "areas": [
+      "primary care",
+      "emergency medicine",
+      "pediatrics",
+      "geriatrics",
+      "internal medicine",
+      "surgery",
+      "cardiology",
+      "oncology",
+      "neurology",
+      "orthopedics"
+    ],
+    "skills": [
+      "patient assessment",
+      "diagnostic interpretation",
+      "treatment planning",
+      "medication administration",
+      "clinical documentation",
+      "infection control",
+      "patient education",
+      "vital signs monitoring",
+      "electronic health records (EHR) management",
+      "multidisciplinary collaboration"
+    ],
+    "tools": [
+      "Epic Systems",
+      "Cerner",
+      "Meditech",
+      "Allscripts",
+      "Athenahealth",
+      "NextGen",
+      "Philips IntelliVue",
+      "GE Healthcare systems"
+    ]
+  },
+  "public_health": {
+    "skills": [
+      "epidemiology",
+      "disease surveillance",
+      "public health education",
+      "vaccination campaigns",
+      "community outreach",
+      "environmental health",
+      "data collection and reporting",
+      "policy implementation",
+      "preventive health strategies"
+    ],
+    "tools": [
+      "SPSS",
+      "SAS",
+      "R",
+      "Excel",
+      "ArcGIS",
+      "Epi Info"
+    ],
+    "metrics": [
+      "disease incidence rate",
+      "prevalence rate",
+      "mortality rate",
+      "vaccination coverage",
+      "health outcomes"
+    ]
+  },
+  "health_technology": {
+    "skills": [
+      "telemedicine setup",
+      "remote patient monitoring",
+      "medical device integration",
+      "EHR interoperability",
+      "clinical data analytics",
+      "digital health innovation",
+      "health IT systems implementation"
+    ],
+    "tools": [
+      "FHIR APIs",
+      "HL7 standards",
+      "Apple HealthKit",
+      "Google Fit",
+      "medical IoT devices",
+      "wearable health tech"
+    ],
+    "metrics": [
+      "adoption rate",
+      "patient engagement",
+      "system uptime",
+      "data accuracy",
+      "response time"
+    ]
+  },
+  "nursing": {
+    "skills": [
+      "patient care",
+      "IV therapy",
+      "wound management",
+      "vital signs monitoring",
+      "care coordination",
+      "patient advocacy",
+      "charting and documentation",
+      "medication reconciliation"
+    ],
+    "specialties": [
+      "ICU",
+      "ER",
+      "pediatrics",
+      "geriatrics",
+      "oncology",
+      "surgical nursing",
+      "psychiatric nursing",
+      "home health nursing"
+    ]
+  },
+  "healthcare_management": {
+    "skills": [
+      "budget management",
+      "resource allocation",
+      "staff scheduling",
+      "policy development",
+      "quality assurance",
+      "regulatory compliance",
+      "strategic planning",
+      "patient experience improvement"
+    ],
+    "tools": [
+      "Microsoft Power BI",
+      "Tableau",
+      "SAP Healthcare",
+      "Salesforce Health Cloud"
+    ],
+    "frameworks": [
+      "Lean Healthcare",
+      "Six Sigma",
+      "Joint Commission Standards",
+      "HIPAA compliance"
+    ]
+  },
+  "medical_research": {
+    "skills": [
+      "clinical trials",
+      "protocol development",
+      "data collection",
+      "informed consent",
+      "biostatistics",
+      "literature review",
+      "manuscript writing",
+      "data analysis"
+    ],
+    "tools": [
+      "REDCap",
+      "SPSS",
+      "R",
+      "Python",
+      "Stata",
+      "NVivo"
+    ],
+    "metrics": [
+      "sample size",
+      "data accuracy",
+      "statistical significance",
+      "study completion rate",
+      "publication count"
+    ]
+  },
+  "pharmacy": {
+    "skills": [
+      "pharmacotherapy",
+      "drug dispensing",
+      "prescription review",
+      "medication counseling",
+      "drug interaction monitoring",
+      "inventory control"
+    ],
+    "tools": [
+      "PioneerRx",
+      "Rx30",
+      "QS/1",
+      "Omnicell",
+      "Pyxis MedStation"
+    ]
+  },
+  "radiology_and_imaging": {
+    "skills": [
+      "image interpretation",
+      "diagnostic imaging",
+      "radiation safety",
+      "MRI operation",
+      "CT scan analysis",
+      "ultrasound procedures"
+    ],
+    "tools": [
+      "PACS",
+      "DICOM",
+      "GE Centricity",
+      "Siemens Syngo",
+      "Philips IntelliSpace"
+    ]
+  },
+  "soft_skills": {
+    "analytical": [
+      "critical thinking",
+      "clinical reasoning",
+      "data interpretation",
+      "diagnostic problem solving",
+      "evidence-based decision making"
+    ],
+    "creative": [
+      "innovative care approaches",
+      "process improvement",
+      "adaptability",
+      "solution-focused mindset",
+      "health innovation"
+    ],
+    "communication": [
+      "patient communication",
+      "interdisciplinary collaboration",
+      "conflict resolution",
+      "team coordination",
+      "family education"
+    ],
+    "project_management": [
+      "case management",
+      "workflow optimization",
+      "scheduling",
+      "reporting",
+      "healthcare operations management"
+    ]
+  },
+  "certifications": [
+    "Registered Nurse (RN)",
+    "Advanced Cardiovascular Life Support (ACLS)",
+    "Basic Life Support (BLS)",
+    "Certified Nursing Assistant (CNA)",
+    "Certified Medical Assistant (CMA)",
+    "Project Management Professional (PMP - Healthcare)",
+    "HIPAA Compliance Certification",
+    "Certified Professional in Healthcare Quality (CPHQ)",
+    "CPR Certification",
+    "Lean Six Sigma Healthcare"
+  ],
+  "industry_specific": {
+    "telehealth": [
+      "virtual consultations",
+      "remote diagnostics",
+      "video triage",
+      "telemonitoring",
+      "digital patient engagement"
+    ],
+    "biotech": [
+      "genetic testing",
+      "clinical data management",
+      "biomarker discovery",
+      "pharmacogenomics",
+      "laboratory compliance"
+    ],
+    "healthtech": [
+      "AI diagnostics",
+      "data-driven care",
+      "EHR analytics",
+      "IoMT (Internet of Medical Things)",
+      "predictive health analytics"
+    ]
+  },
+  "metrics_keywords": [
+    "patient satisfaction",
+    "readmission rate",
+    "treatment success rate",
+    "wait time reduction",
+    "error rate reduction",
+    "quality improvement",
+    "average length of stay (ALOS)",
+    "cost savings",
+    "clinical efficiency"
+  ],
+  "quantifiable_terms": [
+    "treated X patients per day",
+    "reduced readmission rate by X%",
+    "improved patient satisfaction to X%",
+    "reduced medication errors by X%",
+    "cut waiting time by X minutes",
+    "implemented X new procedures",
+    "trained X staff members",
+    "increased treatment success by X%",
+    "managed budget of $X"
+  ],
+  "job_specific_keywords": {
+    "registered_nurse": [
+      "patient care",
+      "medication administration",
+      "EHR documentation",
+      "clinical assessment",
+      "care planning",
+      "infection control"
+    ],
+    "medical_assistant": [
+      "vital signs",
+      "patient intake",
+      "appointment scheduling",
+      "laboratory preparation",
+      "record management",
+      "clinical support"
+    ],
+    "healthcare_manager": [
+      "budget planning",
+      "compliance management",
+      "staff leadership",
+      "strategic healthcare operations",
+      "policy implementation",
+      "performance improvement"
+    ],
+    "public_health_specialist": [
+      "epidemiology analysis",
+      "community health programs",
+      "disease prevention",
+      "data collection",
+      "policy advocacy",
+      "population health"
+    ],
+    "medical_researcher": [
+      "clinical trials",
+      "data analysis",
+      "protocol design",
+      "literature review",
+      "research publication",
+      "statistical modeling"
+    ]
+  },
+  "trending_2025": [
+    "AI-assisted diagnostics",
+    "personalized medicine",
+    "telehealth expansion",
+    "remote patient monitoring",
+    "digital therapeutics",
+    "genomic data integration",
+    "wearable health devices",
+    "predictive healthcare analytics",
+    "virtual reality therapy",
+    "robot-assisted surgery",
+    "health equity initiatives",
+    "data interoperability standards"
+  ]
+}

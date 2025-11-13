@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import * as cvApi from '../api/cv';
+import cvApi from '../api/cv';
 import { CV, CVState } from '../types/cvInterface';
 
 export const useCVStore = defineStore('cv', {
@@ -29,7 +29,7 @@ export const useCVStore = defineStore('cv', {
       try {
         const response = await cvApi.getCVs(filters);
 
-        this.cvs = response.data.data.cvs; 
+        this.cvs = response.data.data.cvs;
 
         return response.data; // opcional
       } catch (error: any) {
@@ -129,28 +129,64 @@ export const useCVStore = defineStore('cv', {
       }
     },
 
-    async downloadCVPDF(id: string) {
+    /* async downloadCV(id: string) {
       this.loading = true;
       this.error = null;
+
       try {
-        const response = await cvApi.downloadCVPDF(id);
+        // Garantir que id é uma string
+        const cvId = typeof id === 'string' ? id : (id?.id || id?.toString());
+        
+        if (!cvId || typeof cvId !== 'string') {
+          throw new Error('ID do CV inválido');
+        }
+
+        console.log('📥 Fazendo download do CV:', cvId);
+        const response = await cvApi.downloadCV(cvId);
+        console.log('📥 PDF recebido do backend:', response);
+
         const blob = new Blob([response.data], { type: 'application/pdf' });
+        const cv = this.cvs.find(c => c.id === cvId) || this.currentCV;
+        const filename = cv ? `cv-${cv.title || cv.id}.pdf` : `cv-${cvId}.pdf`;
+        
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', `cv-${id}.pdf`);
+        link.setAttribute('download', filename.replace(/[^a-zA-Z0-9]/g, '-'));
         document.body.appendChild(link);
         link.click();
-        link.remove();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+
+        console.log('✅ PDF baixado com sucesso');
         return { success: true };
       } catch (error: any) {
-        this.error = error.response?.data?.message || 'Erro ao descarregar PDF';
-        console.error('Erro ao descarregar PDF:', error);
+        this.error = error.response?.data?.message || 'Erro ao fazer download do CV';
+        console.error('❌ Erro ao fazer download do CV:', error);
+        return { success: false, message: this.error };
+      } finally {
+        this.loading = false;
+      }
+    }, */
+
+    async previewCV(id: string) {
+      this.loading = true;
+      this.error = null;
+
+      try {
+        const response = await cvApi.previewCV(id);
+        return { success: true, html: response.data };
+      } catch (error: any) {
+        this.error = error.response?.data?.message || 'Erro ao carregar preview do CV';
+        console.error('❌ Erro ao carregar preview do CV:', error);
         return { success: false, message: this.error };
       } finally {
         this.loading = false;
       }
     },
+
+
+
 
   },
 });

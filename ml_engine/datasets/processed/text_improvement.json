@@ -1,0 +1,251 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "processed_at": "2025-01-15T10:30:00Z",
+    "source": "text_improvement_raw.json",
+    "total_examples": 150,
+    "indexed_by": ["section", "industry", "seniority"],
+    "description": "Dataset processado e otimizado para uso em produção"
+  },
+  "by_section": {
+    "experience": [
+      {
+        "id": "exp_001",
+        "original": "Trabalhei como desenvolvedor na empresa X",
+        "improved": "Desenvolvi e mantive aplicações web full-stack utilizando React e Node.js, resultando em aumento de 30% na eficiência operacional e redução de 25% no tempo de resposta",
+        "patterns": {
+          "weak_verbs_replaced": {
+            "trabalhei": "desenvolvi"
+          },
+          "specificity_added": [
+            "aplicações web full-stack",
+            "React e Node.js"
+          ],
+          "metrics_added": [
+            "30% eficiência",
+            "25% tempo de resposta"
+          ]
+        },
+        "keywords": ["desenvolvi", "mantive", "React", "Node.js", "30%", "25%", "full-stack"],
+        "ats_score": 88,
+        "quality_score": 92,
+        "industry": "technology",
+        "seniority": "mid-level"
+      },
+      {
+        "id": "exp_002",
+        "original": "Fiz gestão de projetos na empresa",
+        "improved": "Geri portfolio de 15 projetos simultâneos com orçamento total de €500K, entregando 95% dentro do prazo estabelecido e 20% abaixo do orçamento previsto",
+        "patterns": {
+          "weak_verbs_replaced": {
+            "fiz": "geri"
+          },
+          "specificity_added": [
+            "portfolio de 15 projetos",
+            "orçamento €500K"
+          ],
+          "metrics_added": [
+            "95% no prazo",
+            "20% abaixo do orçamento"
+          ]
+        },
+        "keywords": ["geri", "15 projetos", "€500K", "95%", "20%", "portfolio"],
+        "ats_score": 92,
+        "quality_score": 95,
+        "industry": "project_management",
+        "seniority": "senior"
+      },
+      {
+        "id": "exp_003",
+        "original": "Ajudei a equipa com várias tarefas",
+        "improved": "Colaborei com equipa cross-functional de 12 pessoas na implementação da metodologia Agile/Scrum, reduzindo time-to-market em 40% e aumentando satisfação do cliente para 4.8/5",
+        "patterns": {
+          "weak_verbs_replaced": {
+            "ajudei": "colaborei"
+          },
+          "specificity_added": [
+            "equipa cross-functional de 12 pessoas",
+            "metodologia Agile/Scrum"
+          ],
+          "metrics_added": [
+            "40% time-to-market",
+            "4.8/5 satisfação"
+          ]
+        },
+        "keywords": ["colaborei", "cross-functional", "12 pessoas", "Agile", "Scrum", "40%", "4.8/5"],
+        "ats_score": 90,
+        "quality_score": 88,
+        "industry": "technology",
+        "seniority": "mid-level"
+      }
+    ],
+    "summary": [
+      {
+        "id": "sum_001",
+        "original": "Sou dedicado e gosto de trabalhar em equipa",
+        "improved": "Engenheiro de Software com 5+ anos de experiência em desenvolvimento full-stack (React, Node.js, Python), especializado em arquiteturas cloud-native e microservices. Histórico comprovado de entrega de soluções escaláveis que aumentaram eficiência operacional em 40% e geraram €2M+ em valor de negócio",
+        "patterns": {
+          "generic_removed": [
+            "sou dedicado",
+            "gosto de trabalhar em equipa"
+          ],
+          "value_added": [
+            "título profissional",
+            "anos de experiência",
+            "tecnologias específicas",
+            "resultados quantificados"
+          ]
+        },
+        "keywords": ["5+ anos", "full-stack", "React", "Node.js", "Python", "cloud-native", "40%", "€2M+"],
+        "ats_score": 91,
+        "quality_score": 93,
+        "industry": "technology",
+        "seniority": "mid-level"
+      },
+      {
+        "id": "sum_002",
+        "original": "Tenho experiência em várias áreas",
+        "improved": "Product Manager com 7 anos gerindo roadmaps de produtos SaaS B2B em fintechs e healthtechs. Track record de 5 lançamentos bem-sucedidos que alcançaram 50K+ utilizadores, €3M ARR e 15% market share. Certificado PSPO III e PSM II pela Scrum.org",
+        "patterns": {
+          "generic_removed": [
+            "tenho experiência em várias áreas"
+          ],
+          "value_added": [
+            "role específico",
+            "tipo de produto",
+            "indústrias",
+            "certificações"
+          ]
+        },
+        "keywords": ["Product Manager", "7 anos", "SaaS B2B", "50K+", "€3M ARR", "PSPO III", "PSM II"],
+        "ats_score": 95,
+        "quality_score": 97,
+        "industry": "product_management",
+        "seniority": "senior"
+      }
+    ],
+    "education": [
+      {
+        "id": "edu_001",
+        "original": "Licenciatura em Informática",
+        "improved": "Licenciatura em Engenharia Informática - Universidade do Minho (2018-2021) | Média: 16/20 | Projeto Final: Sistema de Gestão de CVs com IA (classificação: 18/20)",
+        "patterns": {
+          "specificity_added": [
+            "nome completo do curso",
+            "instituição",
+            "período",
+            "média",
+            "projeto relevante"
+          ]
+        },
+        "keywords": ["Engenharia Informática", "Universidade do Minho", "16/20", "IA", "18/20"],
+        "ats_score": 85,
+        "quality_score": 88
+      }
+    ],
+    "skills": [
+      {
+        "id": "ski_001",
+        "original": "Python, Excel",
+        "improved": "Python (NumPy, Pandas, Scikit-learn) | Excel Avançado (Power Query, VBA, Macros) | SQL (PostgreSQL, MySQL) | Git/GitHub",
+        "patterns": {
+          "specificity_added": [
+            "bibliotecas Python",
+            "nível de Excel",
+            "ferramentas Excel avançadas",
+            "tipos de SQL",
+            "controlo de versão"
+          ]
+        },
+        "keywords": ["Python", "NumPy", "Pandas", "Excel Avançado", "SQL", "PostgreSQL", "Git"],
+        "ats_score": 87,
+        "quality_score": 90
+      }
+    ]
+  },
+  "improvement_rules": {
+    "weak_to_strong_verbs": {
+      "trabalhei": ["desenvolvi", "implementei", "construí", "arquitetei"],
+      "fiz": ["executei", "realizei", "criei", "implementei"],
+      "ajudei": ["colaborei", "contribuí", "apoiei", "facilitei"],
+      "dei": ["prestei", "forneci", "disponibilizei"],
+      "usei": ["utilizei", "apliquei", "implementei"],
+      "participei": ["colaborei", "contribuí", "integrei"],
+      "trabalhei em": ["desenvolvi", "implementei", "geri"]
+    },
+    "action_verbs_by_category": {
+      "leadership": ["liderei", "geri", "coordenei", "dirigi", "supervisionei", "mentorizei"],
+      "technical": ["desenvolvi", "implementei", "arquitetei", "otimizei", "automatizei", "escalei"],
+      "analysis": ["analisei", "identifiquei", "avaliei", "investiguei", "diagnostiquei"],
+      "communication": ["apresentei", "colaborei", "negociei", "facilitei", "documentei"],
+      "achievement": ["alcancei", "excedi", "aumentei", "reduzi", "melhorei", "maximizei"]
+    },
+    "metrics_templates": {
+      "percentage": "aumentando X em Y%",
+      "money": "gerando €X em receita/economia",
+      "time": "reduzindo tempo de X para Y",
+      "volume": "processando X+ transações/utilizadores",
+      "quality": "mantendo X% de satisfação/uptime"
+    },
+    "must_include_by_section": {
+      "experience": ["verbo de ação", "tecnologia/ferramenta", "métrica quantificável"],
+      "summary": ["título profissional", "anos de experiência", "especialização", "resultado de negócio"],
+      "education": ["instituição", "período/ano", "destaque académico"],
+      "skills": ["nível de proficiência", "ferramentas relacionadas"]
+    }
+  },
+  "common_mistakes": [
+    {
+      "mistake": "Usar verbos passivos ou fracos",
+      "examples": ["fui responsável por", "participei em", "ajudei com"],
+      "solution": "Usar verbos de ação fortes no início da frase"
+    },
+    {
+      "mistake": "Falta de quantificação",
+      "examples": ["melhorei a performance", "aumentei as vendas"],
+      "solution": "Adicionar percentagens, valores monetários ou volumes"
+    },
+    {
+      "mistake": "Descrições muito genéricas",
+      "examples": ["trabalhei em projetos diversos", "várias responsabilidades"],
+      "solution": "Especificar tecnologias, metodologias, tamanho de equipa"
+    },
+    {
+      "mistake": "Texto muito longo",
+      "examples": ["parágrafos com 5+ linhas"],
+      "solution": "Manter cada bullet point em 2-3 linhas máximo"
+    }
+  ],
+  "ats_optimization": {
+    "keyword_density": {
+      "recommended": "2-3%",
+      "warning": "Não fazer keyword stuffing"
+    },
+    "formatting_tips": [
+      "Usar bullet points em vez de parágrafos",
+      "Incluir keywords naturalmente no texto",
+      "Evitar tabelas e caixas de texto",
+      "Usar fontes standard (Arial, Calibri, Times)"
+    ],
+    "priority_keywords_by_industry": {
+      "technology": ["desenvolveu", "implementou", "arquitetou", "otimizou", "automatizou"],
+      "marketing": ["executou", "otimizou", "analisou", "aumentou", "geriu"],
+      "product": ["lançou", "prioriz ou", "definiu", "coordenou", "analisou"]
+    }
+  },
+  "quality_scoring": {
+    "criteria": {
+      "has_action_verb": 20,
+      "has_quantification": 25,
+      "has_specificity": 20,
+      "appropriate_length": 15,
+      "ats_friendly": 20
+    },
+    "score_interpretation": {
+      "90-100": "Excelente - pronto para submeter",
+      "75-89": "Bom - pequenos ajustes recomendados",
+      "60-74": "Adequado - melhorias necessárias",
+      "0-59": "Fraco - requer reescrita significativa"
+    }
+  }
+}

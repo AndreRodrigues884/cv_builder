@@ -122,7 +122,8 @@
         </div>
 
         <!-- Create CV Section -->
-        <CreateCV v-if="activeSection === 'create-cv'" />
+        <CreateCVWizard v-if="activeSection === 'create-cv'" @cancel="activeSection = 'dashboard'"
+          @complete="activeSection = 'dashboard'; loadData()" />
 
         <!-- My CVs Section -->
         <MyCVs v-if="activeSection === 'my-cvs'" />
@@ -260,13 +261,14 @@ import Sidebar from "../components/dashboard/sidebar.vue"
 import Header from "../components/dashboard/header.vue"
 import { useCVStore } from "../stores/cv"
 import { useTemplateStore } from "../stores/template"
+import { useAIStore } from "../stores/ai"
 
 // Componentes de secções
 import AiReview from "../components/dashboard/AIReviewSection.vue"
 import JobMatch from "../components/dashboard/JobMatchSection.vue"
 import MyCVs from "../components/dashboard/MyCVsSection.vue"
 import CareerCopilot from "../components/dashboard/CareerCopilotSection.vue"
-import CreateCV from "../components/dashboard/CreateCVSection.vue"
+import CreateCVWizard from "../components/dashboard/CreateCVWizard.vue"
 
 export default {
   name: "Dashboard",
@@ -278,7 +280,7 @@ export default {
     JobMatch,
     MyCVs,
     CareerCopilot,
-    CreateCV
+    CreateCVWizard
   },
 
   data() {
@@ -289,8 +291,10 @@ export default {
         cvsCreated: 0,
         published: 0,
         draft: 0,
-        archived: 0
+        archived: 0,
+        atsScore: 0,      // Média dos ATS scores
       },
+      atsScores: [],       // Guarda scores individuais
       error: null
     }
   },
@@ -307,29 +311,23 @@ export default {
     },
     templates() {
       return this.templateStore.templates
+    },
+    aiStore() {
+      return useAIStore()
     }
   },
 
 
   async mounted() {
-    await Promise.all([
-      this.loadData(),
-      this.templateStore.fetchTemplates()
-    ])
-  },
+    try {
+      this.loading = true
 
-  methods: {
-    async loadData() {
-      try {
-        this.loading = true
+      // 🔹 Carrega templates
+      await this.templateStore.fetchTemplates()
 
-        // 🔹 Primeiro, carrega os templates
-        await this.templateStore.fetchTemplates()
-
-        // 🔹 Depois, carrega os CVs
-        const response = await this.cvStore.fetchCVs()
-        if (!response?.data) return
-
+      // 🔹 Carrega CVs
+      const response = await this.cvStore.fetchCVs()
+      if (response?.data) {
         this.cvStore.cvs = response.data.cvs.map(cv => {
           const template = this.templateStore.templates.find(t => t.id === cv.templateId)
           return {
@@ -338,7 +336,7 @@ export default {
             targetRole: cv.targetRole || "Não definido",
             status: cv.status,
             statusColor: this.getStatusColor(cv.status),
-            template: template ? template.name : "Desconhecido", // 👈 Mostra o nome
+            template: template ? template.name : "Desconhecido",
             updatedAt: this.formatDate(cv.updatedAt)
           }
         })
@@ -348,8 +346,40 @@ export default {
         this.stats.draft = response.data.stats.draft
         this.stats.archived = response.data.stats.archived
 
+        // 🔹 Carrega todos os ATS scores e calcula média
+        await this.loadAllAts()
+      }
+
+    } catch (error) {
+      console.error("Erro ao carregar dashboard:", error)
+      this.error = error
+    } finally {
+      this.loading = false
+    }
+  },
+
+  methods: {
+    async loadAllAts() {
+      if (!this.cvStore.cvs || this.cvStore.cvs.length === 0) return
+
+      try {
+        this.loading = true
+        this.atsScores = []
+
+        // Chama analyzeCV para cada CV e guarda o score
+        for (const cv of this.cvStore.cvs) {
+          const review = await this.aiStore.analyzeCV(cv.id)
+          this.atsScores.push(review.scores.overall)
+        }
+
+        // Calcula média
+        if (this.atsScores.length > 0) {
+          const sum = this.atsScores.reduce((a, b) => a + b, 0)
+          this.stats.atsScore = Math.round(sum / this.atsScores.length)
+        }
+
       } catch (error) {
-        console.error("Erro ao carregar CVs:", error)
+        console.error("Erro ao carregar ATS scores:", error)
         this.error = error
       } finally {
         this.loading = false
@@ -378,13 +408,25 @@ export default {
       return `${diff} dias`
     },
 
-    downloadCV(cv) {
-      if (cv.generatedPdfUrl) {
-        window.open(cv.generatedPdfUrl, "_blank")
-      } else if (cv.generatedDocxUrl) {
-        window.open(cv.generatedDocxUrl, "_blank")
-      } else {
-        alert("Este CV ainda não tem ficheiro gerado para download.")
+    async downloadCV(cv) {
+      try {
+        // Garantir que estamos passando o ID, não o objeto
+        const cvId = typeof cv === 'string' ? cv : cv.id;
+
+        if (!cvId) {
+          alert('ID do CV não encontrado')
+          return
+        }
+
+        // Usar a store para fazer download
+        const result = await this.cvStore.downloadCV(cvId)
+
+        if (!result.success) {
+          alert(`Erro ao fazer download: ${result.message || 'Erro desconhecido'}`)
+        }
+      } catch (error) {
+        console.error('Erro ao fazer download:', error)
+        alert('Erro ao fazer download do CV')
       }
     }
   }

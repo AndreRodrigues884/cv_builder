@@ -1,0 +1,166 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "created_at": "2025-01-15",
+    "total_examples": 150,
+    "languages": ["pt-PT", "pt-BR"],
+    "sections": ["experience", "summary", "education", "skills"],
+    "description": "Dataset bruto para treino de melhoria de texto em CVs"
+  },
+  "examples": [
+    {
+      "id": "exp_001",
+      "original": "Trabalhei como desenvolvedor na empresa X",
+      "section": "experience",
+      "improved": "Desenvolvi e mantive aplicações web full-stack utilizando React e Node.js, resultando em aumento de 30% na eficiência operacional e redução de 25% no tempo de resposta",
+      "improvements": ["verbo de ação forte", "tecnologias específicas", "quantificação de resultados", "impacto mensurável"],
+      "keywords": ["desenvolvi", "mantive", "React", "Node.js", "30%", "25%", "full-stack"],
+      "ats_score": 88,
+      "industry": "technology",
+      "seniority": "mid-level"
+    },
+    {
+      "id": "exp_002",
+      "original": "Fiz gestão de projetos na empresa",
+      "section": "experience",
+      "improved": "Geri portfolio de 15 projetos simultâneos com orçamento total de €500K, entregando 95% dentro do prazo estabelecido e 20% abaixo do orçamento previsto",
+      "improvements": ["quantificação clara", "métricas financeiras", "taxa de sucesso", "gestão de recursos"],
+      "keywords": ["geri", "15 projetos", "€500K", "95%", "20%", "portfolio"],
+      "ats_score": 92,
+      "industry": "project_management",
+      "seniority": "senior"
+    },
+    {
+      "id": "exp_003",
+      "original": "Ajudei a equipa com várias tarefas",
+      "section": "experience",
+      "improved": "Colaborei com equipa cross-functional de 12 pessoas na implementação da metodologia Agile/Scrum, reduzindo time-to-market em 40% e aumentando satisfação do cliente para 4.8/5",
+      "improvements": ["especificidade", "tamanho da equipa", "metodologia clara", "impacto medido"],
+      "keywords": ["colaborei", "cross-functional", "12 pessoas", "Agile", "Scrum", "40%", "4.8/5"],
+      "ats_score": 90,
+      "industry": "technology",
+      "seniority": "mid-level"
+    },
+    {
+      "id": "exp_004",
+      "original": "Trabalhei em marketing digital",
+      "section": "experience",
+      "improved": "Executei campanhas de marketing digital multi-canal em Google Ads, Meta Ads e LinkedIn, gerando 150K+ impressões, 12K leads qualificados e ROI de 320%",
+      "improvements": ["plataformas específicas", "métricas de performance", "ROI claro", "volume de resultados"],
+      "keywords": ["executei", "Google Ads", "Meta Ads", "LinkedIn", "150K+", "12K leads", "320%"],
+      "ats_score": 94,
+      "industry": "marketing",
+      "seniority": "mid-level"
+    },
+    {
+      "id": "exp_005",
+      "original": "Dei suporte técnico aos clientes",
+      "section": "experience",
+      "improved": "Prestei suporte técnico de nível 2 a 200+ clientes mensais via Zendesk e Slack, mantendo NPS de 87, CSAT de 4.6/5 e reduzindo tempo médio de resolução em 35%",
+      "improvements": ["nível de suporte", "volume quantificado", "métricas de satisfação", "ferramentas usadas"],
+      "keywords": ["prestei", "nível 2", "200+", "Zendesk", "Slack", "NPS 87", "CSAT 4.6", "35%"],
+      "ats_score": 86,
+      "industry": "customer_support",
+      "seniority": "junior"
+    },
+    {
+      "id": "exp_006",
+      "original": "Fiz análise de dados",
+      "section": "experience",
+      "improved": "Realizei análise de dados complexos com Python (Pandas, NumPy), SQL e Tableau, identificando oportunidades que geraram €200K em receita adicional e redução de 15% em custos operacionais",
+      "improvements": ["ferramentas específicas", "complexidade", "impacto financeiro", "bibliotecas mencionadas"],
+      "keywords": ["realizei", "Python", "Pandas", "NumPy", "SQL", "Tableau", "€200K", "15%"],
+      "ats_score": 93,
+      "industry": "data_analytics",
+      "seniority": "mid-level"
+    },
+    {
+      "id": "exp_007",
+      "original": "Coordenei reuniões",
+      "section": "experience",
+      "improved": "Facilitei 50+ reuniões estratégicas trimestrais com stakeholders C-level (CEO, CTO, CFO), alinhando roadmap de produto com objetivos de negócio e aumentando OKR achievement para 92%",
+      "improvements": ["quantidade específica", "nível dos stakeholders", "frequência", "resultados medidos"],
+      "keywords": ["facilitei", "50+", "C-level", "CEO", "CTO", "CFO", "roadmap", "OKR", "92%"],
+      "ats_score": 89,
+      "industry": "product_management",
+      "seniority": "senior"
+    },
+    {
+      "id": "exp_008",
+      "original": "Trabalhei com bases de dados",
+      "section": "experience",
+      "improved": "Arquitetei e otimizei bases de dados PostgreSQL e MongoDB processando 10M+ transações diárias, melhorando performance de queries em 60% e reduzindo custos de infraestrutura em €50K/ano",
+      "improvements": ["tecnologias específicas", "escala impressionante", "performance quantificada", "economia de custos"],
+      "keywords": ["arquitetei", "otimizei", "PostgreSQL", "MongoDB", "10M+", "60%", "€50K"],
+      "ats_score": 95,
+      "industry": "database_engineering",
+      "seniority": "senior"
+    },
+    {
+      "id": "exp_009",
+      "original": "Liderei uma pequena equipa",
+      "section": "experience",
+      "improved": "Liderei equipa de 8 engenheiros de software na entrega de 3 produtos SaaS em 18 meses, atingindo 25K utilizadores ativos, €1.2M ARR e 98% uptime",
+      "improvements": ["tamanho da equipa", "resultados de negócio", "métricas de produto", "timeline claro"],
+      "keywords": ["liderei", "8 engenheiros", "3 produtos", "SaaS", "25K", "€1.2M ARR", "98%"],
+      "ats_score": 96,
+      "industry": "technology",
+      "seniority": "leadership"
+    },
+    {
+      "id": "exp_010",
+      "original": "Fiz design de interfaces",
+      "section": "experience",
+      "improved": "Criei designs UX/UI para 12 aplicações web e mobile usando Figma e Adobe XD, aumentando taxa de conversão em 45% e reduzindo bounce rate de 68% para 32%",
+      "improvements": ["quantidade de projetos", "ferramentas profissionais", "métricas de UX", "impacto claro"],
+      "keywords": ["criei", "UX/UI", "12 aplicações", "Figma", "Adobe XD", "45%", "bounce rate", "32%"],
+      "ats_score": 87,
+      "industry": "design",
+      "seniority": "mid-level"
+    },
+    {
+      "id": "sum_001",
+      "original": "Sou dedicado e gosto de trabalhar em equipa",
+      "section": "summary",
+      "improved": "Engenheiro de Software com 5+ anos de experiência em desenvolvimento full-stack (React, Node.js, Python), especializado em arquiteturas cloud-native e microservices. Histórico comprovado de entrega de soluções escaláveis que aumentaram eficiência operacional em 40% e geraram €2M+ em valor de negócio",
+      "improvements": ["título profissional claro", "anos quantificados", "stack tecnológico", "resultados de negócio"],
+      "keywords": ["5+ anos", "full-stack", "React", "Node.js", "Python", "cloud-native", "40%", "€2M+"],
+      "ats_score": 91,
+      "industry": "technology",
+      "seniority": "mid-level"
+    },
+    {
+      "id": "sum_002",
+      "original": "Tenho experiência em várias áreas",
+      "section": "summary",
+      "improved": "Product Manager com 7 anos gerindo roadmaps de produtos SaaS B2B em fintechs e healthtechs. Track record de 5 lançamentos bem-sucedidos que alcançaram 50K+ utilizadores, €3M ARR e 15% market share. Certificado PSPO III e PSM II pela Scrum.org",
+      "improvements": ["role específico", "tipo de produto", "indústrias", "métricas impressionantes", "certificações"],
+      "keywords": ["Product Manager", "7 anos", "SaaS B2B", "50K+", "€3M ARR", "PSPO III", "PSM II"],
+      "ats_score": 95,
+      "industry": "product_management",
+      "seniority": "senior"
+    },
+    {
+      "id": "sum_003",
+      "original": "Procuro uma oportunidade para crescer",
+      "section": "summary",
+      "improved": "Designer UX/UI especializado em design systems e acessibilidade WCAG 2.1 AA/AAA, com portfolio incluindo projetos para empresas Fortune 500. Domínio avançado de Figma, design tokens e metodologias user-centered (Design Thinking, Jobs-to-be-Done)",
+      "improvements": ["especialização clara", "standards mencionados", "clientes relevantes", "metodologias"],
+      "keywords": ["UX/UI", "design systems", "WCAG 2.1", "Fortune 500", "Figma", "Design Thinking"],
+      "ats_score": 90,
+      "industry": "design",
+      "seniority": "mid-level"
+    },
+    {
+      "id": "sum_004",
+      "original": "Profissional de marketing com experiência",
+      "section": "summary",
+      "improved": "Growth Marketing Specialist com 6 anos otimizando funnels de conversão em startups B2C. Expertise em growth hacking, SEO técnico (Core Web Vitals) e paid media (Google Ads, Meta Ads). Resultados: redução de 60% no CAC, aumento de 200% em tráfego orgânico e crescimento de 3x na base de utilizadores",
+      "improvements": ["especialização nicho", "experiência em startups", "técnicas específicas", "métricas impressionantes"],
+      "keywords": ["Growth Marketing", "6 anos", "B2C", "SEO", "60% CAC", "200%", "3x"],
+      "ats_score": 93,
+      "industry": "marketing",
+      "seniority": "mid-level"
+    }
+  ]
+}

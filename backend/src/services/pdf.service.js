@@ -1,85 +1,73 @@
-// backend/src/services/pdf.service.js - ATUALIZADO PARA TEMPLATES
-
+// backend/src/services/pdf.service.js
 import puppeteer from 'puppeteer';
+import handlebars from 'handlebars';
 import fs from 'fs/promises';
 import path from 'path';
-import handlebars from 'handlebars';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 class PDFService {
-
+  /**
+   * Gera PDF a partir de HTML pronto
+   */
   static async generatePDF(htmlContent, options = {}) {
     let browser;
     try {
-      console.log('🚀 Iniciando geração de PDF...');
+      console.log('🚀 Iniciando Puppeteer...')
+      console.log('📝 Tamanho do HTML:', htmlContent.length, 'caracteres')
+
+      // Log do HTML (primeiros 500 chars)
+      console.log('HTML preview:', htmlContent.substring(0, 500))
 
       browser = await puppeteer.launch({
         headless: 'new',
-        executablePath: '/usr/bin/chromium-browser',
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium',
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
           '--disable-dev-shm-usage',
           '--disable-gpu',
-          '--disable-software-rasterizer',
-          '--disable-extensions',
-          '--disable-background-networking',
-          '--disable-background-timer-throttling',
-          '--disable-backgrounding-occluded-windows',
-          '--disable-breakpad',
-          '--disable-component-extensions-with-background-pages',
-          '--disable-features=TranslateUI',
-          '--disable-ipc-flooding-protection',
-          '--disable-renderer-backgrounding',
-          '--force-color-profile=srgb',
-          '--hide-scrollbars',
-          '--metrics-recording-only',
-          '--mute-audio',
-          '--no-first-run',
-          '--no-default-browser-check',
-          '--no-zygote',
-          '--single-process',
         ],
       });
 
-      console.log('✅ Browser iniciado');
+      console.log('✅ Browser iniciado')
 
       const page = await browser.newPage();
-      
+
+      console.log('📄 Setando conteúdo HTML...')
       await page.setContent(htmlContent, {
         waitUntil: 'networkidle0',
-        timeout: 30000,
+        timeout: 30000
       });
 
-      console.log('📄 Gerando PDF...');
-
+      console.log('🖨️ Gerando PDF...')
       const pdfBuffer = await page.pdf({
         format: 'A4',
         printBackground: true,
-        margin: {
-          top: '20px',
-          right: '20px',
-          bottom: '20px',
-          left: '20px',
-        },
+        margin: { top: '20px', right: '20px', bottom: '20px', left: '20px' },
         ...options,
       });
 
-      console.log('✅ PDF gerado com sucesso');
-      
-      await browser.close();
-      return pdfBuffer;
+      console.log('✅ PDF gerado! Tamanho:', pdfBuffer.length, 'bytes')
 
+      await browser.close();
+
+      // Verificar se o buffer não está vazio
+      if (!pdfBuffer || pdfBuffer.length === 0) {
+        throw new Error('PDF buffer está vazio!')
+      }
+
+      return pdfBuffer;
     } catch (error) {
-      console.error('❌ Erro ao gerar PDF:', error);
+      console.error('❌ Erro ao gerar PDF:', error)
+      console.error('Stack:', error.stack)
       if (browser) {
         try {
-          await browser.close();
+          await browser.close()
         } catch (e) {
-          console.error('Erro ao fechar browser:', e);
+          console.error('Erro ao fechar browser:', e)
         }
       }
       throw error;
@@ -87,403 +75,137 @@ class PDFService {
   }
 
   /**
-   * Carregar template HTML/CSS da BD
+   * Carrega HTML/CSS do template
    */
   static async loadTemplate(template) {
-    try {
-      console.log('📁 [PDFService] Carregando template...');
-      
-      // Prioridade 1: HTML/CSS gerado automaticamente (da imagem)
-      if (template?.generatedHTML && template?.generatedCSS) {
-        console.log('✅ [PDFService] Usando template gerado da imagem');
-        return {
-          html: template.generatedHTML,
-          css: template.generatedCSS,
-          metadata: template.layoutData || template.metadata || {},
-        };
-      }
+    if (!template) return this.getDefaultTemplate();
 
-      // Prioridade 2: HTML/CSS manual (metadata)
-      if (template?.metadata?.html && template?.metadata?.css) {
-        console.log('✅ [PDFService] Usando template do metadata');
-        return {
-          html: template.metadata.html,
-          css: template.metadata.css,
-          metadata: template.metadata,
-        };
-      }
-
-      // Prioridade 3: Template de ficheiro (legado)
-      if (template?.slug) {
-        const templatePath = path.join(__dirname, '..', 'templates', template.slug);
-        
-        try {
-          await fs.access(templatePath);
-          const htmlPath = path.join(templatePath, 'template.html');
-          const cssPath = path.join(templatePath, 'styles.css');
-
-          const html = await fs.readFile(htmlPath, 'utf-8');
-          const css = await fs.readFile(cssPath, 'utf-8');
-
-          console.log('✅ [PDFService] Template carregado de ficheiro');
-          return { html, css, metadata: template.metadata || {} };
-        } catch (err) {
-          console.log('⚠️ [PDFService] Template de ficheiro não encontrado');
-        }
-      }
-
-      // Fallback: template genérico
-      console.log('📄 [PDFService] Usando template default');
-      return this.getDefaultTemplate();
-    } catch (error) {
-      console.error('❌ [PDFService] Erro ao carregar template:', error);
-      return this.getDefaultTemplate();
+    if (template.generatedHTML && template.generatedCSS) {
+      console.log('🟢 Usando template gerado');
+      return { html: template.generatedHTML, css: template.generatedCSS };
     }
+    if (template.metadata?.html && template.metadata?.css) {
+      console.log('🟡 Usando template via metadata');
+      return { html: template.metadata.html, css: template.metadata.css };
+    }
+    if (template.slug) {
+      console.log('🟠 Tentando carregar template do filesystem');
+    }
+    console.log('🔴 Usando template default');
+
+    // 3️⃣ Fallback para arquivo
+    if (template.slug) {
+      try {
+        const templatePath = path.join(__dirname, '..', 'templates', template.slug);
+        await fs.access(templatePath);
+        const html = await fs.readFile(path.join(templatePath, 'template.html'), 'utf-8');
+        const css = await fs.readFile(path.join(templatePath, 'styles.css'), 'utf-8');
+        return { html, css };
+      } catch {
+        console.warn('⚠️ Template de arquivo não encontrado, usando default');
+      }
+    }
+
+    return this.getDefaultTemplate();
   }
 
   /**
-   * Preparar dados do CV para o template
+   * Prepara dados do CV + profile para Handlebars
    */
   static prepareCVData(cv, profile) {
-    const contentJson = cv?.contentJson || {};
-    
-    const cvData = {
-      // Informações Pessoais
-      name: contentJson?.personalInfo?.name || profile?.user?.name || profile?.name || 'Nome',
-      email: contentJson?.personalInfo?.email || profile?.user?.email || profile?.email || '',
-      phone: contentJson?.personalInfo?.phone || profile?.phone || '',
-      location: contentJson?.personalInfo?.location || profile?.location || '',
-      website: contentJson?.personalInfo?.website || profile?.website || '',
-      linkedin: contentJson?.personalInfo?.linkedin || profile?.linkedin || '',
-      github: contentJson?.personalInfo?.github || profile?.github || '',
-
-      // Perfil
-      headline: profile?.headline || contentJson?.headline || '',
-      summary: contentJson?.summary || profile?.summary || cv?.summary || '',
-
-      // CV Info
-      title: cv?.title || 'Curriculum Vitae',
-      language: cv?.language || 'PT',
-      jobTargetTitle: cv?.jobTargetTitle || cv?.targetRole || '',
-      jobTargetArea: cv?.jobTargetArea || '',
-
-      // Experiências
-      experiences: (contentJson?.experiences || profile?.experiences || []).map(exp => ({
-        jobTitle: exp.jobTitle || '',
-        company: exp.company || '',
-        location: exp.location || '',
-        startDate: this.formatDate(exp.startDate),
-        endDate: exp.isCurrent ? 'Atual' : this.formatDate(exp.endDate),
-        description: exp.description || '',
-        achievements: exp.achievements || [],
-        skills: exp.skills || [],
-      })),
-
-      // Educação
-      educations: (contentJson?.educations || profile?.educations || []).map(edu => ({
-        degree: edu.degree || '',
-        institution: edu.institution || '',
-        fieldOfStudy: edu.fieldOfStudy || '',
-        location: edu.location || '',
-        startDate: this.formatDate(edu.startDate),
-        endDate: edu.isCurrent ? 'Atual' : this.formatDate(edu.endDate),
-        grade: edu.grade || '',
-        description: edu.description || '',
-      })),
-
-      // Competências
-      skills: (contentJson?.skills || profile?.skills || []).map(skill => ({
-        name: skill.name || skill,
-        category: skill.category || '',
-        level: skill.level || 0,
-        yearsOfExp: skill.yearsOfExp || 0,
-      })),
-
-      // Certificações
-      certifications: (contentJson?.certifications || profile?.certifications || []).map(cert => ({
-        name: cert.name || '',
-        issuingOrg: cert.issuingOrg || '',
-        issueDate: this.formatDate(cert.issueDate),
-        expirationDate: cert.doesNotExpire ? 'Sem expiração' : this.formatDate(cert.expirationDate),
-        credentialId: cert.credentialId || '',
-        credentialUrl: cert.credentialUrl || '',
-      })),
-
-      // Projetos
-      projects: (contentJson?.projects || profile?.projects || []).map(proj => ({
-        name: proj.name || '',
-        description: proj.description || '',
-        role: proj.role || '',
-        url: proj.url || '',
-        technologies: proj.technologies || [],
-        highlights: proj.highlights || [],
-      })),
-
-      // Idiomas
-      languages: contentJson?.languages || profile?.languages || [],
-
-      // Metadata do template (cores, fontes do layoutData)
-      templateColors: cv?.template?.layoutData?.colors || cv?.template?.metadata?.colors || {},
-      templateFonts: cv?.template?.layoutData?.fonts || cv?.template?.metadata?.fonts || {},
-    };
-
-    console.log('📋 [PDFService] cvData preparado:', {
-      name: cvData.name,
-      experiencesCount: cvData.experiences.length,
-      educationsCount: cvData.educations.length,
-      skillsCount: cvData.skills.length,
-      hasColors: !!Object.keys(cvData.templateColors).length,
-      hasFonts: !!Object.keys(cvData.templateFonts).length,
-    });
-
-    return cvData;
-  }
-
-  /**
-   * Compilar template com Handlebars
-   */
-  static compileTemplate(templateData, cvData, template) {
     try {
-      console.log('🔧 [PDFService] Compilando template...');
-      
-      // Registar helpers do Handlebars
-      this.registerHandlebarsHelpers();
+      console.log('📊 Preparando dados do CV...')
+      console.log('CV ID:', cv?.id)
+      console.log('Profile ID:', profile?.id)
 
-      // Compilar HTML
-      const htmlTemplate = handlebars.compile(templateData.html);
-      const compiledHTML = htmlTemplate(cvData);
+      const content = cv?.contentJson || {};
 
-      // Injetar CSS
-      const fullHTML = `
-        <!DOCTYPE html>
-        <html lang="${cvData.language}">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>${cvData.title}</title>
-          <style>
-            /* Reset CSS */
-            * {
-              margin: 0;
-              padding: 0;
-              box-sizing: border-box;
-            }
-            
-            body {
-              font-family: ${cvData.templateFonts?.body || 'Inter, Arial, sans-serif'};
-              font-size: 11pt;
-              line-height: 1.5;
-              color: ${cvData.templateColors?.text || '#1F2937'};
-              background: ${cvData.templateColors?.background || 'white'};
-            }
-            
-            /* Template CSS */
-            ${templateData.css}
-            
-            /* Print-specific styles */
-            @media print {
-              body {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-              }
-            }
-          </style>
-        </head>
-        <body>
-          ${compiledHTML}
-        </body>
-        </html>
-      `;
+      const cvData = {
+        name: content.personalInfo?.name || profile?.user?.name || profile?.name || 'Nome Não Definido',
+        email: content.personalInfo?.email || profile?.user?.email || profile?.email || '',
+        phone: content.personalInfo?.phone || profile?.phone || '',
+        location: content.personalInfo?.location || profile?.location || '',
+        linkedin: content.personalInfo?.linkedin || profile?.linkedin || '',
+        github: content.personalInfo?.github || profile?.github || '',
+        website: content.personalInfo?.website || profile?.website || '',
 
-      console.log('✅ [PDFService] HTML compilado com sucesso');
-      return fullHTML;
+        summary: content.summary || profile?.summary || '',
+
+        experiences: (content.experiences || profile?.experiences || []).map(exp => ({
+          jobTitle: exp.jobTitle || '',
+          company: exp.company || '',
+          location: exp.location || '',
+          startDate: this.formatDate(exp.startDate),
+          endDate: exp.isCurrent ? 'Atual' : this.formatDate(exp.endDate),
+          description: exp.description || '',
+          achievements: exp.achievements || [],
+          skills: exp.skills || []
+        })),
+
+        educations: (content.educations || profile?.educations || []).map(edu => ({
+          degree: edu.degree || '',
+          institution: edu.institution || '',
+          fieldOfStudy: edu.fieldOfStudy || '',
+          location: edu.location || '',
+          startDate: this.formatDate(edu.startDate),
+          endDate: edu.isCurrent ? 'Atual' : this.formatDate(edu.endDate),
+          grade: edu.grade || '',
+          description: edu.description || ''
+        })),
+
+        skills: (content.skills || profile?.skills || []).map(skill => ({
+          name: typeof skill === 'string' ? skill : (skill.name || ''),
+          category: typeof skill === 'object' ? skill.category : '',
+          level: typeof skill === 'object' ? skill.level : 0
+        })),
+
+        projects: (content.projects || profile?.projects || []).map(proj => ({
+          name: proj.name || '',
+          description: proj.description || '',
+          role: proj.role || '',
+          url: proj.url || '',
+          technologies: proj.technologies || []
+        })),
+
+        certifications: (content.certifications || profile?.certifications || []).map(cert => ({
+          name: cert.name || '',
+          issuingOrg: cert.issuingOrg || '',
+          issueDate: this.formatDate(cert.issueDate),
+          expirationDate: cert.doesNotExpire ? 'Sem expiração' : this.formatDate(cert.expirationDate)
+        })),
+
+        title: cv?.title || 'Curriculum Vitae',
+        language: cv?.language || 'PT',
+        jobTargetTitle: cv?.jobTargetTitle || cv?.targetRole || '',
+        jobTargetArea: cv?.jobTargetArea || '',
+
+        templateColors: cv?.template?.layoutData?.colors || cv?.template?.metadata?.colors || {
+          primary: '#2563eb',
+          text: '#1e293b',
+          background: '#ffffff'
+        },
+        templateFonts: cv?.template?.layoutData?.fonts || cv?.template?.metadata?.fonts || {
+          body: 'Arial, sans-serif',
+          heading: 'Arial, sans-serif'
+        },
+      };
+
+      console.log('✅ Dados preparados:', {
+        name: cvData.name,
+        email: cvData.email,
+        experiencesCount: cvData.experiences.length,
+        educationsCount: cvData.educations.length,
+        skillsCount: cvData.skills.length,
+      })
+
+      return cvData;
     } catch (error) {
-      console.error('❌ [PDFService] Erro ao compilar template:', error);
-      throw error;
+      console.error('❌ Erro ao preparar dados do CV:', error)
+      throw error
     }
   }
 
-  /**
-   * Helpers do Handlebars
-   */
-  static registerHandlebarsHelpers() {
-    if (handlebars.helpers.hasItems) return;
-
-    handlebars.registerHelper('hasItems', function (array) {
-      return Array.isArray(array) && array.length > 0;
-    });
-
-    handlebars.registerHelper('eachWithIndex', function (array, options) {
-      let result = '';
-      if (Array.isArray(array)) {
-        array.forEach((item, index) => {
-          result += options.fn({ ...item, index });
-        });
-      }
-      return result;
-    });
-
-    handlebars.registerHelper('eq', function (a, b) {
-      return a === b;
-    });
-
-    handlebars.registerHelper('skillStars', function (level) {
-      const stars = '★'.repeat(level || 0) + '☆'.repeat(5 - (level || 0));
-      return new handlebars.SafeString(stars);
-    });
-
-    handlebars.registerHelper('capitalize', function (str) {
-      if (!str) return '';
-      return str.charAt(0).toUpperCase() + str.slice(1);
-    });
-  }
-
-  /**
-   * Template padrão (fallback)
-   */
-  static getDefaultTemplate() {
-    return {
-      html: `
-        <div class="cv-container">
-          <header class="cv-header">
-            <h1>{{name}}</h1>
-            {{#if jobTargetTitle}}<h2>{{jobTargetTitle}}</h2>{{/if}}
-            <div class="contact">
-              {{#if email}}<span>✉️ {{email}}</span>{{/if}}
-              {{#if phone}}<span>📱 {{phone}}</span>{{/if}}
-              {{#if location}}<span>📍 {{location}}</span>{{/if}}
-            </div>
-          </header>
-
-          {{#if summary}}
-          <section class="section">
-            <h3>Sobre Mim</h3>
-            <p>{{summary}}</p>
-          </section>
-          {{/if}}
-
-          {{#if experiences}}
-          {{#if experiences.length}}
-          <section class="section">
-            <h3>Experiência Profissional</h3>
-            {{#each experiences}}
-            <div class="item">
-              <h4>{{this.jobTitle}}</h4>
-              <p class="meta">{{this.company}} | {{this.startDate}} - {{this.endDate}}</p>
-              {{#if this.description}}<p class="description">{{this.description}}</p>{{/if}}
-            </div>
-            {{/each}}
-          </section>
-          {{/if}}
-          {{/if}}
-
-          {{#if educations}}
-          {{#if educations.length}}
-          <section class="section">
-            <h3>Formação Académica</h3>
-            {{#each educations}}
-            <div class="item">
-              <h4>{{this.degree}}</h4>
-              <p class="meta">{{this.institution}} | {{this.startDate}} - {{this.endDate}}</p>
-            </div>
-            {{/each}}
-          </section>
-          {{/if}}
-          {{/if}}
-
-          {{#if skills}}
-          {{#if skills.length}}
-          <section class="section">
-            <h3>Competências</h3>
-            <div class="skills-grid">
-              {{#each skills}}
-              <span class="skill-item">{{this.name}}</span>
-              {{/each}}
-            </div>
-          </section>
-          {{/if}}
-          {{/if}}
-        </div>
-      `,
-      css: `
-        .cv-container {
-          max-width: 21cm;
-          margin: 0 auto;
-          padding: 2cm;
-          background: white;
-        }
-        
-        .cv-header {
-          text-align: center;
-          border-bottom: 3px solid #3B82F6;
-          padding-bottom: 1.5rem;
-          margin-bottom: 2rem;
-        }
-        
-        .cv-header h1 {
-          font-size: 28pt;
-          color: #1F2937;
-          margin-bottom: 0.5rem;
-        }
-        
-        .contact {
-          display: flex;
-          justify-content: center;
-          gap: 1rem;
-          font-size: 9pt;
-          color: #6B7280;
-        }
-        
-        .section {
-          margin-bottom: 1.5rem;
-        }
-        
-        .section h3 {
-          font-size: 14pt;
-          color: #3B82F6;
-          border-bottom: 2px solid #E5E7EB;
-          padding-bottom: 0.4rem;
-          margin-bottom: 1rem;
-        }
-        
-        .item {
-          margin-bottom: 1.2rem;
-        }
-        
-        .item h4 {
-          font-size: 11pt;
-          color: #1F2937;
-          margin-bottom: 0.2rem;
-        }
-        
-        .meta {
-          font-size: 9pt;
-          color: #6B7280;
-          margin-bottom: 0.4rem;
-        }
-        
-        .skills-grid {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.4rem;
-        }
-        
-        .skill-item {
-          padding: 0.4rem 0.8rem;
-          background: #EFF6FF;
-          border: 1px solid #BFDBFE;
-          border-radius: 0.3rem;
-          font-size: 9pt;
-          color: #1E40AF;
-        }
-      `,
-      metadata: {},
-    };
-  }
-
-  /**
-   * Formatar data
-   */
+  // Helper para formatar datas
   static formatDate(date) {
     if (!date) return '';
     try {
@@ -494,6 +216,163 @@ class PDFService {
       return `${month}/${year}`;
     } catch {
       return '';
+    }
+  }
+
+  /**
+   * Compila template com Handlebars e injeta CSS
+   */
+  static compileTemplate(templateData, cvData) {
+    try {
+      console.log('🔧 Compilando template...')
+      console.log('📊 Dados do CV:', {
+        name: cvData.name,
+        email: cvData.email,
+        experiencesCount: cvData.experiences?.length || 0,
+        educationsCount: cvData.educations?.length || 0,
+        skillsCount: cvData.skills?.length || 0,
+      })
+
+      if (!handlebars.helpers.hasItems) {
+        this.registerHandlebarsHelpers()
+      }
+
+      const htmlTemplate = handlebars.compile(templateData.html);
+      const compiledHTML = htmlTemplate(cvData);
+
+      console.log('✅ HTML compilado, tamanho:', compiledHTML.length, 'caracteres')
+
+      const fullHTML = `
+      <!DOCTYPE html>
+      <html lang="${cvData.language || 'PT'}">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${cvData.title || 'CV'}</title>
+        <style>
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
+          body {
+            font-family: ${cvData.templateFonts?.body || 'Arial, sans-serif'};
+            color: ${cvData.templateColors?.text || '#000000'};
+            background: ${cvData.templateColors?.background || '#ffffff'};
+            padding: 20px;
+          }
+          ${templateData.css || ''}
+          @media print {
+            body { 
+              -webkit-print-color-adjust: exact; 
+              print-color-adjust: exact; 
+            }
+          }
+        </style>
+      </head>
+      <body>
+        ${compiledHTML}
+      </body>
+      </html>
+    `;
+
+      console.log('✅ HTML final gerado, tamanho:', fullHTML.length, 'caracteres')
+
+      return fullHTML;
+    } catch (error) {
+      console.error('❌ Erro ao compilar template:', error)
+      console.error('Stack:', error.stack)
+      throw error
+    }
+  }
+
+  /**
+   * Helpers Handlebars
+   */
+  static registerHandlebarsHelpers() {
+    handlebars.registerHelper('hasItems', arr => Array.isArray(arr) && arr.length > 0);
+    handlebars.registerHelper('eachWithIndex', (arr, options) => {
+      if (!Array.isArray(arr)) return '';
+      return arr.map((item, i) => options.fn({ ...item, index: i })).join('');
+    });
+    handlebars.registerHelper('eq', (a, b) => a === b);
+    handlebars.registerHelper('capitalize', str => str ? str.charAt(0).toUpperCase() + str.slice(1) : '');
+  }
+
+  /**
+   * Template padrão
+   */
+  static getDefaultTemplate() {
+    return {
+      html: `<div><h1>{{name}}</h1><p>{{summary}}</p></div>`,
+      css: '',
+    };
+  }
+
+  /**
+   * Gerar HTML renderizado do CV (para preview)
+   * Retorna HTML string pronto para exibição
+   */
+  static async generateHTMLForCV(cv, profile) {
+    try {
+      console.log('🎨 [Preview] Carregando template:', cv.template?.name);
+
+      const templateData = await this.loadTemplate(cv.template);
+
+      console.log('📊 [Preview] Preparando dados do CV...');
+      const cvData = this.prepareCVData(cv, profile);
+
+      console.log('🔧 [Preview] Compilando HTML com Handlebars...');
+      const html = this.compileTemplate(templateData, cvData);
+
+      console.log('✅ [Preview] HTML gerado com sucesso');
+      return html;
+    } catch (error) {
+      console.error('❌ Erro em generateHTMLForCV:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Função principal para gerar PDF de um CV com template
+   * Retorna Buffer pronto para upload ou envio
+   */
+  static async generatePDFBufferForCV(cv, profile) {
+    try {
+      console.log('🎨 Carregando template:', cv.template?.name);
+
+      const templateData = await this.loadTemplate(cv.template);
+
+      console.log('📊 Preparando dados do CV...');
+      const cvData = this.prepareCVData(cv, profile);
+
+      // LOG ADICIONAL: verificar todos os dados do CV
+      console.log('📌 DADOS COMPLETOS DO CV:', JSON.stringify(cvData, null, 2));
+      console.log('📌 Template do CV:', cv.template);
+
+      console.log('📌 TEMPLATE DATA RECEBIDO PARA COMPILAÇÃO:', {
+        htmlLength: templateData?.html?.length,
+        cssLength: templateData?.css?.length,
+        htmlPreview: templateData?.html?.substring(0, 200),
+      });
+
+
+
+      console.log('🔧 Compilando HTML com Handlebars...');
+      const html = this.compileTemplate(templateData, cvData);
+
+      // LOG ADICIONAL: verificar HTML final
+      console.log('📌 HTML FINAL PARA PDF:', html.substring(0, 1000), '...'); // Limita a 1000 chars para não poluir logs
+
+      console.log('🖨️ Gerando PDF com Puppeteer...');
+      const pdfBuffer = await this.generatePDF(html);
+
+      console.log('✅ PDF gerado com sucesso, tamanho:', pdfBuffer.length, 'bytes');
+
+      return pdfBuffer;
+    } catch (error) {
+      console.error('❌ Erro em generatePDFBufferForCV:', error);
+      throw error;
     }
   }
 }

@@ -11,6 +11,7 @@ router.post('/optimize-ats', authenticateToken, aiController.optimizeForATS);//F
 router.post('/review-cv', authenticateToken, aiController.reviewCV);//Feito
 router.post('/interview-questions', authenticateToken, aiController.generateInterviewQuestions);//Feito
 router.post('/suggest-career-path', authenticateToken, aiController.suggestCareerPath);//Feito
+router.post('/improve-experience', authenticateToken, aiController.improveExperience);
 
 
 export default router;

@@ -48,6 +48,27 @@ router.get("/", authenticateToken,
   CVController.getCVs
 );
 
+// Rotas específicas devem vir ANTES da rota genérica :id
+router.get('/:id/preview', authenticateToken,
+  [
+    param('id')
+      .notEmpty()
+      .isString()
+      .withMessage('O ID do CV é obrigatório e deve ser uma string válida.'),
+  ],
+  CVController.previewCV
+);
+
+router.get('/:id/download/pdf', authenticateToken,
+  [
+    param('id')
+      .notEmpty()
+      .isString()
+      .withMessage('O ID do CV é obrigatório e deve ser uma string válida.'),
+  ],
+  CVController.downloadCV
+);
+
 router.get("/:id", authenticateToken,
   [
     param("id")
@@ -133,10 +154,6 @@ router.patch("/:id/template", authenticateToken,
   ],
   CVController.changeTemplate
 );
-
-router.get('/:id/pdf-url', authenticateToken, CVController.getCVPdfUrl);
-router.get('/:id/download/pdf', authenticateToken, CVController.downloadCVPDF);
-router.get('/:id/download/docx', authenticateToken, CVController.downloadCVDOCX);
 
 export default router;
 

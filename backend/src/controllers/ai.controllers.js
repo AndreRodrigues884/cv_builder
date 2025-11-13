@@ -757,3 +757,31 @@ export const adaptCVToJob = async (req, res) => {
     });
   }
 }
+
+export const improveExperience = async (req, res) => {
+  try {
+    const { description, jobTitle, company } = req.body;
+    
+    const context = `Melhore esta descrição de experiência profissional:
+Cargo: ${jobTitle}
+Empresa: ${company}
+
+Descrição atual:
+${description}
+
+Reescreva de forma mais impactante, usando verbos de ação e quantificando resultados quando possível.`;
+
+    const improved = await aiService.improveText(context);
+    
+    return res.status(200).json({
+      success: true,
+      data: { improved }
+    });
+  } catch (error) {
+    console.error('Erro ao melhorar experiência:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Erro ao melhorar descrição'
+    });
+  }
+};

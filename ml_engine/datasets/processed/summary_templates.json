@@ -1,0 +1,191 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "processed_at": "2025-01-15T10:40:00Z",
+    "total_templates": 50,
+    "description": "Templates para geração de sumários profissionais"
+  },
+  "templates_by_role": {
+    "software_engineer": {
+      "junior": {
+        "professional": "Desenvolvedor [Especialização] com [X anos] de experiência em [tecnologias principais]. Formação em [educação] com conhecimento em [skills]. Focado em [objetivo ou valor].",
+        "casual": "Developer em início de carreira apaixonado por [área]. Adoro trabalhar com [tecnologias] e estou sempre a aprender. [Conquista recente].",
+        "examples": [
+          "Desenvolvedor Frontend com 2 anos de experiência criando interfaces web responsivas. Formação em Engenharia Informática com domínio de React, TypeScript e Tailwind CSS. Focado em entregar experiências de utilizador intuitivas e acessíveis.",
+          "Full Stack Developer júnior com 1 ano construindo aplicações web. Licenciatura em Informática com proficiência em JavaScript, Node.js e PostgreSQL. Apaixonado por código limpo e boas práticas de desenvolvimento."
+        ]
+      },
+      "mid_level": {
+        "professional": "[Título] com [X anos] de experiência especializado em [área técnica]. Domínio de [tecnologias] e [metodologias]. Histórico comprovado de [resultado quantificável] em [contexto].",
+        "confident": "[Título] com track record de [X anos] entregando [tipo de resultados]. Especialista em [stack tecnológico] com projetos que [métricas impressionantes]. [Proposta de valor única].",
+        "examples": [
+          "Engenheiro de Software Full Stack com 5 anos de experiência especializado em arquiteturas cloud-native. Domínio de React, Node.js, TypeScript e AWS. Histórico comprovado de entrega de soluções escaláveis que aumentaram eficiência em 40% e geraram €2M+ em valor de negócio.",
+          "Backend Engineer com track record de 6 anos construindo APIs de alta performance. Especialista em Python, PostgreSQL e microservices com sistemas processando 10M+ requests/dia. Obsessivo por performance e clean architecture."
+        ]
+      },
+      "senior": {
+        "professional": "[Título Senior/Lead] com [X+ anos] liderando [tipo de iniciativas]. Expertise em [área técnica] e [soft skill]. [Resultado de negócio significativo] em [contexto empresarial].",
+        "examples": [
+          "Engineering Manager com 8+ anos liderando equipas de desenvolvimento de produtos SaaS. Expertise em arquitetura de sistemas distribuídos e gestão de equipas de alto desempenho. Liderou migração para cloud que reduziu custos em €500K/ano e escalou produto para 100K+ utilizadores.",
+          "Principal Engineer com 10 anos arquitetando soluções enterprise de missão crítica. Especialista em microservices, Kubernetes e system design. Orientou 5 engineers para posições senior e implementou práticas que aumentaram velocity em 60%."
+        ]
+      }
+    },
+    "data_analyst": {
+      "junior": {
+        "professional": "Analista de Dados com [X anos] transformando dados em insights. Formação em [educação] com proficiência em [ferramentas]. [Foco ou paixão].",
+        "examples": [
+          "Analista de Dados júnior com 1 ano transformando dados em insights acionáveis. Licenciatura em Estatística com proficiência em Python, SQL e Tableau. Apaixonado por descobrir padrões que suportam decisões de negócio."
+        ]
+      },
+      "mid_level": {
+        "professional": "Data Analyst com [X anos] de experiência em [área específica]. Expertise em [ferramentas] com histórico de [resultados]. [Especialização].",
+        "examples": [
+          "Data Analyst com 4 anos de experiência transformando dados complexos em insights estratégicos. Expertise em Python, SQL, Tableau e Power BI com análises que identificaram €200K+ em oportunidades de economia. Especializado em análise preditiva e otimização de processos."
+        ]
+      }
+    },
+    "product_manager": {
+      "mid_level": {
+        "professional": "Product Manager com [X anos] gerindo [tipo de produtos]. Experiência em [metodologias] com histórico de [resultados de produto]. [Foco].",
+        "examples": [
+          "Product Manager com 4 anos gerindo roadmaps de produtos SaaS B2B. Experiência em discovery, priorização e go-to-market com lançamentos que alcançaram 50K utilizadores e €1M ARR. Focado em product-market fit e growth."
+        ]
+      },
+      "senior": {
+        "professional": "[Senior PM/GPM] com [X+ anos] liderando [escopo]. Track record de [resultados de negócio]. Expertise em [área estratégica] e [liderança].",
+        "examples": [
+          "Senior Product Manager com 7+ anos liderando produtos SaaS enterprise em fintechs. Track record de 5 lançamentos que geraram €10M+ ARR e alcançaram 200K+ utilizadores. Especialista em 0-to-1 products e scaling, com experiência liderando squads de 15+ pessoas."
+        ]
+      }
+    },
+    "digital_marketer": {
+      "junior": {
+        "professional": "[Título] com [X anos] executando [tipo de campanhas]. Experiência em [plataformas]. [Resultado inicial].",
+        "examples": [
+          "Digital Marketing Specialist com 2 anos executando campanhas paid media em Google Ads e Meta. Experiência em otimização de conversão e análise de métricas. Contribuí para aumento de 30% em leads qualificados."
+        ]
+      },
+      "mid_level": {
+        "professional": "[Título] com [X anos] otimizando [área]. Expertise em [plataformas] com resultados que incluem [métricas]. [Especialização].",
+        "confident": "[Título] com track record de [X anos] gerando [resultados]. [Canais] com métricas: [lista de resultados]. [Proposta de valor].",
+        "examples": [
+          "Growth Marketing Specialist com 5 anos otimizando funnels de aquisição em startups B2C. Expertise em Google Ads, SEO e CRO com histórico de redução de 55% no CAC e aumento de 200% em tráfego orgânico. Obcecado por growth loops e product-led growth.",
+          "Performance Marketer com track record de 6 anos gerando ROI excepcional. Multi-channel expert (Google Ads, Meta, SEO) com métricas: €5M+ geridos, ROI médio de 5:1, redução de 70% em CPA. Transformo budgets em máquinas de crescimento."
+        ]
+      }
+    },
+    "ux_ui_designer": {
+      "mid_level": {
+        "professional": "[Tipo de Designer] com [X anos] criando [tipo de trabalho]. Especializado em [áreas] com portfolio que inclui [projetos]. [Metodologia].",
+        "casual": "[Tipo de Designer] com [X anos] apaixonado por [área]. [Skills] com trabalhos que [resultado]. [Filosofia pessoal].",
+        "examples": [
+          "Product Designer com 5 anos criando experiências digitais data-driven. Especializado em design systems e user research com portfolio que inclui redesigns que aumentaram conversão em 40%. Comprometido com acessibilidade e design inclusivo.",
+          "UX Designer com 6 anos apaixonado por resolver problemas complexos de forma simples. Research-first approach com projetos que aumentaram satisfação e reduziram support tickets em 50%. Design é sobre pessoas, não pixels."
+        ]
+      }
+    },
+    "devops_engineer": {
+      "mid_level": {
+        "professional": "DevOps Engineer com [X anos] [atividade principal]. Expertise em [ferramentas] com histórico de [resultados]. [Foco].",
+        "examples": [
+          "DevOps Engineer com 5 anos automatizando infraestrutura e melhorando reliability. Expertise em Kubernetes, Docker, Terraform e CI/CD com histórico de redução de deployment time em 90% e manutenção de 99.9% uptime. Focado em observabilidade e otimização de custos."
+        ]
+      },
+      "senior": {
+        "professional": "[Senior/Principal] DevOps Engineer com [X+ anos] arquitetando [tipo de infra]. Expertise em [tecnologias] com resultados: [métricas]. [Liderança].",
+        "examples": [
+          "Senior DevOps Engineer com 7+ anos arquitetando infraestruturas cloud-native de alta disponibilidade. Expertise em Kubernetes, AWS e Terraform com resultados: 99.97% uptime, deployment time de 8min, €200K+ poupados em custos cloud. Certificado CKA e AWS Solutions Architect."
+        ]
+      }
+    }
+  },
+  "structure_components": {
+    "opening_phrases": [
+      "[Título] com [X anos] de experiência",
+      "[Título] especializado em [área]",
+      "[Seniority] [Título] com track record de [X anos]",
+      "[Título] focado em [especialização]"
+    ],
+    "expertise_phrases": [
+      "Expertise em [skill 1], [skill 2] e [skill 3]",
+      "Domínio de [tecnologia] e [metodologia]",
+      "Especializado em [área técnica]",
+      "Proficiência em [ferramenta 1], [ferramenta 2] e [ferramenta 3]"
+    ],
+    "achievement_phrases": [
+      "Histórico comprovado de [resultado quantificável]",
+      "Track record de [número] [entregas] que [impacto]",
+      "Resultados que incluem [métrica 1], [métrica 2] e [métrica 3]",
+      "[Ação] que [resultado mensurável]"
+    ],
+    "closing_phrases": [
+      "Focado em [especialização ou objetivo]",
+      "Certificado [certificação]",
+      "Apaixonado por [área ou valor]",
+      "[Soft skill] e [proposta de valor]"
+    ]
+  },
+  "action_verbs": {
+    "leadership": ["liderei", "geri", "coordenei", "dirigi", "supervisionei", "mentorizei"],
+    "technical": ["desenvolvi", "implementei", "arquitetei", "otimizei", "automatizei", "escalei"],
+    "achievement": ["alcancei", "excedi", "aumentei", "reduzi", "melhorei", "maximizei"],
+    "collaboration": ["colaborei", "contribuí", "facilitei", "integrei", "apoiei"]
+  },
+  "metric_templates": {
+    "percentage": "aumentou/reduziu X em Y%",
+    "money": "gerou/poupou €X",
+    "volume": "alcançou/processou X+ [unidade]",
+    "quality": "manteve X% de [métrica]",
+    "time": "reduziu de X para Y"
+  },
+  "tone_guidelines": {
+    "professional": {
+      "style": "formal, objetivo, orientado a resultados",
+      "avoid": ["gírias", "linguagem muito casual", "emojis"],
+      "use": ["verbos fortes", "métricas quantificáveis", "títulos claros"]
+    },
+    "casual": {
+      "style": "amigável, acessível, autêntico",
+      "allow": ["primeira pessoa", "paixões", "personalidade"],
+      "use": ["linguagem natural", "entusiasmo genuíno"]
+    },
+    "confident": {
+      "style": "assertivo, orientado a impacto",
+      "emphasize": ["track record", "métricas fortes", "conquistas únicas"],
+      "use": ["verbos de transformação", "números impressionantes"]
+    }
+  },
+  "ats_best_practices": {
+    "must_include": [
+      "Título profissional nos primeiros 10 palavras",
+      "Anos de experiência quantificados",
+      "3-5 skills técnicas principais",
+      "Pelo menos 1 resultado quantificável"
+    ],
+    "formatting": [
+      "Manter entre 3-5 linhas (50-80 palavras)",
+      "Incluir keywords naturalmente",
+      "Evitar jargão excessivo",
+      "Usar linguagem clara e direta"
+    ],
+    "keywords_by_industry": {
+      "technology": ["desenvolveu", "implementou", "arquitetou", "otimizou", "escalou"],
+      "marketing": ["executou", "otimizou", "analisou", "aumentou", "gerou"],
+      "product": ["lançou", "priorizou", "definiu", "coordenou"],
+      "data": ["analisou", "modelou", "visualizou", "identificou"]
+    }
+  },
+  "quality_checklist": [
+    "Tem título profissional claro?",
+    "Menciona anos de experiência?",
+    "Lista 3-5 skills técnicas relevantes?",
+    "Inclui pelo menos 1 métrica quantificável?",
+    "Tem entre 3-5 linhas de comprimento?",
+    "Usa verbos de ação fortes?",
+    "É específico (evita generalidades)?",
+    "Está otimizado para ATS?",
+    "Tom consistente com perfil profissional?",
+    "Evita clichês genéricos?"
+  ]
+}

@@ -46,8 +46,17 @@ export const useProfileStore = defineStore('user', {
 
         const response = await profileApi.updateProfile(this.accessToken, profileData);
 
-        if (response.data.success) {
-          // Atualiza o profile local com os dados retornados
+        if (!response.data.success) {
+          console.warn('Falha ao atualizar perfil:', response.data.errors);
+
+          const errors: { type: string; value: any; msg: string; path: string; location: string }[] =
+            response.data.errors;
+
+          alert(
+            'Não foi possível atualizar o perfil:\n' +
+            errors.map(e => `${e.path}: ${e.msg}`).join('\n')
+          );
+        } else {
           this.profile = response.data.data.profile;
         }
 

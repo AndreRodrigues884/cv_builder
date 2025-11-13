@@ -1,6 +1,4 @@
-export interface AIReviewRequest {
-  cvId: string
-}
+
 
 export interface AIReviewScores {
   overall: number
@@ -28,28 +26,17 @@ export interface AIReviewData {
   createdAt: string
 }
 
-export interface AIReviewResponse {
-  success: boolean
-  message: string
-  data: {
-    review: AIReviewData
-  }
-}
-
-export interface AIReviewHistoryResponse {
-  success: boolean
-  data: {
-    reviews: AIReviewData[]
-  }
-}
 
 export interface AIState {
   currentReview: AIReviewData | null
   reviewHistory: AIReviewData[]
   currentQuestions: AIInterviewQuestionsData | null
+  currentCareerSuggestion: AISuggestCareerPathData | null
+  currentSummary: string | null
+  currentSuggestions: string[]
+  optimizedCV: any
   loading: boolean
   error: string | null
-  currentCareerSuggestion: AISuggestCareerPathData | null
 }
 
 export interface AIInterviewQuestion {
@@ -57,12 +44,6 @@ export interface AIInterviewQuestion {
   question: string
   difficulty: 'easy' | 'medium' | 'hard'
   basedOn: string
-}
-
-// Requisição ao endpoint
-export interface AIGenerateQuestionsRequest {
-  cvId: string
-  jobDescription: string
 }
 
 export interface AIInterviewQuestionsData {
@@ -100,11 +81,6 @@ export interface AISuggestCareerPathResponse {
   message?: string
 }
 
-export interface AIAnalyzeSkillGapsRequest {
-  targetRole: string
-  targetCompany?: string
-}
-
 // Cada sugestão de skill
 export interface AISkillGapSuggestion {
   skill: string
@@ -119,9 +95,58 @@ export interface AIAnalyzeSkillGapsData {
   currentSkills: string[]  // skills que o usuário já possui
 }
 
-// Response padrão da API
-export interface AIAnalyzeSkillGapsResponse {
-  success: boolean
-  message?: string
-  data: AIAnalyzeSkillGapsData
+export interface ImproveExperienceRequest {
+  description: string
+  jobTitle: string
+  company: string
+}
+
+export interface SuggestSkillsRequest {
+  jobTitle: string
+  jobArea?: string
+}
+
+export interface GenerateSummaryRequest {
+  name: string
+  targetRole: string
+  experiences: any[]
+  skills: any[]
+}
+
+export interface ReviewCVRequest {
+  cvId: string
+}
+
+export interface ImproveExperienceRequest {
+  description: string
+  jobTitle: string
+  company: string
+}
+
+export interface SuggestSkillsRequest {
+  jobTitle: string
+  jobArea?: string
+}
+
+export interface GenerateSummaryRequest {
+  name: string
+  targetRole: string
+  experiences: any[]
+  skills: any[]
+}
+
+export interface ImproveTextRequest {
+  text: string
+  context?: string
+}
+
+export interface OptimizeATSRequest {
+  cvId: string
+  jobDescription?: string
+}
+
+
+export interface GenerateQuestionsRequest {
+  cvId: string
+  jobDescription: string
 }

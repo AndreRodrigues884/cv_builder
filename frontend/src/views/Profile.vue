@@ -83,7 +83,6 @@ export default {
   },
 
   computed: {
-    // Acesso direto às stores
     authStore() {
       return useAuthStore()
     },
@@ -110,17 +109,13 @@ export default {
 
     async loadProfile() {
       try {
-        await this.profileStore.getMe()
-        this.user = this.profileStore.user
-        this.profile = this.profileStore.profile
-        this.billing = this.profileStore.billing
-
+        await this.profileStore.getMe();
       } catch (error) {
-        console.error('Erro ao carregar perfil:', error)
+        console.error('Erro ao carregar perfil:', error);
       } finally {
-        this.loading = false
+        this.loading = false;
       }
-    },
+    }
   },
 
   mounted() {

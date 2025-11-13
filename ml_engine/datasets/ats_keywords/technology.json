@@ -1,0 +1,415 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "area": "Technology",
+    "created_at": "2025-01-15",
+    "total_keywords": 250,
+    "description": "ATS-optimized technology and IT keywords for technical resumes and job descriptions"
+  },
+  "action_verbs": {
+    "high_priority": [
+      "developed",
+      "implemented",
+      "optimized",
+      "automated",
+      "configured",
+      "integrated",
+      "deployed",
+      "troubleshot",
+      "improved",
+      "managed"
+    ],
+    "medium_priority": [
+      "created",
+      "tested",
+      "coded",
+      "maintained",
+      "documented",
+      "collaborated",
+      "analyzed",
+      "debugged",
+      "customized",
+      "reported"
+    ],
+    "leadership": [
+      "led",
+      "coordinated",
+      "supervised",
+      "mentored",
+      "directed",
+      "planned",
+      "delegated"
+    ]
+  },
+  "software_development": {
+    "languages": [
+      "Python",
+      "JavaScript",
+      "TypeScript",
+      "Java",
+      "C#",
+      "C++",
+      "Go",
+      "Rust",
+      "PHP",
+      "Ruby"
+    ],
+    "frameworks": [
+      "React",
+      "Angular",
+      "Vue.js",
+      "Next.js",
+      "Spring Boot",
+      "Django",
+      "Flask",
+      "Express.js",
+      ".NET Core",
+      "Laravel"
+    ],
+    "skills": [
+      "backend development",
+      "frontend development",
+      "API design",
+      "RESTful services",
+      "microservices",
+      "CI/CD pipelines",
+      "unit testing",
+      "code review",
+      "version control",
+      "software architecture"
+    ],
+    "tools": [
+      "Git",
+      "GitHub",
+      "GitLab",
+      "Bitbucket",
+      "Jenkins",
+      "Docker",
+      "Kubernetes",
+      "Postman",
+      "Swagger",
+      "Jira"
+    ]
+  },
+  "data_engineering": {
+    "skills": [
+      "data pipelines",
+      "ETL processes",
+      "data modeling",
+      "data warehousing",
+      "stream processing",
+      "data lake architecture",
+      "big data analytics",
+      "data integration",
+      "query optimization"
+    ],
+    "tools": [
+      "Apache Spark",
+      "Hadoop",
+      "Airflow",
+      "Databricks",
+      "Kafka",
+      "Snowflake",
+      "Redshift",
+      "BigQuery",
+      "AWS Glue",
+      "Azure Data Factory"
+    ],
+    "languages": [
+      "Python",
+      "SQL",
+      "Scala",
+      "R",
+      "Java"
+    ]
+  },
+  "cloud_computing": {
+    "providers": [
+      "AWS",
+      "Microsoft Azure",
+      "Google Cloud Platform",
+      "IBM Cloud",
+      "Oracle Cloud"
+    ],
+    "skills": [
+      "cloud architecture",
+      "serverless computing",
+      "container orchestration",
+      "infrastructure as code (IaC)",
+      "cloud security",
+      "cost optimization",
+      "scalability design"
+    ],
+    "tools": [
+      "Terraform",
+      "Ansible",
+      "AWS Lambda",
+      "CloudFormation",
+      "Azure DevOps",
+      "Kubernetes",
+      "Helm"
+    ]
+  },
+  "cybersecurity": {
+    "skills": [
+      "network security",
+      "vulnerability management",
+      "penetration testing",
+      "incident response",
+      "risk assessment",
+      "identity and access management (IAM)",
+      "endpoint protection",
+      "threat detection"
+    ],
+    "tools": [
+      "Wireshark",
+      "Nmap",
+      "Metasploit",
+      "Burp Suite",
+      "Splunk",
+      "SIEM",
+      "Qualys",
+      "CrowdStrike"
+    ],
+    "frameworks": [
+      "NIST",
+      "ISO 27001",
+      "CIS Controls",
+      "SOC 2",
+      "GDPR compliance"
+    ]
+  },
+  "devops": {
+    "skills": [
+      "continuous integration",
+      "continuous delivery",
+      "automation",
+      "monitoring",
+      "infrastructure management",
+      "version control",
+      "containerization"
+    ],
+    "tools": [
+      "Jenkins",
+      "GitLab CI",
+      "CircleCI",
+      "Docker",
+      "Kubernetes",
+      "Prometheus",
+      "Grafana",
+      "Ansible"
+    ]
+  },
+  "ai_and_machine_learning": {
+    "skills": [
+      "machine learning models",
+      "deep learning",
+      "data preprocessing",
+      "model evaluation",
+      "natural language processing (NLP)",
+      "computer vision",
+      "predictive analytics",
+      "feature engineering"
+    ],
+    "tools": [
+      "TensorFlow",
+      "PyTorch",
+      "scikit-learn",
+      "Keras",
+      "Hugging Face",
+      "OpenAI API",
+      "Pandas",
+      "NumPy"
+    ],
+    "languages": [
+      "Python",
+      "R",
+      "Julia"
+    ]
+  },
+  "software_testing": {
+    "skills": [
+      "manual testing",
+      "automated testing",
+      "unit testing",
+      "integration testing",
+      "regression testing",
+      "performance testing",
+      "QA strategy"
+    ],
+    "tools": [
+      "Selenium",
+      "Cypress",
+      "JUnit",
+      "Postman",
+      "TestNG",
+      "Appium",
+      "Playwright"
+    ]
+  },
+  "it_infrastructure": {
+    "skills": [
+      "network administration",
+      "server management",
+      "virtualization",
+      "system monitoring",
+      "disaster recovery",
+      "IT support",
+      "hardware configuration"
+    ],
+    "tools": [
+      "VMware",
+      "Hyper-V",
+      "Nagios",
+      "Zabbix",
+      "Windows Server",
+      "Linux",
+      "Active Directory"
+    ]
+  },
+  "soft_skills": {
+    "analytical": [
+      "problem solving",
+      "analytical thinking",
+      "data-driven decision making",
+      "troubleshooting",
+      "attention to detail"
+    ],
+    "creative": [
+      "innovation",
+      "design thinking",
+      "solution-oriented mindset",
+      "creative problem solving",
+      "systems thinking"
+    ],
+    "communication": [
+      "team collaboration",
+      "technical communication",
+      "stakeholder management",
+      "cross-functional alignment",
+      "client communication"
+    ],
+    "project_management": [
+      "agile methodology",
+      "scrum management",
+      "task prioritization",
+      "deadline management",
+      "budget tracking"
+    ]
+  },
+  "certifications": [
+    "AWS Certified Solutions Architect",
+    "Microsoft Certified: Azure Administrator",
+    "Google Cloud Professional Engineer",
+    "CompTIA Security+",
+    "Certified Ethical Hacker (CEH)",
+    "Cisco CCNA",
+    "AWS DevOps Engineer",
+    "Scrum Master Certification",
+    "Certified Kubernetes Administrator (CKA)",
+    "Data Science Professional Certificate"
+  ],
+  "industry_specific": {
+    "fintech": [
+      "secure transactions",
+      "blockchain integration",
+      "API banking",
+      "financial compliance",
+      "data encryption"
+    ],
+    "healthtech": [
+      "HIPAA compliance",
+      "medical data security",
+      "health informatics",
+      "telemedicine platforms"
+    ],
+    "saas": [
+      "multi-tenant architecture",
+      "user onboarding",
+      "API integrations",
+      "subscription management",
+      "scalable backend systems"
+    ]
+  },
+  "metrics_keywords": [
+    "uptime",
+    "latency reduction",
+    "deployment frequency",
+    "mean time to recovery (MTTR)",
+    "defect density",
+    "test coverage",
+    "system scalability",
+    "cost optimization",
+    "code efficiency",
+    "performance improvement"
+  ],
+  "quantifiable_terms": [
+    "reduced latency by X%",
+    "increased system uptime to X%",
+    "automated X processes",
+    "deployed X releases per month",
+    "cut costs by X%",
+    "improved performance by X%",
+    "managed infrastructure for X users",
+    "secured X endpoints",
+    "developed X APIs",
+    "optimized build time by X%"
+  ],
+  "job_specific_keywords": {
+    "software_engineer": [
+      "software design",
+      "code optimization",
+      "API integration",
+      "unit testing",
+      "version control",
+      "problem solving",
+      "agile development"
+    ],
+    "devops_engineer": [
+      "CI/CD pipelines",
+      "infrastructure as code",
+      "cloud automation",
+      "monitoring tools",
+      "containerization",
+      "system reliability"
+    ],
+    "data_engineer": [
+      "ETL pipelines",
+      "data modeling",
+      "big data processing",
+      "SQL optimization",
+      "data warehousing",
+      "data governance"
+    ],
+    "cybersecurity_specialist": [
+      "vulnerability management",
+      "incident response",
+      "threat detection",
+      "network security",
+      "risk assessment",
+      "penetration testing"
+    ],
+    "cloud_architect": [
+      "cloud infrastructure design",
+      "multi-cloud environments",
+      "cost optimization",
+      "serverless solutions",
+      "migration planning",
+      "scalability architecture"
+    ]
+  },
+  "trending_2025": [
+    "AI-driven development",
+    "generative AI applications",
+    "low-code/no-code platforms",
+    "quantum computing",
+    "edge computing",
+    "cloud-native infrastructure",
+    "zero-trust security",
+    "cyber resilience",
+    "sustainable computing (Green IT)",
+    "blockchain scalability",
+    "5G integration",
+    "autonomous systems"
+  ]
+}

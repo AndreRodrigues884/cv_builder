@@ -338,7 +338,6 @@ export default {
             this.editingCV = cv
             const content = cv.contentJson || {};
 
-
             // Preenche o formulário com valores existentes ou defaults
             this.editForm = {
                 id: cv.id,
@@ -509,29 +508,12 @@ export default {
         },
 
         async downloadCV(cv) {
-            try {
-                console.log('⬇️ Fazendo download do CV via store:', cv.id);
-
-                // Mostra loading
-                const loadingToast = this.$toast?.info('A gerar PDF...', { duration: false });
-
-                // Chama a action da store
-                const result = await this.cvStore.downloadCVPDF(cv.id);
-
-                // Fecha o toast de loading
-                if (loadingToast) loadingToast.dismiss();
-
-                if (result.success) {
-                    this.$toast?.success('✅ PDF baixado com sucesso!');
-                    console.log('✅ Download concluído com sucesso');
-                } else {
-                    throw new Error(result.message || 'Erro ao descarregar PDF');
-                }
-            } catch (error) {
-                console.error('❌ Erro ao fazer download:', error);
-                this.$toast?.error('Erro ao fazer download do CV');
-                alert('Erro ao fazer download do CV: ' + (error.message || 'Erro desconhecido'));
+            if (!cv?.id) {
+                alert('CV inválido: ID não encontrado');
+                return;
             }
+
+            await this.cvStore.downloadCV(cv);
         },
 
         async deleteCV(cv) {
