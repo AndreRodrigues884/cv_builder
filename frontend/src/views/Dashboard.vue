@@ -1,17 +1,18 @@
 <template>
   <div class="min-h-screen bg-slate-950 text-slate-100">
-    <Sidebar :activeSection="activeSection" @change-section="activeSection = $event" />
+    <Sidebar />
 
     <!-- Main Content -->
     <main class="ml-64 min-h-screen">
       <!-- Top Bar -->
-      <Header :activeSection="activeSection" />
+     <Header :activeSection="uiStore.activeSection" />
+
       <router-view />
 
       <!-- Dashboard Content -->
       <div class="p-8">
         <!-- Dashboard Overview -->
-        <div v-if="activeSection === 'dashboard'">
+        <div v-if="uiStore.activeSection === 'dashboard'">
           <!-- Stats Cards -->
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 hover:border-blue-500/30 transition-all">
@@ -55,21 +56,21 @@
           <div class="mb-8">
             <h2 class="text-xl font-bold mb-4">Ações Rápidas</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <button @click="activeSection = 'create-cv'"
+              <button @click="changeSection('create-cv')"
                 class="bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl p-6 text-left hover:shadow-xl hover:shadow-blue-500/20 hover:-translate-y-1 transition-all">
                 <div class="text-3xl mb-3">✨</div>
                 <h3 class="text-lg font-bold mb-2">Criar Novo CV</h3>
                 <p class="text-sm text-blue-100">Cria um CV profissional em minutos com IA</p>
               </button>
 
-              <button @click="activeSection = 'ai-review'"
+              <button @click="changeSection('ai-review')"
                 class="bg-slate-900 border border-slate-800 rounded-xl p-6 text-left hover:border-blue-500/30 hover:-translate-y-1 transition-all">
                 <div class="text-3xl mb-3">🎯</div>
                 <h3 class="text-lg font-bold mb-2">AI Review</h3>
                 <p class="text-sm text-slate-400">Analisa e melhora o teu CV</p>
               </button>
 
-              <button @click="activeSection = 'templates'"
+              <button @click="changeSection('templates')"
                 class="bg-slate-900 border border-slate-800 rounded-xl p-6 text-left hover:border-purple-500/30 hover:-translate-y-1 transition-all">
                 <div class="text-3xl mb-3">🎨</div>
                 <h3 class="text-lg font-bold mb-2">Ver Templates</h3>
@@ -82,7 +83,7 @@
           <div>
             <div class="flex justify-between items-center mb-4">
               <h2 class="text-xl font-bold">CVs Recentes</h2>
-              <button @click="activeSection = 'my-cvs'"
+              <button @click="changeSection('my-cvs')"
                 class="text-blue-500 hover:text-blue-400 text-sm font-medium">Ver todos →</button>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -121,26 +122,24 @@
           </div>
         </div>
 
-        <!-- Create CV Section -->
-        <CreateCVWizard v-if="activeSection === 'create-cv'" @cancel="activeSection = 'dashboard'"
-          @complete="activeSection = 'dashboard'; loadData()" />
+        <CreateCVWizard v-if="uiStore.activeSection === 'create-cv'" @cancel="changeSection('dashboard')"
+          @complete="changeSection('dashboard'); loadData()" />
 
         <!-- My CVs Section -->
-        <MyCVs v-if="activeSection === 'my-cvs'" />
-
+        <MyCVs v-if="uiStore.activeSection === 'my-cvs'" />
 
         <!-- AI Review Section -->
-        <AiReview v-if="activeSection === 'ai-review'" />
+        <AiReview v-if="uiStore.activeSection === 'ai-review'" />
 
         <!-- Job Match Section -->
-        <JobMatch v-if="activeSection === 'job-match'" />
+        <JobMatch v-if="uiStore.activeSection === 'job-match'" />
 
         <!-- Career Copilot Section -->
-        <CareerCopilot :activeSection="activeSection" />
+        <CareerCopilot :activeSection="uiStore.activeSection" />
 
 
         <!-- Templates Section -->
-        <div v-if="activeSection === 'templates'">
+        <div v-if="uiStore.activeSection === 'templates'">
           <div class="flex gap-4 mb-6">
             <button class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium"
               @click="templateStore.fetchTemplates()">
@@ -187,7 +186,7 @@
 
 
         <!-- Settings Section -->
-        <div v-if="activeSection === 'settings'" class="max-w-4xl mx-auto">
+        <div v-if="uiStore.activeSection === 'settings'" class="max-w-4xl mx-auto">
           <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8">
             <h2 class="text-2xl font-bold mb-6">Definições</h2>
 
@@ -261,7 +260,8 @@ import Sidebar from "../components/dashboard/sidebar.vue"
 import Header from "../components/dashboard/header.vue"
 import { useCVStore } from "../stores/cv"
 import { useTemplateStore } from "../stores/template"
-import { useAIStore } from "../stores/ai"
+import { useAIStore } from "../stores/ai";
+import { useUIStore } from "../stores/ui";
 
 // Componentes de secções
 import AiReview from "../components/dashboard/AIReviewSection.vue"
@@ -285,16 +285,14 @@ export default {
 
   data() {
     return {
-      activeSection: "dashboard",
       loading: false,
       stats: {
         cvsCreated: 0,
         published: 0,
         draft: 0,
-        archived: 0,
-        atsScore: 0,      // Média dos ATS scores
+        archived: 0
       },
-      atsScores: [],       // Guarda scores individuais
+      atsScores: [],
       error: null
     }
   },
@@ -314,6 +312,9 @@ export default {
     },
     aiStore() {
       return useAIStore()
+    },
+    uiStore() {
+      return useUIStore()
     }
   },
 
@@ -359,6 +360,43 @@ export default {
   },
 
   methods: {
+    async loadData() {
+      try {
+        this.loading = true
+
+        // 🔹 Primeiro, carrega os templates
+        await this.templateStore.fetchTemplates()
+
+        // 🔹 Depois, carrega os CVs
+        const response = await this.cvStore.fetchCVs()
+        if (!response?.data) return
+
+        this.cvStore.cvs = response.data.cvs.map(cv => {
+          const template = this.templateStore.templates.find(t => t.id === cv.templateId)
+          return {
+            id: cv.id,
+            title: cv.title,
+            targetRole: cv.targetRole || "Não definido",
+            status: cv.status,
+            statusColor: this.getStatusColor(cv.status),
+            template: template ? template.name : "Desconhecido", // 👈 Mostra o nome
+            updatedAt: this.formatDate(cv.updatedAt)
+          }
+        })
+
+        this.stats.cvsCreated = response.data.stats.total
+        this.stats.published = response.data.stats.published
+        this.stats.draft = response.data.stats.draft
+        this.stats.archived = response.data.stats.archived
+
+      } catch (error) {
+        console.error("Erro ao carregar CVs:", error)
+        this.error = error
+      } finally {
+        this.loading = false
+      }
+    },
+
     async loadAllAts() {
       if (!this.cvStore.cvs || this.cvStore.cvs.length === 0) return
 
@@ -428,7 +466,10 @@ export default {
         console.error('Erro ao fazer download:', error)
         alert('Erro ao fazer download do CV')
       }
-    }
+    },
+    changeSection(section) {
+      this.uiStore.setActiveSection(section)
+    },
   }
 }
 </script>

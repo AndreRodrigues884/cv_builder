@@ -220,7 +220,7 @@ export const useAIStore = defineStore('ai', {
       this.optimizedCV = null
       this.error = null
     }
-  }
+  },
 })
 
 export default useAIStore

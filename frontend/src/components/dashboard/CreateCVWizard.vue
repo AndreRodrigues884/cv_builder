@@ -1,80 +1,98 @@
 <template>
   <div class="min-h-screen bg-slate-950 text-slate-100">
     <!-- Navbar -->
-
-    <div class=" rounded-lg">
-      <nav class="bg-slate-900 border-b border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="flex justify-between h-16">
-            <div class="flex items-center space-x-4">
-              <button @click="$emit('cancel')" class="text-slate-400 hover:text-slate-100 transition">
-                ← Voltar
-              </button>
-              <h1 class="text-xl font-bold">Criar Novo CV</h1>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-sm text-slate-400">Passo {{ currentStep }} de {{ totalSteps }}</span>
-            </div>
+    <nav class="bg-slate-900 border-b border-slate-800">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <div class="flex items-center space-x-4">
+            <button @click="$emit('cancel')" class="text-slate-400 hover:text-slate-100 transition">
+              ← Voltar
+            </button>
+            <h1 class="text-xl font-bold">Criar Novo CV</h1>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-slate-400">Passo {{ currentStep }} de {{ totalSteps }}</span>
           </div>
         </div>
-      </nav>
+      </div>
+    </nav>
 
-      <!-- Progress Bar -->
-      <div class="bg-slate-900 border-b border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div class="flex items-center justify-between">
-            <div v-for="(step, index) in steps" :key="index" class="flex items-center flex-1">
-              <div class="flex items-center justify-center w-8 h-8 rounded-full transition-all"
-                :class="getStepClass(index + 1)">
-                {{ index + 1 }}
-              </div>
-              <div class="ml-2 hidden md:block">
-                <div class="text-xs font-medium" :class="getStepTextClass(index + 1)">
-                  {{ step.label }}
-                </div>
-              </div>
-              <div v-if="index < steps.length - 1" class="flex-1 h-1 mx-2 transition-all"
-                :class="currentStep > index + 1 ? 'bg-blue-600' : 'bg-slate-700'"></div>
+    <!-- Progress Bar -->
+    <div class="bg-slate-900 border-b border-slate-800">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex items-center justify-between">
+          <div 
+            v-for="(step, index) in steps" 
+            :key="index"
+            class="flex items-center flex-1"
+          >
+            <div 
+              class="flex items-center justify-center w-8 h-8 rounded-full transition-all"
+              :class="getStepClass(index + 1)"
+            >
+              {{ index + 1 }}
             </div>
+            <div class="ml-2 hidden md:block">
+              <div class="text-xs font-medium" :class="getStepTextClass(index + 1)">
+                {{ step.label }}
+              </div>
+            </div>
+            <div 
+              v-if="index < steps.length - 1"
+              class="flex-1 h-1 mx-2 transition-all"
+              :class="currentStep > index + 1 ? 'bg-blue-600' : 'bg-slate-700'"
+            ></div>
           </div>
         </div>
       </div>
     </div>
 
-
     <!-- Content -->
-    <div class="max-w-5xl mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto px-4 py-8">
       <!-- Step 1: Informações do CV e Template -->
       <div v-if="currentStep === 1" class="space-y-6">
         <div class="bg-slate-900 border border-slate-800 rounded-lg shadow p-6">
           <h2 class="text-2xl font-bold mb-4">📄 Informações do CV</h2>
-
+          
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label class="block text-sm font-medium mb-2">Título do CV *</label>
-              <input v-model="formData.title" type="text" required
+              <input 
+                v-model="formData.title" 
+                type="text" 
+                required
                 class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
-                placeholder="Ex: CV Full-Stack Developer" />
+                placeholder="Ex: CV Full-Stack Developer" 
+              />
             </div>
 
             <div>
               <label class="block text-sm font-medium mb-2">Cargo Alvo *</label>
-              <input v-model="formData.targetRole" type="text" required
+              <input 
+                v-model="formData.targetRole" 
+                type="text" 
+                required
                 class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
-                placeholder="Ex: Desenvolvedor Full-Stack" />
+                placeholder="Ex: Desenvolvedor Full-Stack" 
+              />
             </div>
 
             <div>
               <label class="block text-sm font-medium mb-2">Área Profissional</label>
-              <input v-model="formData.jobTargetArea" type="text"
+              <input 
+                v-model="formData.jobTargetArea" 
+                type="text"
                 class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
-                placeholder="Ex: Tecnologia" />
+                placeholder="Ex: Tecnologia" 
+              />
             </div>
 
             <div>
               <label class="block text-sm font-medium mb-2">Idioma</label>
-              <select v-model="formData.language"
-                class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100">
+              <select 
+                v-model="formData.language"
+                class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
+              >
                 <option value="PT">Português</option>
                 <option value="EN">Inglês</option>
                 <option value="ES">Espanhol</option>
@@ -85,8 +103,11 @@
 
           <div>
             <label class="block text-sm font-medium mb-2">Template *</label>
-            <select v-model="formData.templateId" required
-              class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100">
+            <select 
+              v-model="formData.templateId" 
+              required
+              class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
+            >
               <option value="">Seleciona um template</option>
               <option v-for="template in templateStore.templates" :key="template.id" :value="template.id">
                 {{ template.name }} ({{ template.type }})
@@ -100,59 +121,87 @@
       <div v-if="currentStep === 2" class="space-y-6">
         <div class="bg-slate-900 border border-slate-800 rounded-lg shadow p-6">
           <h2 class="text-2xl font-bold mb-4">📋 Dados Pessoais</h2>
-
+          
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label class="block text-sm font-medium mb-2">Nome Completo *</label>
-              <input v-model="formData.personalInfo.name" type="text" required
+              <input 
+                v-model="formData.personalInfo.name" 
+                type="text" 
+                required
                 class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
-                placeholder="João Silva" />
+                placeholder="João Silva" 
+              />
             </div>
 
             <div>
               <label class="block text-sm font-medium mb-2">Email *</label>
-              <input v-model="formData.personalInfo.email" type="email" required
+              <input 
+                v-model="formData.personalInfo.email" 
+                type="email" 
+                required
                 class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
-                placeholder="joao@example.com" />
+                placeholder="joao@example.com" 
+              />
             </div>
 
             <div>
               <label class="block text-sm font-medium mb-2">Telefone *</label>
-              <input v-model="formData.personalInfo.phone" type="tel" required
+              <input 
+                v-model="formData.personalInfo.phone" 
+                type="tel" 
+                required
                 class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
-                placeholder="+351 912 345 678" />
+                placeholder="+351 912 345 678" 
+              />
             </div>
 
             <div>
               <label class="block text-sm font-medium mb-2">Localização</label>
-              <input v-model="formData.personalInfo.location" type="text"
+              <input 
+                v-model="formData.personalInfo.location" 
+                type="text"
                 class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
-                placeholder="Lisboa, Portugal" />
+                placeholder="Lisboa, Portugal" 
+              />
             </div>
 
             <div>
               <label class="block text-sm font-medium mb-2">LinkedIn</label>
-              <input v-model="formData.personalInfo.linkedin" type="url"
+              <input 
+                v-model="formData.personalInfo.linkedin" 
+                type="url"
                 class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
-                placeholder="https://linkedin.com/in/..." />
+                placeholder="https://linkedin.com/in/..." 
+              />
             </div>
 
             <div>
               <label class="block text-sm font-medium mb-2">GitHub</label>
-              <input v-model="formData.personalInfo.github" type="url"
+              <input 
+                v-model="formData.personalInfo.github" 
+                type="url"
                 class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
-                placeholder="https://github.com/..." />
+                placeholder="https://github.com/..." 
+              />
             </div>
           </div>
 
           <div>
             <label class="block text-sm font-medium mb-2">Resumo Profissional</label>
             <div class="relative">
-              <textarea v-model="formData.summary" rows="4"
+              <textarea 
+                v-model="formData.summary" 
+                rows="4"
                 class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
-                placeholder="Breve descrição sobre ti e tua experiência..."></textarea>
-              <button type="button" @click="generateSummary" :disabled="loadingAI"
-                class="absolute bottom-2 right-2 px-3 py-1 bg-purple-600 text-white text-sm rounded hover:bg-purple-700 transition disabled:opacity-50">
+                placeholder="Breve descrição sobre ti e tua experiência..."
+              ></textarea>
+              <button 
+                type="button" 
+                @click="generateSummary" 
+                :disabled="loadingAI"
+                class="absolute bottom-2 right-2 px-3 py-1 bg-purple-600 text-white text-sm rounded hover:bg-purple-700 transition disabled:opacity-50"
+              >
                 {{ loadingAI ? '⏳' : '✨ Gerar com IA' }}
               </button>
             </div>
@@ -165,17 +214,23 @@
         <div class="bg-slate-900 border border-slate-800 rounded-lg shadow p-6">
           <div class="flex justify-between items-center mb-4">
             <h2 class="text-2xl font-bold">💼 Experiência Profissional</h2>
-            <button type="button" @click="addExperience"
-              class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition text-sm">
+            <button 
+              type="button" 
+              @click="addExperience"
+              class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition text-sm"
+            >
               ➕ Adicionar
             </button>
           </div>
 
-          <div v-for="(exp, index) in formData.experiences" :key="index"
-            class="mb-6 p-4 bg-slate-800 border border-slate-700 rounded-lg">
+          <div v-for="(exp, index) in formData.experiences" :key="index" class="mb-6 p-4 bg-slate-800 border border-slate-700 rounded-lg">
             <div class="flex justify-between items-start mb-4">
               <h3 class="font-semibold text-slate-100">Experiência {{ index + 1 }}</h3>
-              <button type="button" @click="removeExperience(index)" class="text-red-400 hover:text-red-300 text-sm">
+              <button 
+                type="button" 
+                @click="removeExperience(index)"
+                class="text-red-400 hover:text-red-300 text-sm"
+              >
                 🗑️ Remover
               </button>
             </div>
@@ -183,37 +238,60 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium mb-2 text-slate-300">Cargo *</label>
-                <input v-model="exp.jobTitle" type="text" required
+                <input 
+                  v-model="exp.jobTitle" 
+                  type="text" 
+                  required
                   class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
-                  placeholder="Desenvolvedor Full-Stack" />
+                  placeholder="Desenvolvedor Full-Stack" 
+                />
               </div>
 
               <div>
                 <label class="block text-sm font-medium mb-2 text-slate-300">Empresa *</label>
-                <input v-model="exp.company" type="text" required
+                <input 
+                  v-model="exp.company" 
+                  type="text" 
+                  required
                   class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
-                  placeholder="Tech Company Lda" />
+                  placeholder="Tech Company Lda" 
+                />
               </div>
 
               <div>
                 <label class="block text-sm font-medium mb-2 text-slate-300">Localização</label>
-                <input v-model="exp.location" type="text"
+                <input 
+                  v-model="exp.location" 
+                  type="text"
                   class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
-                  placeholder="Lisboa, Portugal" />
+                  placeholder="Lisboa, Portugal" 
+                />
               </div>
 
               <div>
                 <label class="block text-sm font-medium mb-2 text-slate-300">Data Início *</label>
-                <input v-model="exp.startDate" type="month" required
-                  class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100" />
+                <input 
+                  v-model="exp.startDate" 
+                  type="month" 
+                  required
+                  class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
+                />
               </div>
 
               <div>
                 <label class="block text-sm font-medium mb-2 text-slate-300">Data Fim</label>
-                <input v-model="exp.endDate" type="month" :disabled="exp.isCurrent"
-                  class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100 disabled:opacity-50" />
+                <input 
+                  v-model="exp.endDate" 
+                  type="month" 
+                  :disabled="exp.isCurrent"
+                  class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100 disabled:opacity-50"
+                />
                 <label class="flex items-center mt-2 text-sm text-slate-300">
-                  <input v-model="exp.isCurrent" type="checkbox" class="mr-2" />
+                  <input 
+                    v-model="exp.isCurrent" 
+                    type="checkbox" 
+                    class="mr-2" 
+                  />
                   Trabalho atual
                 </label>
               </div>
@@ -222,11 +300,19 @@
             <div class="mt-4">
               <label class="block text-sm font-medium mb-2 text-slate-300">Descrição *</label>
               <div class="relative">
-                <textarea v-model="exp.description" rows="3" required
+                <textarea 
+                  v-model="exp.description" 
+                  rows="3" 
+                  required
                   class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
-                  placeholder="Descreve as tuas responsabilidades e conquistas..."></textarea>
-                <button type="button" @click="improveDescription(index)" :disabled="loadingAI"
-                  class="absolute bottom-2 right-2 px-3 py-1 bg-purple-600 text-white text-sm rounded hover:bg-purple-700 transition disabled:opacity-50">
+                  placeholder="Descreve as tuas responsabilidades e conquistas..."
+                ></textarea>
+                <button 
+                  type="button" 
+                  @click="improveDescription(index)" 
+                  :disabled="loadingAI"
+                  class="absolute bottom-2 right-2 px-3 py-1 bg-purple-600 text-white text-sm rounded hover:bg-purple-700 transition disabled:opacity-50"
+                >
                   {{ loadingAI ? '⏳' : '✨ Melhorar' }}
                 </button>
               </div>
@@ -244,17 +330,23 @@
         <div class="bg-slate-900 border border-slate-800 rounded-lg shadow p-6">
           <div class="flex justify-between items-center mb-4">
             <h2 class="text-2xl font-bold">🎓 Formação Académica</h2>
-            <button type="button" @click="addEducation"
-              class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition text-sm">
+            <button 
+              type="button" 
+              @click="addEducation"
+              class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition text-sm"
+            >
               ➕ Adicionar
             </button>
           </div>
 
-          <div v-for="(edu, index) in formData.educations" :key="index"
-            class="mb-6 p-4 bg-slate-800 border border-slate-700 rounded-lg">
+          <div v-for="(edu, index) in formData.educations" :key="index" class="mb-6 p-4 bg-slate-800 border border-slate-700 rounded-lg">
             <div class="flex justify-between items-start mb-4">
               <h3 class="font-semibold text-slate-100">Formação {{ index + 1 }}</h3>
-              <button type="button" @click="removeEducation(index)" class="text-red-400 hover:text-red-300 text-sm">
+              <button 
+                type="button" 
+                @click="removeEducation(index)"
+                class="text-red-400 hover:text-red-300 text-sm"
+              >
                 🗑️ Remover
               </button>
             </div>
@@ -262,31 +354,52 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium mb-2 text-slate-300">Instituição *</label>
-                <input v-model="edu.institution" type="text" required
+                <input 
+                  v-model="edu.institution" 
+                  type="text" 
+                  required
                   class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
-                  placeholder="Universidade de Aveiro" />
+                  placeholder="Universidade de Aveiro" 
+                />
               </div>
 
               <div>
                 <label class="block text-sm font-medium mb-2 text-slate-300">Grau *</label>
-                <input v-model="edu.degree" type="text" required
+                <input 
+                  v-model="edu.degree" 
+                  type="text" 
+                  required
                   class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
-                  placeholder="Licenciatura" />
+                  placeholder="Licenciatura" 
+                />
               </div>
 
               <div>
                 <label class="block text-sm font-medium mb-2 text-slate-300">Área *</label>
-                <input v-model="edu.fieldOfStudy" type="text" required
+                <input 
+                  v-model="edu.fieldOfStudy" 
+                  type="text" 
+                  required
                   class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
-                  placeholder="Engenharia Informática" />
+                  placeholder="Engenharia Informática" 
+                />
               </div>
 
               <div>
                 <label class="block text-sm font-medium mb-2 text-slate-300">Data Fim *</label>
-                <input v-model="edu.endDate" type="month" required :disabled="edu.isCurrent"
-                  class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100 disabled:opacity-50" />
+                <input 
+                  v-model="edu.endDate" 
+                  type="month" 
+                  required 
+                  :disabled="edu.isCurrent"
+                  class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100 disabled:opacity-50"
+                />
                 <label class="flex items-center mt-2 text-sm text-slate-300">
-                  <input v-model="edu.isCurrent" type="checkbox" class="mr-2" />
+                  <input 
+                    v-model="edu.isCurrent" 
+                    type="checkbox" 
+                    class="mr-2" 
+                  />
                   Em curso
                 </label>
               </div>
@@ -306,25 +419,43 @@
 
           <div class="mb-4">
             <div class="flex gap-2">
-              <input v-model="newSkill" type="text" @keyup.enter="addSkill"
+              <input 
+                v-model="newSkill" 
+                type="text" 
+                @keyup.enter="addSkill"
                 class="flex-1 px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
-                placeholder="Ex: Vue.js, Node.js, PostgreSQL..." />
-              <button type="button" @click="addSkill"
-                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                placeholder="Ex: Vue.js, Node.js, PostgreSQL..." 
+              />
+              <button 
+                type="button" 
+                @click="addSkill"
+                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+              >
                 Adicionar
               </button>
-              <button type="button" @click="suggestSkills" :disabled="loadingAI"
-                class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition disabled:opacity-50">
+              <button 
+                type="button" 
+                @click="suggestSkills" 
+                :disabled="loadingAI"
+                class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition disabled:opacity-50"
+              >
                 {{ loadingAI ? '⏳' : '✨ Sugerir' }}
               </button>
             </div>
           </div>
 
           <div class="flex flex-wrap gap-2">
-            <span v-for="(skill, index) in formData.skills" :key="index"
-              class="px-3 py-1 bg-blue-600 text-white rounded-full text-sm flex items-center space-x-2">
+            <span 
+              v-for="(skill, index) in formData.skills" 
+              :key="index"
+              class="px-3 py-1 bg-blue-600 text-white rounded-full text-sm flex items-center space-x-2"
+            >
               <span>{{ typeof skill === 'string' ? skill : skill.name }}</span>
-              <button type="button" @click="removeSkill(index)" class="text-blue-200 hover:text-white font-bold">
+              <button 
+                type="button" 
+                @click="removeSkill(index)"
+                class="text-blue-200 hover:text-white font-bold"
+              >
                 ×
               </button>
             </span>
@@ -341,17 +472,23 @@
         <div class="bg-slate-900 border border-slate-800 rounded-lg shadow p-6">
           <div class="flex justify-between items-center mb-4">
             <h2 class="text-2xl font-bold">🚀 Projetos</h2>
-            <button type="button" @click="addProject"
-              class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition text-sm">
+            <button 
+              type="button" 
+              @click="addProject"
+              class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition text-sm"
+            >
               ➕ Adicionar
             </button>
           </div>
 
-          <div v-for="(proj, index) in formData.projects" :key="index"
-            class="mb-6 p-4 bg-slate-800 border border-slate-700 rounded-lg">
+          <div v-for="(proj, index) in formData.projects" :key="index" class="mb-6 p-4 bg-slate-800 border border-slate-700 rounded-lg">
             <div class="flex justify-between items-start mb-4">
               <h3 class="font-semibold text-slate-100">Projeto {{ index + 1 }}</h3>
-              <button type="button" @click="removeProject(index)" class="text-red-400 hover:text-red-300 text-sm">
+              <button 
+                type="button" 
+                @click="removeProject(index)"
+                class="text-red-400 hover:text-red-300 text-sm"
+              >
                 🗑️ Remover
               </button>
             </div>
@@ -359,38 +496,55 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium mb-2 text-slate-300">Título do Projeto *</label>
-                <input v-model="proj.name" type="text" required
+                <input 
+                  v-model="proj.name" 
+                  type="text" 
+                  required
                   class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
-                  placeholder="Nome do Projeto" />
+                  placeholder="Nome do Projeto" 
+                />
               </div>
 
               <div>
                 <label class="block text-sm font-medium mb-2 text-slate-300">Teu Papel</label>
-                <input v-model="proj.role" type="text"
+                <input 
+                  v-model="proj.role" 
+                  type="text"
                   class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
-                  placeholder="Desenvolvedor Full-Stack" />
+                  placeholder="Desenvolvedor Full-Stack" 
+                />
               </div>
 
               <div class="md:col-span-2">
                 <label class="block text-sm font-medium mb-2 text-slate-300">URL</label>
-                <input v-model="proj.url" type="url"
+                <input 
+                  v-model="proj.url" 
+                  type="url"
                   class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
-                  placeholder="https://github.com/..." />
+                  placeholder="https://github.com/..." 
+                />
               </div>
             </div>
 
             <div class="mt-4">
               <label class="block text-sm font-medium mb-2 text-slate-300">Descrição *</label>
-              <textarea v-model="proj.description" rows="3" required
+              <textarea 
+                v-model="proj.description" 
+                rows="3" 
+                required
                 class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
-                placeholder="Descreve o projeto e o teu contributo..."></textarea>
+                placeholder="Descreve o projeto e o teu contributo..."
+              ></textarea>
             </div>
 
             <div class="mt-4">
               <label class="block text-sm font-medium mb-2 text-slate-300">Tecnologias (separadas por vírgula)</label>
-              <input v-model="proj.technologiesStr" type="text"
+              <input 
+                v-model="proj.technologiesStr" 
+                type="text"
                 class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-100"
-                placeholder="Vue.js, Node.js, PostgreSQL" />
+                placeholder="Vue.js, Node.js, PostgreSQL" 
+              />
             </div>
           </div>
 
@@ -404,7 +558,7 @@
       <div v-if="currentStep === 7" class="space-y-6">
         <div class="bg-slate-900 border border-slate-800 rounded-lg shadow p-6">
           <h2 class="text-2xl font-bold mb-4">👁️ Preview do CV</h2>
-
+          
           <div v-if="generating" class="flex items-center justify-center py-12">
             <div class="text-center">
               <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -416,14 +570,19 @@
             <div class="bg-white rounded-lg p-4 mb-4" style="max-height: 600px; overflow-y: auto;">
               <div v-html="previewHTML"></div>
             </div>
-
+            
             <div class="flex gap-4">
-              <button @click="downloadPDF" :disabled="downloading || !createdCVId"
-                class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 font-medium">
+              <button 
+                @click="downloadPDF" 
+                :disabled="downloading || !createdCVId"
+                class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 font-medium"
+              >
                 {{ downloading ? '⏳ A baixar...' : '📥 Download PDF' }}
               </button>
-              <button @click="goToDashboard"
-                class="px-6 py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition">
+              <button 
+                @click="goToDashboard" 
+                class="px-6 py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition"
+              >
                 Ver no Dashboard
               </button>
             </div>
@@ -431,8 +590,11 @@
 
           <div v-else class="text-center py-12">
             <p class="text-slate-400 mb-4">Clique em "Gerar CV" para ver o preview</p>
-            <button @click="generateCV" :disabled="generating"
-              class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 font-medium">
+            <button 
+              @click="generateCV" 
+              :disabled="generating"
+              class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 font-medium"
+            >
               {{ generating ? '⏳ A gerar...' : '✨ Gerar CV' }}
             </button>
           </div>
@@ -441,15 +603,22 @@
 
       <!-- Navigation Buttons -->
       <div class="flex justify-between mt-8">
-        <button v-if="currentStep > 1" @click="previousStep"
-          class="px-6 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition">
+        <button 
+          v-if="currentStep > 1"
+          @click="previousStep"
+          class="px-6 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition"
+        >
           ← Anterior
         </button>
         <div v-else></div>
 
         <!-- Botão Próximo - aparece do passo 1 ao 6 -->
-        <button v-if="currentStep < 7" @click="nextStep" :disabled="!canProceed"
-          class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50">
+        <button 
+          v-if="currentStep < 7"
+          @click="nextStep"
+          :disabled="!canProceed"
+          class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+        >
           {{ currentStep === 6 ? 'Ver Preview →' : 'Próximo →' }}
         </button>
         <div v-else></div>
@@ -460,12 +629,12 @@
 
 <script>
 import { useCVStore } from '../../stores/cv'
-import { useAIStore } from '../../stores/ai'
 import { useTemplateStore } from '../../stores/template'
+import useAiStore from '../../stores/ai'
 
 export default {
   name: 'CreateCVWizard',
-
+  
   emits: ['cancel', 'complete'],
 
   data() {
@@ -516,7 +685,7 @@ export default {
 
   created() {
     this.cvStore = useCVStore();
-    this.aiStore = useAIStore();
+    this.aiStore = useAiStore();
   },
 
   computed: {
@@ -555,7 +724,7 @@ export default {
         this.currentStep++
       }
     },
-
+    
     previousStep() {
       if (this.currentStep > 1) {
         this.currentStep--
@@ -687,7 +856,7 @@ export default {
           jobTitle: this.formData.targetRole,
           jobArea: this.formData.jobTargetArea
         })
-
+        
         response.data.suggestions.forEach(skill => {
           if (!this.formData.skills.find(s => s.name === skill.skill)) {
             this.formData.skills.push({
@@ -750,8 +919,8 @@ export default {
           description: proj.description,
           role: proj.role,
           url: proj.url,
-          technologies: proj.technologiesStr
-            ? proj.technologiesStr.split(',').map(t => t.trim())
+          technologies: proj.technologiesStr 
+            ? proj.technologiesStr.split(',').map(t => t.trim()) 
             : [],
           highlights: proj.highlights || []
         }))
@@ -818,7 +987,7 @@ export default {
           const cvId = typeof result.cv.id === 'string' ? result.cv.id : String(result.cv.id)
           this.createdCVId = cvId
           console.log('✅ CV criado com ID:', cvId, typeof cvId)
-
+          
           // Carregar preview
           try {
             const previewResponse = await this.cvStore.previewCV(cvId)
@@ -853,10 +1022,10 @@ export default {
         // Garantir que o ID é uma string
         const cvId = typeof this.createdCVId === 'string' ? this.createdCVId : String(this.createdCVId)
         console.log('📥 Fazendo download do CV com ID:', cvId, typeof cvId)
-
+        
         this.downloading = true
         const result = await this.cvStore.downloadCV(cvId)
-
+        
         if (!result.success) {
           throw new Error(result.message || 'Erro ao fazer download')
         }

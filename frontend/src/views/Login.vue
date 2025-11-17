@@ -94,6 +94,11 @@ export default {
   created() {
     this.authStore = useAuthStore();
     this.router = useRouter();
+
+    const savedEmail = localStorage.getItem('lastEmail')
+    if (savedEmail) {
+      this.email = savedEmail
+    }
   },
 
   methods: {
@@ -106,7 +111,9 @@ export default {
         this.loading = true
         this.error = ''
         await this.authStore.login(this.email, this.password)
+
         if (this.authStore.user) {
+          localStorage.setItem('lastEmail', this.email)
           this.router.push('/dashboard')
         } else {
           this.error = 'Erro: utilizador não foi autenticado'

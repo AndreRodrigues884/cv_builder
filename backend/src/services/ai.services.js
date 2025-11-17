@@ -215,66 +215,53 @@ p { font-size: 14px; color: #333; margin:2px 0; }
     return { html, css };
   }
 
-  async callClaudeAPI(prompt, maxTokens = 1000) {
-    // Check cache
-    const cacheKey = this.hashString(prompt);
-    if (this.cache.has(cacheKey)) {
-      const cached = this.cache.get(cacheKey);
-      if (Date.now() - cached.timestamp < this.cacheTimeout) {
-        console.log('💾 Usando resposta em cache');
-        return cached.data;
-      }
-    }
-
-    const response = await fetch(this.baseURL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': this.apiKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: this.model,
-        max_tokens: maxTokens,
-        messages: [{
-          role: 'user',
-          content: prompt
-        }]
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`Claude API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const content = data.content[0].text;
-
-    // Salvar em cache
-    this.cache.set(cacheKey, {
-      data: content,
-      timestamp: Date.now()
-    });
-
-    return content;
-  }
-
-  /**
-   * 🛠️ HELPER: Parse JSON da resposta
-   */
-  parseJSONResponse(response) {
+  async callHuggingFace(model, payload, retries = 3) {
     try {
-      // Remover markdown se existir
-      const cleaned = response
-        .replace(/```json\n?/g, '')
-        .replace(/```\n?/g, '')
-        .trim();
-      
-      return JSON.parse(cleaned);
+      // Construir URL corretamente: https://api-inference.huggingface.co/models/{model}
+      // Garantir que model não contém a URL completa
+      const modelName = model.includes('http') ? model.split('/').pop() : model;
+      const url = `${this.baseURL}/models/${modelName}`;
+      console.log('🌐 URL da API:', url);
+      console.log('📦 Payload:', JSON.stringify(payload, null, 2));
+      console.log('🔑 API Key presente:', !!this.apiKey);
+
+      const response = await axios.post(
+        url,
+        payload,
+        {
+          headers: {
+            'Authorization': `Bearer ${this.apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          timeout: 60000, // Aumentar timeout para 60s
+        }
+      );
+
+      console.log('✅ Resposta recebida:', response.status);
+      return response.data;
     } catch (error) {
-      console.error('❌ Erro ao parsear JSON:', error.message);
-      console.log('📄 Resposta original:', response);
-      throw new Error('Resposta da IA não está em formato JSON válido');
+      console.error('❌ Erro completo:', {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        url: error.config?.url,
+      });
+
+      // Se API mudou de endpoint (erro 410)
+      if (error.response?.status === 410) {
+        const errorMessage = error.response?.data?.error || '';
+        console.error('⚠️ API do HuggingFace retornou erro 410:', errorMessage);
+        // Continuar para usar fallback
+      }
+
+      // Se modelo está carregando, retry
+      if (error.response?.status === 503 && retries > 0) {
+        console.log(`Modelo carregando, tentando novamente em 5s... (${retries} tentativas restantes)`);
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        return this.callHuggingFace(model, payload, retries - 1);
+      }
+
+      throw error;
     }
   }
 
@@ -534,71 +521,36 @@ Formato da resposta:
    */
   async improveText(text, section, context = {}) {
     try {
-      console.log(`📝 Melhorando texto da secção: ${section}`);
+      const sectionTips = {
+        summary: 'Seja conciso, destaque resultados e use verbos de ação.',
+        experience: 'Use verbos de ação, quantifique resultados, destaque impacto.',
+        education: 'Seja direto, mencione conquistas académicas relevantes.',
+        skills: 'Organize por categorias, priorize as mais relevantes.',
+      };
 
-      // 1. Buscar exemplos similares no dataset local
-      const examples = findImprovementExample(section);
-      const relevantExamples = examples.slice(0, 3); // Top 3 exemplos
+      // Prompt simplificado para FLAN-T5
+      const prompt = `Improve this ${section} text for a CV: "${text}". ${sectionTips[section]}`;
 
-      // 2. Preparar prompt com contexto do dataset
-      const examplesText = relevantExamples.map((ex, i) => 
-        `Exemplo ${i + 1}:
-Original: "${ex.original}"
-Melhorado: "${ex.improved}"
-Melhorias aplicadas: ${ex.improvements.join(', ')}`
-      ).join('\n\n');
+      const response = await this.generateText(prompt, 300, 0.7);
 
-      const prompt = `És um especialista em otimização de CVs para recrutadores e sistemas ATS.
-
-**TEXTO ORIGINAL:**
-"${text}"
-
-**SECÇÃO:** ${section}
-
-**CONTEXTO ADICIONAL:**
-${context.jobTitle ? `- Cargo desejado: ${context.jobTitle}` : ''}
-${context.jobArea ? `- Área: ${context.jobArea}` : ''}
-${context.company ? `- Empresa alvo: ${context.company}` : ''}
-
-**EXEMPLOS DE MELHORIAS (aprende com estes):**
-${examplesText}
-
-**INSTRUÇÕES:**
-1. Usa verbos de ação fortes e impactantes
-2. Adiciona quantificação (números, percentagens, valores) sempre que possível
-3. Menciona tecnologias, ferramentas ou metodologias específicas
-4. Mantém o texto conciso (máximo 2-3 linhas)
-5. Otimiza para sistemas ATS com keywords relevantes
-6. Mantém tom profissional mas não robotizado
-
-**RESPONDE APENAS COM JSON (sem markdown):**
-{
-  "improved": "texto melhorado aqui",
-  "suggestions": [
-    "sugestão específica 1",
-    "sugestão específica 2",
-    "sugestão específica 3"
-  ],
-  "keywords_added": ["keyword1", "keyword2"],
-  "ats_score": 85
-}`;
-
-      // 3. Chamar Claude API
-      const response = await this.callClaudeAPI(prompt, 800);
-
-      // 4. Parse da resposta
-      const result = this.parseJSONResponse(response);
-
-      // 5. Validação e fallback
-      if (!result.improved || result.improved === text) {
-        return this.getFallbackTextImprovement(text, section);
+      // Tentar extrair JSON (pode não vir formatado)
+      const jsonMatch = response.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        return JSON.parse(jsonMatch[0]);
       }
 
-      return result;
-
+      // Fallback - retornar resposta simples
+      return {
+        improved: response.trim() || text,
+        suggestions: [
+          'Adicione mais detalhes quantificáveis',
+          'Use verbos de ação mais impactantes',
+          'Torne o texto mais conciso',
+        ],
+      };
     } catch (error) {
-      console.error('❌ Erro ao melhorar texto:', error.message);
-      return this.getFallbackTextImprovement(text, section);
+      console.error('Erro ao melhorar texto:', error);
+      throw new Error('Erro ao melhorar texto');
     }
   }
 
@@ -607,107 +559,58 @@ ${examplesText}
    */
   async suggestSkills(profile, jobTitle, jobArea) {
     try {
-      console.log(`💡 Sugerindo skills para: ${jobTitle} em ${jobArea}`);
+      const currentSkills = profile.skills?.map(s => s.name).join(', ') || 'Nenhuma';
+      const experiences = profile.experiences?.map(e => e.jobTitle).join(', ') || 'Nenhuma';
 
-      // 1. Obter skills relevantes do dataset local
-      const areaSkills = skills_database[jobArea?.toLowerCase()] || {};
-      const allSkills = [];
-      
-      Object.values(areaSkills).forEach(categorySkills => {
-        if (Array.isArray(categorySkills)) {
-          allSkills.push(...categorySkills);
-        }
-      });
+      // Prompt otimizado para Mistral
+      const prompt = `Você é um consultor de carreira especializado. Analise o perfil abaixo e sugira 6 competências profissionais importantes.
 
-      // Ordenar por demand_score
-      allSkills.sort((a, b) => b.demand_score - a.demand_score);
-
-      // 2. Skills que o user já tem
-      const currentSkills = profile.skills?.map(s => s.name.toLowerCase()) || [];
-      const currentSkillsText = currentSkills.join(', ') || 'Nenhuma registada';
-
-      // 3. Experiências do user
-      const experiences = profile.experiences?.map(e => 
-        `${e.jobTitle} na ${e.company}`
-      ).join(' | ') || 'Sem experiências registadas';
-
-      // 4. Top skills do dataset que o user NÃO tem
-      const suggestedFromDB = allSkills
-        .filter(skill => !currentSkills.includes(skill.name.toLowerCase()))
-        .slice(0, 10);
-
-      const prompt = `És um consultor de carreira especializado em tecnologia e desenvolvimento profissional.
-
-**PERFIL DO CANDIDATO:**
+Perfil:
 - Cargo desejado: ${jobTitle || 'Não especificado'}
-- Área profissional: ${jobArea || 'Tecnologia'}
-- Skills atuais: ${currentSkillsText}
-- Experiências: ${experiences}
+- Área: ${jobArea || 'Tecnologia'}
+- Competências atuais: ${currentSkills}
+- Experiências anteriores: ${experiences}
 
-**SKILLS RECOMENDADAS DO MERCADO (com demand score):**
-${suggestedFromDB.map((s, i) => 
-  `${i + 1}. ${s.name} (Demand: ${s.demand_score}/100, Impacto salarial: ${s.avg_salary_impact})`
-).join('\n')}
+IMPORTANTE: Responda APENAS com um objeto JSON válido, sem texto adicional.
 
-**TAREFA:**
-Analisa o perfil e sugere **exatamente 6 skills** mais importantes para este candidato.
-Prioriza:
-1. Skills com maior demand no mercado
-2. Skills que complementam as que já possui
-3. Skills críticas para o cargo desejado
-4. Mix de technical skills + soft skills
-
-**RESPONDE APENAS COM JSON (sem markdown):**
+Formato da resposta:
 {
   "suggestions": [
     {
-      "skill": "Nome da skill",
-      "category": "Frontend|Backend|DevOps|Database|Cloud|Soft Skills",
-      "priority": "high|medium|low",
-      "reason": "Explicação clara de porque é importante (1 frase)",
-      "demand_score": 90,
-      "learning_resources": ["Recurso 1", "Recurso 2"]
+      "skill": "nome da competência",
+      "category": "Frontend ou Backend ou DevOps ou Soft Skills ou Cloud ou Database",
+      "priority": "high ou medium ou low",
+      "reason": "explicação breve de por que é importante"
     }
   ]
 }`;
 
-      // 5. Chamar Claude API
-      const response = await this.callClaudeAPI(prompt, 1200);
-      const result = this.parseJSONResponse(response);
+      const response = await this.generateText(prompt, 800, 0.7);
 
-      // 6. Validação
-      if (!result.suggestions || !Array.isArray(result.suggestions)) {
-        console.log('⚠️ Resposta inválida, usando fallback do dataset');
-        return this.getFallbackSkillSuggestions(jobArea, currentSkills, suggestedFromDB);
+      console.log('📝 Resposta bruta do Mistral:', response);
+
+      // Tenta extrair JSON da resposta
+      const jsonMatch = response.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        try {
+          const parsed = JSON.parse(jsonMatch[0]);
+
+          // Valida a estrutura
+          if (parsed.suggestions && Array.isArray(parsed.suggestions)) {
+            return parsed;
+          }
+        } catch (e) {
+          console.error('❌ Erro ao parsear JSON:', e.message);
+        }
       }
 
-      // 7. Enriquecer com dados do dataset
-      result.suggestions = result.suggestions.map(suggestion => {
-        const dbSkill = findSkill(suggestion.skill, jobArea);
-        if (dbSkill) {
-          return {
-            ...suggestion,
-            demand_score: dbSkill.demand_score,
-            avg_salary_impact: dbSkill.avg_salary_impact
-          };
-        }
-        return suggestion;
-      });
-
-      return result;
+      // Se falhar, usa fallback
+      console.log('⚠️ Usando fallback');
+      return this.getFallbackSkillSuggestions(jobArea);
 
     } catch (error) {
-      console.error('❌ Erro ao sugerir skills:', error.message);
-      const areaSkills = skills_database[jobArea?.toLowerCase()] || {};
-      const allSkills = [];
-      Object.values(areaSkills).forEach(cat => {
-        if (Array.isArray(cat)) allSkills.push(...cat);
-      });
-      return this.getFallbackSkillSuggestions(
-        jobArea, 
-        profile.skills?.map(s => s.name.toLowerCase()) || [],
-        allSkills.slice(0, 10)
-      );
+      console.error('❌ Erro ao sugerir skills:', error);
+      return this.getFallbackSkillSuggestions(jobArea);
     }
   }
 
@@ -716,91 +619,63 @@ Prioriza:
    */
   async generateSummary(profile, jobTitle, targetArea, tone = 'professional') {
     try {
-      console.log(`📄 Gerando sumário para: ${jobTitle}`);
+      const experiences = profile.experiences?.map(e =>
+        `${e.jobTitle} na ${e.company} (${e.isCurrent ? 'atual' : 'anterior'})`
+      ).join(', ') || 'sem experiência listada';
 
-      // 1. Preparar dados do perfil
-      const experiences = profile.experiences?.map(e => ({
-        title: e.jobTitle,
-        company: e.company,
-        current: e.isCurrent,
-        duration: this.calculateDuration(e.startDate, e.endDate)
-      })) || [];
-
-      const totalYears = experiences.reduce((sum, exp) => sum + exp.duration, 0);
-
-      const topSkills = profile.skills
-        ?.slice(0, 8)
-        .map(s => s.name)
-        .join(', ') || 'não especificadas';
-
-      const education = profile.educations?.[0];
-      const educationText = education 
-        ? `${education.degree} em ${education.field || education.institution}`
-        : 'formação não especificada';
-
-      // 2. Obter keywords ATS relevantes
-      const atsKeywords = getATSKeywords(targetArea?.toLowerCase());
+      const skills = profile.skills?.slice(0, 10).map(s => s.name).join(', ') || 'não especificadas';
+      const education = profile.educations?.[0]?.degree || 'formação não especificada';
 
       const toneInstructions = {
-        professional: 'formal, objetivo e corporativo',
-        casual: 'amigável mas profissional, acessível',
-        confident: 'assertivo, confiante, orientado a resultados'
+        professional: 'formal e profissional',
+        casual: 'amigável mas profissional',
+        confident: 'assertivo e confiante',
       };
 
-      const prompt = `És um copywriter especializado em CVs de alto impacto.
+      const prompt = `[INST] Crie um sumário profissional conciso (3-4 linhas) para um CV com tom ${toneInstructions[tone] || 'professional'}:
 
-**INFORMAÇÕES DO CANDIDATO:**
-- Cargo desejado: ${jobTitle || 'Não especificado'}
-- Área alvo: ${targetArea || 'Tecnologia'}
-- Anos de experiência: ${totalYears || '0'} anos
-- Formação: ${educationText}
-- Experiências relevantes: ${experiences.map(e => `${e.title} na ${e.company}`).join('; ')}
-- Competências principais: ${topSkills}
+Informações:
+- Cargo desejado: ${jobTitle || 'não especificado'}
+- Área: ${targetArea || 'não especificada'}
+- Formação: ${education}
+- Experiências: ${experiences}
+- Principais competências: ${skills}
 
-**TOM DESEJADO:** ${toneInstructions[tone] || 'professional'}
+O sumário deve:
+- Ser objetivo e impactante
+- Destacar pontos fortes
+- Mencionar experiência relevante
+- Incluir competências-chave
+- Ter 3-4 linhas no máximo
 
-**KEYWORDS ATS RECOMENDADAS (usa algumas):**
-${atsKeywords.must_have?.join(', ') || 'N/A'}
+Forneça também 2 variações alternativas do sumário.
 
-**INSTRUÇÕES:**
-1. Cria um sumário profissional de **3-4 linhas** máximo
-2. Começa com cargo/título profissional + anos de experiência
-3. Destaca 2-3 competências técnicas mais relevantes
-4. Menciona 1-2 conquistas quantificáveis (se possível inferir dos dados)
-5. Inclui keywords ATS naturalmente
-6. Termina com proposta de valor ou especialização
-7. Cria também 2 variações alternativas do sumário
-
-**RESPONDE APENAS COM JSON (sem markdown):**
+Responda no formato JSON:
 {
-  "summary": "Sumário principal aqui (3-4 linhas)",
-  "variations": [
-    "Variação 1 do sumário",
-    "Variação 2 do sumário"
-  ],
-  "tips": [
-    "Dica personalizável 1",
-    "Dica personalizável 2",
-    "Dica personalizável 3"
-  ],
-  "ats_score": 88,
-  "keywords_used": ["keyword1", "keyword2"]
-}`;
+  "summary": "sumário principal",
+  "variations": ["variação 1", "variação 2"]
+}
+[/INST]`;
 
-      // 3. Chamar Claude API
-      const response = await this.callClaudeAPI(prompt, 1000);
-      const result = this.parseJSONResponse(response);
+      const response = await this.generateText(prompt, 600, 0.7);
 
-      // 4. Validação
-      if (!result.summary) {
-        return this.getFallbackSummary(jobTitle, targetArea, totalYears);
+      const jsonMatch = response.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        const result = JSON.parse(jsonMatch[0]);
+        return {
+          ...result,
+          tips: [
+            'Personalize o sumário para cada vaga',
+            'Destaque as competências mais relevantes',
+            'Mantenha entre 3-5 linhas',
+          ],
+        };
       }
 
-      return result;
-
+      return this.getFallbackSummary(jobTitle, targetArea);
     } catch (error) {
-      console.error('❌ Erro ao gerar sumário:', error.message);
-      return this.getFallbackSummary(jobTitle, targetArea, 0);
+      console.error('Erro ao gerar sumário:', error);
+      return this.getFallbackSummary(jobTitle, targetArea);
     }
   }
 
@@ -1147,23 +1022,6 @@ Responda no formato JSON:
   // FALLBACKS (caso a IA falhe)
   // ========================================
 
-  getFallbackTextImprovement(text, section) {
-    const examples = findImprovementExample(section);
-    const random = examples[Math.floor(Math.random() * examples.length)];
-    
-    return {
-      improved: text, // Retorna original
-      suggestions: [
-        'Adicione verbos de ação no início das frases',
-        'Inclua números e percentagens para quantificar resultados',
-        'Mencione tecnologias ou ferramentas específicas utilizadas'
-      ],
-      keywords_added: [],
-      ats_score: 60,
-      note: 'Sugestões baseadas em padrões do dataset'
-    };
-  }
-
   getFallbackAnalysis() {
     return {
       scores: {
@@ -1194,71 +1052,54 @@ Responda no formato JSON:
     };
   }
 
-   getFallbackSkillSuggestions(jobArea, currentSkills = [], suggestedFromDB = []) {
+  getFallbackSkillSuggestions(jobArea) {
+    const fallbackSkills = {
+      'frontend': [
+        { skill: 'React', category: 'Frontend', priority: 'high', reason: 'Framework mais popular' },
+        { skill: 'TypeScript', category: 'Frontend', priority: 'high', reason: 'Type safety essencial' },
+        { skill: 'Tailwind CSS', category: 'Frontend', priority: 'medium', reason: 'Styling moderno' },
+        { skill: 'Next.js', category: 'Frontend', priority: 'medium', reason: 'SSR e performance' },
+        { skill: 'Testing (Jest)', category: 'Frontend', priority: 'medium', reason: 'Qualidade de código' },
+        { skill: 'Git', category: 'Tools', priority: 'high', reason: 'Controlo de versão' },
+      ],
+      'backend': [
+        { skill: 'Node.js', category: 'Backend', priority: 'high', reason: 'Runtime popular' },
+        { skill: 'Express.js', category: 'Backend', priority: 'high', reason: 'Framework essencial' },
+        { skill: 'PostgreSQL', category: 'Database', priority: 'high', reason: 'Base de dados robusta' },
+        { skill: 'Docker', category: 'DevOps', priority: 'medium', reason: 'Containerização' },
+        { skill: 'REST APIs', category: 'Backend', priority: 'high', reason: 'Comunicação entre serviços' },
+        { skill: 'Git', category: 'Tools', priority: 'high', reason: 'Controlo de versão' },
+      ],
+      'fullstack': [
+        { skill: 'React', category: 'Frontend', priority: 'high', reason: 'UI moderna' },
+        { skill: 'Node.js', category: 'Backend', priority: 'high', reason: 'Backend JavaScript' },
+        { skill: 'TypeScript', category: 'Frontend', priority: 'high', reason: 'Full-stack type safety' },
+        { skill: 'PostgreSQL', category: 'Database', priority: 'medium', reason: 'Persistência de dados' },
+        { skill: 'Docker', category: 'DevOps', priority: 'medium', reason: 'Deploy e ambiente' },
+        { skill: 'Git', category: 'Tools', priority: 'high', reason: 'Essencial para equipa' },
+      ]
+    };
+
+    const area = jobArea?.toLowerCase() || 'fullstack';
     return {
-      suggestions: suggestedFromDB.slice(0, 6).map(skill => ({
-        skill: skill.name,
-        category: this.categorizeSkill(skill.name),
-        priority: skill.demand_score > 85 ? 'high' : 'medium',
-        reason: `Skill muito procurada na área de ${jobArea} (demand score: ${skill.demand_score})`,
-        demand_score: skill.demand_score,
-        avg_salary_impact: skill.avg_salary_impact
-      }))
+      suggestions: fallbackSkills[area] || fallbackSkills['fullstack']
     };
   }
 
-  getFallbackSummary(jobTitle, targetArea, years) {
+  getFallbackSummary(jobTitle, targetArea) {
     return {
-      summary: `Profissional de ${targetArea || 'tecnologia'}${years > 0 ? ` com ${years} anos de experiência` : ''} especializado em ${jobTitle || 'desenvolvimento'}. Orientado a resultados e sempre em busca de novos desafios que permitam crescimento profissional e impacto nos projetos.`,
+      summary: `Profissional de ${targetArea || 'tecnologia'} com experiência em ${jobTitle || 'desenvolvimento'}. Especialista em resolver problemas complexos e entregar soluções de alta qualidade. Forte capacidade de trabalho em equipa e comunicação eficaz.`,
       variations: [
-        `${jobTitle || 'Profissional'} com experiência em ${targetArea || 'tecnologia'}, focado em entregar soluções de qualidade e trabalhar em ambientes colaborativos.`,
-        `Especialista em ${targetArea || 'tecnologia'} com histórico de projetos bem-sucedidos${years > 0 ? ` ao longo de ${years} anos` : ''}. Pronto para contribuir em equipes de alto desempenho.`
+        `Profissional dedicado com foco em ${targetArea || 'inovação'} e resultados mensuráveis.`,
+        `${jobTitle || 'Profissional'} com experiência comprovada em projetos desafiadores.`,
       ],
       tips: [
-        'Personalize este sumário para cada vaga específica',
-        'Adicione métricas concretas das suas experiências',
-        'Destaque as competências mais relevantes para o cargo'
+        'Personalize o sumário para cada vaga',
+        'Destaque as competências mais relevantes',
+        'Mantenha entre 3-5 linhas',
       ],
-      ats_score: 70
     };
   }
-
-  categorizeSkill(skillName) {
-    const categories = {
-      frontend: ['react', 'vue', 'angular', 'css', 'html', 'javascript', 'typescript'],
-      backend: ['node', 'python', 'java', 'api', 'django', 'express'],
-      devops: ['docker', 'kubernetes', 'aws', 'azure', 'ci/cd'],
-      database: ['sql', 'postgres', 'mongo', 'redis', 'mysql'],
-      'soft skills': ['liderança', 'comunicação', 'equipa', 'gestão']
-    };
-
-    const lowerSkill = skillName.toLowerCase();
-    for (const [category, keywords] of Object.entries(categories)) {
-      if (keywords.some(kw => lowerSkill.includes(kw))) {
-        return category.charAt(0).toUpperCase() + category.slice(1);
-      }
-    }
-    return 'Technical';
-  }
-
-  calculateDuration(startDate, endDate) {
-    if (!startDate) return 0;
-    const start = new Date(startDate);
-    const end = endDate ? new Date(endDate) : new Date();
-    const years = (end - start) / (1000 * 60 * 60 * 24 * 365);
-    return Math.max(0, Math.round(years * 10) / 10);
-  }
-
-  hashString(str) {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash;
-    }
-    return hash.toString();
-  }
-
 
   getFallbackATSOptimization() {
     return {

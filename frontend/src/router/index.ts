@@ -6,12 +6,14 @@ import ProfileView from "../views/Profile.vue";
 import Home from "../views/Home.vue";
 import AuthCallback from '../views/AuthCallback.vue';
 import Dashboard from '../views/Dashboard.vue'
+import UpgradeView from '../views/UpgradePlan.vue'; 
 
 const routes = [
   { path: "/", component: Home },
   { path: "/login", component: LoginView },
   { path: "/register", component: RegisterView },
   { path: "/profile", component: ProfileView, meta: { requiresAuth: true } },
+  { path: '/upgrade', name: 'Upgrade', component: UpgradeView, meta: { requiresAuth: true } },
    { path: '/dashboard', name: 'Dashboard', component: Dashboard, meta: { requiresAuth: true } },
    { path: '/auth/callback', component: AuthCallback },
 ];

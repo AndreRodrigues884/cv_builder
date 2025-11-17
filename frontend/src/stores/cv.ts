@@ -129,7 +129,7 @@ export const useCVStore = defineStore('cv', {
       }
     },
 
-    /* async downloadCV(id: string) {
+    async downloadCV(id: string) {
       this.loading = true;
       this.error = null;
 
@@ -167,7 +167,7 @@ export const useCVStore = defineStore('cv', {
       } finally {
         this.loading = false;
       }
-    }, */
+    },
 
     async previewCV(id: string) {
       this.loading = true;

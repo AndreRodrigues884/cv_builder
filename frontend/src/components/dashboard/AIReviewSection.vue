@@ -1,5 +1,5 @@
 <template>
-  <div v-if="activeSection === 'ai-review'" class="max-w-5xl mx-auto">
+  <div v-if="uiStore.activeSection === 'ai-review'" class="max-w-5xl mx-auto">
     <!-- Seleção do CV -->
     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 mb-6">
       <h2 class="text-2xl font-bold mb-4">Analisar CV com IA</h2>
@@ -171,6 +171,7 @@
 <script>
 import { useCVStore } from '../../stores/cv'
 import { useAIStore } from '../../stores/ai'
+import { useUIStore } from '../../stores/ui';
 
 export default {
   name: 'AiReview',
@@ -202,14 +203,8 @@ export default {
     currentReview() {
       return this.aiStore.currentReview
     },
-
-    activeSection: {
-      get() {
-        return this.$parent.activeSection
-      },
-      set(value) {
-        this.$parent.activeSection = value
-      }
+    uiStore() {
+      return useUIStore()
     }
   },
 
@@ -265,10 +260,5 @@ export default {
       })
     }
   },
-
-  beforeUnmount() {
-    // Limpa a análise atual quando sai da view
-    this.aiStore.clearError()
-  }
 }
 </script>
