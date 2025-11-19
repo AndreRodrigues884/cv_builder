@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import * as aiAPI from '../api/ai'
-import {
+import type {
   AIState,
   AIGenerateQuestionsResponse,
   AISuggestCareerPathData,
@@ -9,7 +9,8 @@ import {
   ImproveTextRequest,
   ImproveExperienceRequest,
   SuggestSkillsRequest,
-  OptimizeATSRequest
+  OptimizeATSRequest,
+  ReviewCVRequest
 } from '../types/aiInterface'
 
 export const useAIStore = defineStore('ai', {
@@ -140,7 +141,9 @@ export const useAIStore = defineStore('ai', {
         const response = await aiAPI.improveText(payload)
         if (!response.data.success)
           throw new Error(response.data.message || 'Erro ao melhorar texto')
-        return response.data.data.improvedText
+        
+        // ✅ CORRIGIDO: Backend retorna "improved" dentro de "data"
+        return response.data.data.improved
       } catch (error: any) {
         const msg =
           error.response?.data?.message || error.message || 'Erro ao melhorar texto'
@@ -158,7 +161,9 @@ export const useAIStore = defineStore('ai', {
         const response = await aiAPI.improveExperience(payload)
         if (!response.data.success)
           throw new Error(response.data.message || 'Erro ao melhorar experiência')
-        return response.data.data.improvedText
+        
+        // ✅ CORRIGIDO: Backend retorna "improved" dentro de "data"
+        return response.data.data.improved
       } catch (error: any) {
         const msg =
           error.response?.data?.message ||
@@ -178,7 +183,9 @@ export const useAIStore = defineStore('ai', {
         const response = await aiAPI.suggestSkills(payload)
         if (!response.data.success)
           throw new Error(response.data.message || 'Erro ao sugerir skills')
-        this.currentSuggestions = response.data.data.skills
+        
+        // ✅ CORRIGIDO: Backend retorna "suggestions" não "skills"
+        this.currentSuggestions = response.data.data.suggestions
         return this.currentSuggestions
       } catch (error: any) {
         const msg =
@@ -199,7 +206,13 @@ export const useAIStore = defineStore('ai', {
         const response = await aiAPI.optimizeForATS(payload)
         if (!response.data.success)
           throw new Error(response.data.message || 'Erro ao otimizar CV')
-        this.optimizedCV = response.data.data.optimized
+        
+        // ✅ CORRIGIDO: Backend não retorna "optimized", retorna objeto completo
+        this.optimizedCV = {
+          optimizations: response.data.data.optimizations,
+          atsScore: response.data.data.atsScore,
+          improvements: response.data.data.improvements
+        }
         return this.optimizedCV
       } catch (error: any) {
         const msg =

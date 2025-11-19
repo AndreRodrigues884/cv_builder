@@ -1,4 +1,6 @@
-
+// ============================================
+// SCORES E REVIEW
+// ============================================
 
 export interface AIReviewScores {
   overall: number
@@ -26,6 +28,9 @@ export interface AIReviewData {
   createdAt: string
 }
 
+// ============================================
+// STATE DA STORE
+// ============================================
 
 export interface AIState {
   currentReview: AIReviewData | null
@@ -34,10 +39,14 @@ export interface AIState {
   currentCareerSuggestion: AISuggestCareerPathData | null
   currentSummary: string | null
   currentSuggestions: string[]
-  optimizedCV: any
+  optimizedCV: AIOptimizedCVData | null // ✅ Tipado corretamente
   loading: boolean
   error: string | null
 }
+
+// ============================================
+// INTERVIEW QUESTIONS
+// ============================================
 
 export interface AIInterviewQuestion {
   category: string
@@ -52,7 +61,6 @@ export interface AIInterviewQuestionsData {
   preparationTips: string[]
 }
 
-// Resposta do endpoint
 export interface AIGenerateQuestionsResponse {
   success: boolean
   data: {
@@ -63,15 +71,21 @@ export interface AIGenerateQuestionsResponse {
   message?: string
 }
 
+// ============================================
+// CAREER PATH
+// ============================================
+
+export interface AICareerPathSuggestion {
+  role: string
+  timeline: string
+  probability: string
+  requirements: string[]
+  salary: string
+}
+
 export interface AISuggestCareerPathData {
   currentRole: string
-  suggestedPaths: {
-    role: string
-    timeline: string
-    probability: string
-    requirements: string[]
-    salary: string
-  }[]
+  suggestedPaths: AICareerPathSuggestion[]
   insights: string[]
 }
 
@@ -81,7 +95,10 @@ export interface AISuggestCareerPathResponse {
   message?: string
 }
 
-// Cada sugestão de skill
+// ============================================
+// SKILL GAPS
+// ============================================
+
 export interface AISkillGapSuggestion {
   skill: string
   category: string
@@ -89,64 +106,151 @@ export interface AISkillGapSuggestion {
   reason: string
 }
 
-// Dados retornados pelo endpoint
 export interface AIAnalyzeSkillGapsData {
   suggestions: AISkillGapSuggestion[]
-  currentSkills: string[]  // skills que o usuário já possui
+  currentSkills: string[]
 }
 
-export interface ImproveExperienceRequest {
-  description: string
-  jobTitle: string
-  company: string
+export interface AIAnalyzeSkillGapsResponse {
+  success: boolean
+  data: AIAnalyzeSkillGapsData
+  message?: string
 }
 
-export interface SuggestSkillsRequest {
-  jobTitle: string
-  jobArea?: string
-}
-
-export interface GenerateSummaryRequest {
-  name: string
-  targetRole: string
-  experiences: any[]
-  skills: any[]
-}
-
-export interface ReviewCVRequest {
-  cvId: string
-}
-
-export interface ImproveExperienceRequest {
-  description: string
-  jobTitle: string
-  company: string
-}
-
-export interface SuggestSkillsRequest {
-  jobTitle: string
-  jobArea?: string
-}
-
-export interface GenerateSummaryRequest {
-  name: string
-  targetRole: string
-  experiences: any[]
-  skills: any[]
-}
+// ============================================
+// IMPROVE TEXT
+// ============================================
 
 export interface ImproveTextRequest {
   text: string
+  section?: string // ✅ Adicionado
   context?: string
 }
+
+export interface ImproveTextResponse {
+  success: boolean
+  data: {
+    original: string
+    improved: string // ✅ Corresponde ao backend
+    suggestions?: string[]
+  }
+  message?: string
+}
+
+// ============================================
+// IMPROVE EXPERIENCE
+// ============================================
+
+export interface ImproveExperienceRequest {
+  description: string
+  jobTitle: string
+  company: string
+}
+
+export interface ImproveExperienceResponse {
+  success: boolean
+  data: {
+    improved: string // ✅ Corresponde ao backend
+  }
+  message?: string
+}
+
+// ============================================
+// SUGGEST SKILLS
+// ============================================
+
+export interface SuggestSkillsRequest {
+  jobTitle: string
+  jobArea?: string
+}
+
+export interface SuggestSkillsResponse {
+  success: boolean
+  data: {
+    suggestions: string[] // ✅ Backend retorna "suggestions" não "skills"
+    currentSkills: string[]
+  }
+  message?: string
+}
+
+// ============================================
+// GENERATE SUMMARY
+// ============================================
+
+export interface GenerateSummaryRequest {
+  jobTitle: string // ✅ Alinhado com backend
+  targetArea?: string // ✅ Alinhado com backend
+  tone?: string // ✅ Alinhado com backend
+}
+
+export interface GenerateSummaryResponse {
+  success: boolean
+  data: {
+    summary: string
+    variations?: string[]
+    tips?: string[]
+  }
+  message?: string
+}
+
+// ============================================
+// OPTIMIZE ATS
+// ============================================
 
 export interface OptimizeATSRequest {
   cvId: string
   jobDescription?: string
 }
 
+export interface AIOptimizedCVData {
+  optimizations: any[] // ✅ Estrutura correta do backend
+  atsScore: number
+  improvements: string[]
+}
+
+export interface OptimizeATSResponse {
+  success: boolean
+  data: {
+    optimizations: any[]
+    atsScore: number
+    maxScore: number
+    improvements: string[]
+  }
+  message?: string
+}
+
+// ============================================
+// REVIEW CV
+// ============================================
+
+export interface ReviewCVRequest {
+  cvId: string
+}
+
+export interface ReviewCVResponse {
+  success: boolean
+  data: {
+    review: AIReviewData
+  }
+  message?: string
+}
+
+// ============================================
+// GENERATE INTERVIEW QUESTIONS
+// ============================================
 
 export interface GenerateQuestionsRequest {
   cvId: string
   jobDescription: string
+}
+
+// ============================================
+// GENERIC API RESPONSE
+// ============================================
+
+export interface APIResponse<T = any> {
+  success: boolean
+  data?: T
+  message?: string
+  errors?: any[]
 }
